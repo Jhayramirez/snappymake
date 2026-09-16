@@ -54,6 +54,7 @@ from app.services.sheets import (
 from app.services import snaps21 as snaps21_service
 from app.services import qa as qa_service
 from app.services import gmail_login as gmail_login_service
+from app.services import gmail_login_runner as gmail_login_runner_service
 
 ROOT = Path(__file__).resolve().parent
 templates = Jinja2Templates(directory=str(ROOT / "templates"))
@@ -277,6 +278,11 @@ class GmailLoginStatusIn(BaseModel):
     profile_id: str | None = None
     proxy_label: str | None = None
     last_error: str | None = None
+
+
+class GmailLoginRunIn(BaseModel):
+    inject_proxy: bool = True
+    stop_at_first: bool = True
 
 
 class RunIn(CreateIn):
@@ -600,6 +606,29 @@ def create_official_group():
         _raise(exc)
     finally:
         client.close()
+
+
+@app.get("/api/gmail-login/run")
+def gmail_login_run_status():
+    return gmail_login_runner_service.status()
+
+
+@app.post("/api/gmail-login/run/start")
+def gmail_login_run_start(payload: GmailLoginRunIn):
+    result = gmail_login_runner_service.start(
+        inject_proxy=payload.inject_proxy, stop_at_first=payload.stop_at_first
+    )
+    if not result.get("ok"):
+        raise HTTPException(status_code=409, detail=result.get("detail", "already running"))
+    return result
+
+
+@app.post("/api/gmail-login/run/stop")
+def gmail_login_run_stop():
+    result = gmail_login_runner_service.stop()
+    if not result.get("ok"):
+        raise HTTPException(status_code=409, detail=result.get("detail", "not running"))
+    return result
 
 
 EMAIL_IN_REMARK = re.compile(r"Email:\s*([^\s·|]+@[^\s·|]+)", re.I)

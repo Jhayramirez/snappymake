@@ -53,6 +53,26 @@
   <section class="sheet">
     <div class="sheet-head">
       <div>
+        <h2>Run logins</h2>
+        <p class="muted">Create profile in <b>SnappyMake Official</b> → login Gmail (backup code) → inject Netlox proxy. Needs AdsPower open with Local API.</p>
+      </div>
+      <div id="runPill" class="pill off">idle</div>
+    </div>
+    <div class="form-grid nested" style="padding:0 22px 22px">
+      <div class="inline span-2" style="align-items:center;gap:1rem;flex-wrap:wrap;margin:0">
+        <button class="solid" id="btnStart" type="button">▶ Start logins</button>
+        <button class="warn" id="btnStop" type="button" disabled>■ Stop</button>
+        <label class="check"><input type="checkbox" id="optStopFirst" checked /> Stop at first good login</label>
+        <label class="check"><input type="checkbox" id="optInjectProxy" checked /> Inject Netlox proxy on success</label>
+        <span class="hint" id="runProgress">—</span>
+      </div>
+      <div class="console span-2" id="runLog" style="margin-top:10px;max-height:220px;overflow:auto"><div class="empty">Press Start to begin. Live progress shows here.</div></div>
+    </div>
+  </section>
+
+  <section class="sheet">
+    <div class="sheet-head">
+      <div>
         <h2>Accounts</h2>
         <p class="muted" id="sheetSub">Login status + backup-code usage</p>
       </div>

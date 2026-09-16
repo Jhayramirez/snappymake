@@ -241,4 +241,59 @@ $("rows").addEventListener("click", async (e) => {
   }
 });
 
+// ---- Run controls (Start / Stop logins) ----
+let RUN_POLL = null;
+
+function renderRun(st) {
+  const running = !!st.running;
+  const pill = $("runPill");
+  pill.textContent = running ? (st.current ? `running · ${st.current}` : "running") : "idle";
+  pill.classList.toggle("on", running);
+  pill.classList.toggle("off", !running);
+  $("btnStart").disabled = running;
+  $("btnStop").disabled = !running;
+  $("optStopFirst").disabled = running;
+  $("optInjectProxy").disabled = running;
+  const t = st.tally || {};
+  $("runProgress").textContent =
+    `${st.processed || 0}/${st.total || 0} done · ok ${t.login_ok || 0} · captcha ${t.captcha || 0} · selfie ${t.selfie || 0} · error ${t.error || 0}`;
+  const log = st.log || [];
+  const box = $("runLog");
+  box.innerHTML = log.length ? log.map((l) => `<div>${esc(l)}</div>`).join("") : `<div class="empty">No output yet.</div>`;
+  box.scrollTop = box.scrollHeight;
+  if (running && !RUN_POLL) {
+    RUN_POLL = setInterval(pollRun, 2000);
+  } else if (!running && RUN_POLL) {
+    clearInterval(RUN_POLL); RUN_POLL = null;
+    refresh();
+  }
+}
+
+async function pollRun() {
+  try { renderRun(await api("/api/gmail-login/run")); } catch (err) { /* transient */ }
+}
+
+$("btnStart").onclick = async () => {
+  try {
+    const r = await api("/api/gmail-login/run/start", {
+      method: "POST",
+      body: JSON.stringify({
+        inject_proxy: $("optInjectProxy").checked,
+        stop_at_first: $("optStopFirst").checked,
+      }),
+    });
+    renderRun(r.status || { running: true });
+    toast("Login run started");
+  } catch (err) { toast(err.message); }
+};
+
+$("btnStop").onclick = async () => {
+  try {
+    const r = await api("/api/gmail-login/run/stop", { method: "POST" });
+    renderRun(r.status || {});
+    toast("Stopping after current account…");
+  } catch (err) { toast(err.message); }
+};
+
 refresh();
+pollRun();
