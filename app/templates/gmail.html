@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gmail pool · SnappyMake</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/app.css" />
+</head>
+<body>
+  <div class="glow glow-a"></div>
+  <div class="glow glow-b"></div>
+
+  <header class="top">
+    <div class="brand">
+      <a class="mark" href="/" style="text-decoration:none">SM</a>
+      <div>
+        <h1>Gmail pool</h1>
+        <p>Unused mailboxes for Snapchat OTP · IMAP app passwords</p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <a class="pill" href="/" style="text-decoration:none">← Dashboard</a>
+      <a class="ghost" href="/gmail-login">Gmail Login</a>
+      <button class="ghost" id="btnRefresh">Refresh</button>
+    </div>
+  </header>
+
+  <section class="meters compact" id="meters"></section>
+
+  <section class="sheet">
+    <div class="sheet-head">
+      <div>
+        <h2>Add Gmails</h2>
+        <p class="muted">One unused mailbox per Snapchat signup. Click a cell to edit email or app password — it saves as you type.</p>
+      </div>
+    </div>
+    <form id="gmailForm" class="form-grid nested" style="padding:0 22px 22px">
+      <label class="span-2">email|app password — one per line
+        <textarea name="gmail_list" rows="5" placeholder="you@gmail.com|abcd efgh ijkl mnop&#10;another@gmail.com:abcdefghijklmnop"></textarea>
+      </label>
+      <div class="form-actions span-2">
+        <p class="hint">2-Step on, IMAP enabled, 16-char Google app password. Spaces are stripped.</p>
+        <button class="solid" type="submit">Add to pool</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="sheet">
+    <div class="sheet-head">
+      <div>
+        <h2>Availability</h2>
+        <p class="muted" id="sheetSub">Unused vs used for Snapchat</p>
+      </div>
+      <div class="inline" style="margin:0">
+        <button class="ghost" data-filter="all" id="filterAll">All</button>
+        <button class="ghost" data-filter="available" id="filterAvail">Available</button>
+        <button class="ghost" data-filter="used" id="filterUsed">Used</button>
+        <input id="search" class="search" placeholder="Filter email or password…" />
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Email</th>
+            <th>App password</th>
+            <th>Status</th>
+            <th>Used at</th>
+            <th>Profile</th>
+            <th>Last error</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <aside id="inbox" class="drawer" hidden>
+    <div class="drawer-card wide">
+      <header>
+        <div>
+          <p class="kicker">Read-only IMAP</p>
+          <h3 id="inboxTitle">Inbox</h3>
+        </div>
+        <button class="icon" id="btnCloseInbox" aria-label="Close">✕</button>
+      </header>
+      <div class="inline" style="margin-bottom:14px">
+        <select id="inboxFolder"></select>
+        <button class="ghost" id="btnReloadInbox">Reload</button>
+      </div>
+      <p class="hint" id="inboxHint">Newest 30 messages. Nothing is marked read or deleted.</p>
+      <div class="inbox-split">
+        <div class="inbox-list" id="inboxList"></div>
+        <div class="inbox-body" id="inboxBody"><p class="muted">Pick a message.</p></div>
+      </div>
+    </div>
+  </aside>
+
+  <div id="toast" class="toast" hidden></div>
+  <script src="/static/js/gmail.js"></script>
+</body>
+</html>

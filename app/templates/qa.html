@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SnapX QA · SnappyMake</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/app.css?v={{ asset_version }}" />
+</head>
+<body>
+  <div class="glow glow-a"></div>
+  <div class="glow glow-b"></div>
+
+  <header class="top">
+    <div class="brand">
+      <a class="mark" href="/" style="text-decoration:none">SM</a>
+      <div>
+        <h1>SnapX QA</h1>
+        <p>Secret panel · check availability → open → add from 21snaps</p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <div id="connPill" class="pill off">idle</div>
+      <a class="ghost" href="/" style="text-decoration:none">← Dashboard</a>
+      <button class="ghost" id="btnRefresh">Refresh</button>
+    </div>
+  </header>
+
+  <section class="meters compact" id="meters"></section>
+
+  <section class="sheet">
+    <div class="sheet-head">
+      <div>
+        <h2>21snaps connection</h2>
+        <p class="muted">Base URL for SnapX `/api/snaps/*`. Enable before Run QA / Run ALL.</p>
+      </div>
+    </div>
+    <form id="snapsForm" class="form-grid nested" style="padding:0 22px 22px">
+      <label class="row" style="align-items:center;gap:.5rem">
+        <input name="enabled" type="checkbox" />
+        <span>Enable 21snaps SnapX pulls</span>
+      </label>
+      <label class="span-2">Base URL
+        <input name="base" placeholder="https://21snaps.laravel.cloud" />
+      </label>
+      <label>Usernames per QA
+        <input name="count" type="number" min="1" max="10" value="1" />
+      </label>
+      <div class="form-actions span-2">
+        <button class="ghost" type="button" id="btnPing">Test connection</button>
+        <button class="solid" type="submit">Save</button>
+        <span id="snapsHint" class="hint">—</span>
+      </div>
+    </form>
+  </section>
+
+  <section class="sheet run-sheet">
+    <div class="sheet-head">
+      <div>
+        <h2>QA run</h2>
+        <p class="muted" id="runSub">Check availability per profile, then open + add SnapX usernames.</p>
+      </div>
+      <div id="runStatus" class="pill off">idle</div>
+    </div>
+    <div class="sheet-tools" style="padding:0 22px 12px;display:flex;gap:.6rem;flex-wrap:wrap;align-items:center">
+      <select id="bucketFilter">
+        <option value="all">All groups</option>
+        <option value="new">New</option>
+        <option value="warm">24hrs Pass</option>
+        <option value="ready">4days Pass Ready</option>
+      </select>
+      <label class="row" style="align-items:center;gap:.4rem;margin:0">
+        <input id="onlyAvail" type="checkbox" checked />
+        <span class="hint">Run ALL skips unavailable</span>
+      </label>
+      <button class="solid" type="button" id="btnRunAll">Run ALL</button>
+      <button class="warn" type="button" id="btnCancel" disabled>Cancel</button>
+    </div>
+    <div id="runLog" class="run-log" style="padding:0 22px 18px;max-height:180px;overflow:auto"></div>
+  </section>
+
+  <section class="sheet">
+    <div class="sheet-head">
+      <div>
+        <h2>Profiles</h2>
+        <p class="muted" id="sheetSub">Loading…</p>
+      </div>
+      <input id="search" class="search" placeholder="Filter name, id, username…" />
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Name</th>
+            <th>Username</th>
+            <th>Bucket</th>
+            <th>Life</th>
+            <th>Browser</th>
+            <th>SnapX</th>
+            <th>Availability</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="rows">
+          <tr><td colspan="9" class="empty">Loading…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div id="toast" class="toast" hidden></div>
+  <script src="/static/js/qa.js?v={{ asset_version }}"></script>
+</body>
+</html>

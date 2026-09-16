@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gmail Login · SnappyMake</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/app.css?v={{ asset_version }}" />
+</head>
+<body>
+  <div class="glow glow-a"></div>
+  <div class="glow glow-b"></div>
+
+  <header class="top">
+    <div class="brand">
+      <a class="mark" href="/" style="text-decoration:none">SM</a>
+      <div>
+        <h1>Gmail Login</h1>
+        <p>Accounts we log INTO Gmail (password + 2FA backup codes) → Snapchat via Google</p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <a class="pill" href="/" style="text-decoration:none">← Dashboard</a>
+      <a class="ghost" href="/gmail">IMAP pool</a>
+      <button class="ghost" id="btnOfficialGroup" title="Create the SnappyMake Official AdsPower group">Create Official group</button>
+      <button class="ghost" id="btnRefresh">Refresh</button>
+    </div>
+  </header>
+
+  <section class="meters compact" id="meters"></section>
+
+  <section class="sheet">
+    <div class="sheet-head">
+      <div>
+        <h2>Bulk import</h2>
+        <p class="muted">One account per line — <code>email⇥password⇥code1⇥code2…</code>. Codes like <code>9538 5125</code> or <code>95385125</code> both work.</p>
+      </div>
+    </div>
+    <form id="importForm" class="form-grid nested" style="padding:0 22px 22px">
+      <label class="span-2">email · password · backup codes — one per line
+        <textarea name="login_list" rows="6" placeholder="you@gmail.com&#9;Passw0rd&#9;9538 5125&#9;5715 7268&#9;1964 6475&#10;other@gmail.com&#9;secret&#9;98806525&#9;22449188"></textarea>
+      </label>
+      <label class="check span-2"><input type="checkbox" id="excludeUsed" checked /> Exclude emails already in the AdsPower <b>&nbsp;SnappyMail-Test&nbsp;</b> group</label>
+      <div class="form-actions span-2">
+        <p class="hint">Backup codes power the used/unused chips below. Re-importing an account keeps codes already marked used.</p>
+        <button class="solid" type="submit">Import accounts</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="sheet">
+    <div class="sheet-head">
+      <div>
+        <h2>Accounts</h2>
+        <p class="muted" id="sheetSub">Login status + backup-code usage</p>
+      </div>
+      <div class="inline" style="margin:0">
+        <button class="ghost" data-filter="all" id="filterAll">All</button>
+        <button class="ghost" data-filter="pending" id="filterPending">Needs login</button>
+        <button class="ghost" data-filter="login_ok" id="filterOk">Logged in</button>
+        <button class="ghost" data-filter="issue" id="filterIssue">Captcha/Selfie/Error</button>
+        <input id="search" class="search" placeholder="Filter email…" />
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Email</th>
+            <th>Password</th>
+            <th>Login</th>
+            <th>Snapchat</th>
+            <th>Profile</th>
+            <th>Proxy</th>
+            <th>Backup codes <span class="hint">click a chip to toggle used</span></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="rows">
+          <tr><td colspan="8" class="empty">Loading…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div id="toast" class="toast" hidden></div>
+  <script src="/static/js/gmail_login.js?v={{ asset_version }}"></script>
+</body>
+</html>

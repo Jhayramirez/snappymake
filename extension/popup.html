@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="popup.css" />
+  <title>SnappyMake IMAP</title>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="dot"></span>
+      <span>SnappyMake IMAP</span>
+    </div>
+    <button id="settings-toggle" class="icon-btn" title="Settings">⚙</button>
+  </header>
+
+  <section id="settings" class="settings hidden">
+    <label for="base-url">Backend base URL</label>
+    <div class="row">
+      <input id="base-url" type="text" placeholder="http://127.0.0.1:8799" spellcheck="false" />
+      <button id="save-base" class="btn small">Save</button>
+    </div>
+    <p class="hint">Default is the companion at <code>http://127.0.0.1:8799</code>. The SnappyMake dashboard (<code>:8787</code>) also works if it's running.</p>
+
+    <div class="divider"></div>
+
+    <label for="provider">Provider (manual / default)</label>
+    <select id="provider">
+      <option value="imap">IMAP (Gmail)</option>
+      <option value="anymessage">AnyMessage</option>
+    </select>
+    <label for="am-token">AnyMessage token</label>
+    <input id="am-token" type="password" placeholder="AnyMessage API token" spellcheck="false" autocomplete="off" />
+    <label for="am-site">AnyMessage site</label>
+    <input id="am-site" type="text" placeholder="snapchat.com" spellcheck="false" autocomplete="off" />
+    <div class="row" style="align-items:center">
+      <button id="save-am" class="btn small primary">Save AnyMessage</button>
+      <button id="check-balance" class="btn small">Balance</button>
+      <span id="am-balance" class="hint">—</span>
+    </div>
+    <p class="hint">Open profiles auto-detect their provider from the remark. Manual lookups use this provider. AnyMessage <b>reorders the same email</b> to pull the latest verification link.</p>
+
+    <div class="divider"></div>
+
+    <label>Manual credentials (IMAP fallback)</label>
+    <input id="manual-email" type="text" placeholder="name@gmail.com" spellcheck="false" autocomplete="off" />
+    <input id="manual-pass" type="password" placeholder="app password (16 chars, no spaces)" spellcheck="false" autocomplete="off" />
+    <div class="row">
+      <button id="save-manual" class="btn small primary">Save credentials</button>
+      <button id="clear-manual" class="btn small">Clear</button>
+    </div>
+    <p id="manual-saved" class="hint">Used only when no profile account can be resolved from AdsPower.</p>
+  </section>
+
+  <section class="account">
+    <div class="row account-head">
+      <span class="account-label">Account</span>
+      <button id="refresh" class="btn primary">Refresh</button>
+    </div>
+
+    <!-- AUTO: the currently-open AdsPower profile -->
+    <div id="auto-box" class="auto-box hidden">
+      <span id="auto-email" class="auto-email"></span>
+      <span id="auto-note" class="auto-note"></span>
+    </div>
+
+    <!-- MANUAL: shown when no profile is open -->
+    <div id="manual-box" class="manual-box hidden">
+      <input id="manual-email-input" type="text" placeholder="name@gmail.com" spellcheck="false" autocomplete="off" />
+      <input id="manual-pass-input" type="password" placeholder="app password" spellcheck="false" autocomplete="off" />
+      <button id="fetch-manual" class="btn primary">Fetch</button>
+    </div>
+
+    <p id="context-hint" class="hint">Loading open profile…</p>
+  </section>
+
+  <div id="status" class="status"></div>
+
+  <section class="card link-card">
+    <div class="card-head">
+      <span class="card-title">Verification link</span>
+      <span id="link-badge" class="badge muted">—</span>
+    </div>
+    <div id="link-value" class="value empty">No link yet</div>
+    <div class="row">
+      <button id="open-link" class="btn primary" disabled>Open link</button>
+      <button id="copy-link" class="btn" disabled>Copy</button>
+      <button id="reorder-link" class="btn hidden">Reorder &amp; wait</button>
+    </div>
+  </section>
+
+  <section class="card otp-card">
+    <div class="card-head">
+      <span class="card-title">OTP code</span>
+      <span id="otp-badge" class="badge muted">—</span>
+    </div>
+    <div id="otp-value" class="value otp empty">------</div>
+    <div class="row">
+      <button id="copy-otp" class="btn" disabled>Copy code</button>
+    </div>
+  </section>
+
+  <footer id="meta" class="meta"></footer>
+
+  <script src="popup.js"></script>
+</body>
+</html>

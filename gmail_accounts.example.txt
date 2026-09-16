@@ -1,0 +1,5 @@
+# Local Gmail pool for Snapchat signup (gitignored copy lives in data/gmail_accounts.txt).
+# One account per line. App password spaces are optional.
+#
+# you@gmail.com|abcd efgh ijkl mnop
+# another@gmail.com:abcdefghijklmnop

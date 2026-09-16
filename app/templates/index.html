@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SnappyMake</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/app.css?v={{ asset_version }}" />
+</head>
+<body>
+  <div class="glow glow-a"></div>
+  <div class="glow glow-b"></div>
+
+  <header class="top">
+    <div class="brand">
+      <span class="mark">SM</span>
+      <div>
+        <h1>SnappyMake</h1>
+        <p>AdsPower automation loop</p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <div id="connPill" class="pill off">checking AdsPower</div>
+      <a class="ghost" href="/gmail">Gmail</a>
+      <a class="ghost" href="/gmail-login">Gmail Login</a>
+      <a class="ghost" href="/qa" title="SnapX QA secret panel" style="opacity:.55">QA</a>
+      <button class="ghost" id="btnSettings">Settings</button>
+      <button class="ghost" id="btnRefresh">Refresh</button>
+      <button class="ghost" id="btnCreate">Profiles only</button>
+      <button class="solid" id="btnRun">Run loop</button>
+    </div>
+  </header>
+
+  <section class="meters" id="meters"></section>
+
+  <section class="sheet run-sheet">
+    <div class="sheet-head">
+      <div>
+        <h2>Automation loop</h2>
+        <p class="muted">Create → open → Snapchat action → close. Test the whole path here.</p>
+      </div>
+      <div id="runStatus" class="pill off">idle</div>
+    </div>
+    <div class="run-grid">
+      <form id="runForm" class="form-grid nested run-form">
+        <label>How many
+          <input name="count" type="number" min="1" max="20" value="1" />
+        </label>
+        <label>Fingerprint
+          <select name="fingerprint_mode">
+            <option value="random" selected>Random each profile</option>
+            <option value="selective">Selective (OS / kernel below)</option>
+          </select>
+        </label>
+        <label>OS
+          <select name="os">
+            <option value="win11">Windows 11</option>
+            <option value="win10">Windows 10</option>
+            <option value="macos">macOS</option>
+            <option value="linux">Linux</option>
+          </select>
+        </label>
+        <label>Kernel
+          <select name="kernel"></select>
+        </label>
+        <label>Action
+          <select name="run_action">
+            <option value="snapchat_signup">Snapchat signup page</option>
+            <option value="snapchat_login">Snapchat login page</option>
+            <option value="snapchat_open">Open Snapchat URL only</option>
+            <option value="none">Create + open + close (no site)</option>
+          </select>
+        </label>
+        <label>Dwell seconds
+          <input name="dwell_seconds" type="number" min="0" max="120" value="6" />
+        </label>
+        <label class="span-2">Start URL
+          <input name="start_url" value="https://accounts.snapchat.com/v2/signup" />
+        </label>
+        <label>Proxy
+          <select name="proxy_mode">
+            <option value="pool" selected>Proxy pool</option>
+            <option value="list">Paste list</option>
+            <option value="none">No proxy</option>
+            <option value="saved">Saved ID</option>
+          </select>
+        </label>
+        <label>Saved proxy ID
+          <input name="proxy_id" value="random" />
+        </label>
+        <label>Proxy type override
+          <select name="proxy_type">
+            <option value="">Auto-detect</option>
+            <option value="http">HTTP</option>
+            <option value="https">HTTPS</option>
+            <option value="socks5">SOCKS5</option>
+          </select>
+        </label>
+        <div class="span-2 inline" style="align-items:center;gap:.6rem;flex-wrap:wrap">
+          <button class="ghost" type="button" id="btnManageProxy">Manage Proxy</button>
+          <span class="hint" id="proxyPoolHint">Proxy pool — rotates a small set of proxies, filling each to the cap.</span>
+        </div>
+        <label class="span-2" id="runProxyListWrap" hidden>Proxy list — auto-parses http/https/socks5
+          <textarea name="proxy_list" rows="2" placeholder="host:port:user:pass&#10;socks5://user:pass@host:port&#10;http://host:port"></textarea>
+        </label>
+        <label class="check span-2"><input type="checkbox" name="merge_after_create" /> Merge after creation — signup + Bitmoji on this machine, then close, inject the proxy, reopen, and Chat (list mode only)</label>
+        <label>Bitmoji / identity <span class="hint">Male → boyish name + username + randomized male Bitmoji</span>
+          <select name="bitmoji_gender">
+            <option value="female" selected>Female</option>
+            <option value="male">Male</option>
+          </select>
+        </label>
+        <label class="span-2">Remark
+          <input name="remark" value="Created by SnappyMake" />
+        </label>
+        <label class="span-2">Cookies (JSON or Netscape)
+          <textarea name="cookie" rows="2" placeholder='[{"name":"session","value":"...","domain":".snapchat.com"}]'></textarea>
+        </label>
+        <div class="inline span-2">
+          <label class="check"><input type="checkbox" name="close_after" /> Close after action</label>
+          <label class="check"><input type="checkbox" name="auto_username" checked /> Auto username</label>
+          <label class="check"><input type="checkbox" name="auto_password" checked /> Auto password</label>
+        </div>
+        <div class="form-actions span-2">
+          <p class="hint" id="runHint">Types first name, birthday (2002–2004), slangy username, default password, then Gmail + OTP. Pick Male for boyish names + male Bitmoji. Check Merge after creation to signup on this IP, then inject the proxy before Chat.</p>
+          <div class="row-actions">
+            <button class="ghost" type="button" id="btnTestRunProxy">Test proxies</button>
+            <button class="ghost" type="button" id="btnCancelRun">Cancel</button>
+            <button class="solid" type="submit">Start run</button>
+          </div>
+        </div>
+      </form>
+      <div class="console" id="runLog"><div class="empty">Logs land here once a run starts.</div></div>
+    </div>
+  </section>
+
+  <section class="sheet">
+    <div class="sheet-head">
+      <div>
+        <h2>SnappyMake profiles</h2>
+        <p class="muted" id="sheetSub">Waiting for AdsPower…</p>
+      </div>
+      <div class="sheet-tools">
+        <input id="search" class="search" placeholder="Filter name, id, proxy, OS…" />
+        <select id="bucketFilter" class="search" title="Filter by age bucket" aria-label="Age bucket">
+          <option value="all">All buckets</option>
+          <option value="new">New</option>
+          <option value="warm">24hrs Pass</option>
+          <option value="ready">4days Ready</option>
+        </select>
+        <button class="ghost" type="button" id="btnSyncGroups" title="Move profiles into age-based groups">Sync groups</button>
+        <button class="ghost" type="button" id="btnSyncSheets" title="Push profiles + proxy pool to Google Sheets">Sync Sheets</button>
+        <button class="warn" type="button" id="btnDeleteSelected" disabled>Delete</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th class="check-cell"><input type="checkbox" id="checkAll" aria-label="Select all" /></th>
+            <th>Name</th>
+            <th>Life</th>
+            <th>ID</th>
+            <th>Status</th>
+            <th>Browser</th>
+            <th>OS</th>
+            <th>User agent</th>
+            <th>Proxy type</th>
+            <th>Proxy</th>
+            <th>Remark</th>
+            <th>Cookie</th>
+            <th>Username</th>
+            <th>Password</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="rows">
+          <tr><td colspan="16" class="empty">Loading…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <aside id="drawer" class="drawer" hidden>
+    <div class="drawer-card">
+      <header>
+        <div>
+          <p class="kicker">Profile</p>
+          <h3 id="dName">—</h3>
+        </div>
+        <button class="icon" id="btnCloseDrawer" aria-label="Close">✕</button>
+      </header>
+      <div id="drawerBody"></div>
+    </div>
+  </aside>
+
+  <aside id="create" class="drawer" hidden>
+    <div class="drawer-card wide">
+      <header>
+        <div>
+          <p class="kicker">Batch create</p>
+          <h3>Drop new faces into SnappyMake</h3>
+        </div>
+        <button class="icon" id="btnCloseCreate" aria-label="Close">✕</button>
+      </header>
+      <form id="createForm" class="form-grid">
+        <label>How many
+          <input name="count" type="number" min="1" max="50" value="1" />
+        </label>
+        <label>Name prefix
+          <input name="name_prefix" value="SM" />
+        </label>
+        <label>Fingerprint
+          <select name="fingerprint_mode">
+            <option value="selective">Selective</option>
+            <option value="random">Random each profile</option>
+          </select>
+        </label>
+        <label>OS
+          <select name="os">
+            <option value="win11">Windows 11</option>
+            <option value="win10">Windows 10</option>
+            <option value="macos">macOS</option>
+            <option value="linux">Linux</option>
+          </select>
+        </label>
+        <label>Kernel
+          <select name="kernel"></select>
+        </label>
+        <label>WebRTC
+          <select name="webrtc">
+            <option value="disabled">Disabled</option>
+            <option value="proxy">Replace with proxy IP</option>
+            <option value="forward">Forward (high security)</option>
+          </select>
+        </label>
+        <label>Platform <span class="hint">empty until Snapchat inject</span>
+          <input name="platform" placeholder="snapchat.com later" />
+        </label>
+        <label class="span-2">Remark
+          <input name="remark" value="Created by SnappyMake" />
+        </label>
+        <label class="span-2">Startup tabs, one URL per line
+          <textarea name="tabs" rows="2" placeholder="https://accounts.snapchat.com/v2/signup"></textarea>
+        </label>
+
+        <fieldset class="span-2">
+          <legend>Proxy</legend>
+          <div class="inline">
+            <label class="check"><input type="radio" name="proxy_mode" value="none" checked /> No proxy</label>
+            <label class="check"><input type="radio" name="proxy_mode" value="list" /> Paste list</label>
+            <label class="check"><input type="radio" name="proxy_mode" value="saved" /> Saved ID</label>
+          </div>
+          <textarea name="proxy_list" rows="4" placeholder="host:port&#10;host:port:user:pass&#10;socks5://user:pass@host:port&#10;http://user:pass@host:port"></textarea>
+          <label>Proxy type override
+            <select name="proxy_type">
+              <option value="">Auto-detect from the line</option>
+              <option value="http">HTTP</option>
+              <option value="https">HTTPS</option>
+              <option value="socks5">SOCKS5</option>
+            </select>
+          </label>
+          <input name="proxy_id" placeholder="Saved proxy ID, or random" value="random" />
+          <p class="hint">Paste any mix. Click Test proxies to check HTTP/SOCKS5 before creating.</p>
+          <button class="ghost" type="button" id="btnTestCreateProxy">Test proxies</button>
+        </fieldset>
+
+        <label class="span-2">Cookies (JSON or Netscape)
+          <textarea name="cookie" rows="3" placeholder='[{"name":"session","value":"...","domain":".snapchat.com"}]'></textarea>
+        </label>
+
+        <fieldset class="span-2">
+          <legend>Identity — optional until Playwright signup</legend>
+          <div class="inline">
+            <label class="check"><input type="checkbox" name="auto_name" checked /> Auto name SM-0001</label>
+            <label class="check"><input type="checkbox" name="auto_username" /> Auto username</label>
+            <label class="check"><input type="checkbox" name="auto_password" /> Auto password</label>
+          </div>
+          <div class="form-grid nested">
+            <label>Username
+              <input name="username" autocomplete="off" />
+            </label>
+            <label>Password
+              <input name="password" autocomplete="off" />
+            </label>
+            <label>2FA secret
+              <input name="fakey" placeholder="TOTP key" />
+            </label>
+            <label>Username prefix
+              <input name="username_prefix" value="" placeholder="ignored — uses slangy names from Bitmoji gender" />
+            </label>
+          </div>
+        </fieldset>
+
+        <div class="form-actions span-2">
+          <p class="hint" id="createHint"></p>
+          <button class="solid" type="submit">Create into SnappyMake</button>
+        </div>
+      </form>
+    </div>
+  </aside>
+
+  <aside id="settings" class="drawer" hidden>
+    <div class="drawer-card">
+      <header>
+        <div>
+          <p class="kicker">Settings</p>
+          <h3>Talk to AdsPower</h3>
+        </div>
+        <button class="icon" id="btnCloseSettings" aria-label="Close">✕</button>
+      </header>
+      <form id="settingsForm" class="form-grid one">
+        <label>API base
+          <input name="api_base" placeholder="http://local.adspower.net:50325" />
+        </label>
+        <label>API key <span class="hint">if Local API security is on</span>
+          <input name="api_key" placeholder="leave blank if unused" />
+        </label>
+        <label>Plan cap <span class="hint">0 = unknown premium, still counts used</span>
+          <input name="plan_cap" type="number" min="0" value="0" />
+        </label>
+        <label>Group name
+          <input name="group_name" value="SnappyMake" />
+        </label>
+        <label>Name prefix
+          <input name="name_prefix" value="SM" />
+        </label>
+        <label>Warm bucket after (hrs) <span class="hint">age ≥ this → "24hrs Pass"</span>
+          <input name="bucket_warm_hours" type="number" min="1" value="24" />
+        </label>
+        <label>Ready bucket after (hrs) <span class="hint">age ≥ this → "4days Pass Ready"</span>
+          <input name="bucket_ready_hours" type="number" min="1" value="96" />
+        </label>
+        <label class="row" style="align-items:center;gap:.5rem">
+          <input name="auto_move_enabled" type="checkbox" />
+          <span>Auto-move profiles between age groups <span class="hint">background sync every ~20 min</span></span>
+        </label>
+        <p class="kicker" style="margin-top:.6rem">Google Sheets</p>
+        <label class="row" style="align-items:center;gap:.5rem">
+          <input name="sheets_enabled" type="checkbox" />
+          <span>Push updates to Google Sheets <span class="hint">on create / success / delete / proxy changes</span></span>
+        </label>
+        <label>Sheet ID
+          <input name="sheets_id" placeholder="from docs.google.com/spreadsheets/d/SHEET_ID/edit" />
+        </label>
+        <label>Service account JSON path <span class="hint">relative to project root</span>
+          <input name="sheets_creds_path" placeholder="secrets/google-sheets.json" />
+        </label>
+        <div class="row" style="align-items:center;gap:.6rem">
+          <button type="button" id="btnSheetsTest" class="ghost">Test Sheets</button>
+          <button type="button" id="btnSheetsSync" class="ghost">Push now</button>
+          <span id="sheetsStatus" class="hint">—</span>
+        </div>
+        <label>OTP provider <span class="hint">where signup codes come from</span>
+          <select name="otp_provider">
+            <option value="imap">IMAP (Gmail pool)</option>
+            <option value="anymessage">AnyMessage</option>
+          </select>
+        </label>
+        <label>AnyMessage token <span class="hint">only used when provider = AnyMessage</span>
+          <input name="anymessage_token" placeholder="leave blank to keep current" />
+        </label>
+        <label>AnyMessage site
+          <input name="anymessage_site" placeholder="snapchat.com" />
+        </label>
+        <label>AnyMessage domain <span class="hint">tried in order until one has stock, e.g. gmail,gmail.com</span>
+          <input name="anymessage_domain" placeholder="gmail,gmail.com" />
+        </label>
+        <div class="row" style="align-items:center;gap:.6rem">
+          <button type="button" id="btnAmBalance" class="ghost">Check balance</button>
+          <span id="amBalance" class="hint">—</span>
+        </div>
+        <div class="form-actions">
+          <button class="solid" type="submit">Save</button>
+        </div>
+      </form>
+    </div>
+  </aside>
+
+  <aside id="proxyPool" class="drawer" hidden>
+    <div class="drawer-card wide">
+      <header>
+        <div>
+          <p class="kicker">Proxy pool</p>
+          <h3>Manage Proxy</h3>
+        </div>
+        <button class="icon" id="btnCloseProxyPool" aria-label="Close">✕</button>
+      </header>
+
+      <form id="proxyCapForm" class="form-grid nested">
+        <label>Cap per proxy <span class="hint">successful accounts per exit IP before rotating</span>
+          <input name="proxy_cap" type="number" min="1" value="3" />
+        </label>
+        <label>Rest after N fails <span class="hint">consecutive failures before a proxy rests</span>
+          <input name="proxy_fail_limit" type="number" min="1" value="5" />
+        </label>
+        <label class="span-2">Rotation <span class="hint">Spread — spread across proxies · Fill — one proxy at a time</span>
+          <select name="proxy_rotation">
+            <option value="spread">Spread (round-robin)</option>
+            <option value="fill">Fill (one at a time)</option>
+          </select>
+        </label>
+        <div class="form-actions span-2">
+          <p class="hint" id="proxyPoolSummary">—</p>
+          <button class="solid" type="submit">Save limits</button>
+        </div>
+      </form>
+
+      <form id="proxyAddForm" class="form-grid nested">
+        <label class="span-2">Add proxies — one per line, auto-parses http/https/socks5
+          <textarea name="proxy_list" rows="4" placeholder="host:port:user:pass&#10;socks5://user:pass@host:port&#10;http://user:pass@host:port"></textarea>
+        </label>
+        <label>Proxy type override
+          <select name="proxy_type">
+            <option value="">Auto-detect from the line</option>
+            <option value="http">HTTP</option>
+            <option value="https">HTTPS</option>
+            <option value="socks5">SOCKS5</option>
+          </select>
+        </label>
+        <label class="check"><input type="checkbox" name="test" /> Test on add (disable failures)</label>
+        <div class="form-actions span-2">
+          <p class="hint">Duplicates are skipped by exit-IP signature. Testing checks HTTP/SOCKS5 reachability.</p>
+          <button class="solid" type="submit">Add to pool</button>
+        </div>
+      </form>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Proxy</th>
+              <th>Geo</th>
+              <th>Using</th>
+              <th>Success</th>
+              <th>Remaining</th>
+              <th>Fails</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="proxyPoolRows">
+            <tr><td colspan="8" class="empty">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </aside>
+
+  <div id="toast" class="toast" hidden></div>
+  <script src="/static/js/app.js?v={{ asset_version }}"></script>
+</body>
+</html>
