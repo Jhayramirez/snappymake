@@ -1,0 +1,706 @@
+12:09:02 Official Gmail warmup Stage 1 · 34 live account(s) · skip dead
+12:09:02 [1/34] #8627 nodmockquorcite@gmail.com k1guxndl web=False
+12:09:19   8627 · qa_auth_page_seen:signup
+12:09:19   8627 · qa_goto_welcome
+12:09:25   8627 · qa_welcome_visible
+12:09:26   8627 · web_onboard_chat_try:1
+12:09:29   8627 · web_onboard_chat
+12:09:36   8627 · qa_ready_to_add
+12:09:36   8627 · web_add_friends_empty_list
+12:09:36   8627 · web_add_friends_settle
+12:09:40   8627 · web_add_friends_open
+12:09:42   8627 · web_add_friends_search:Aaron
+12:09:45   8627 · web_add_friends_added:2
+12:09:46   8627 · web_add_friends_settle
+12:09:51   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=1 inside=0 dead=0 fail=0
+12:09:53 [2/34] #8796 duihdspshopkfs@gmail.com k1h0i908 web=False
+12:10:03   8796 · qa_auth_page_seen:signup
+12:10:03   8796 · qa_goto_welcome
+12:10:15   8796 · qa_welcome_visible
+12:10:16   8796 · web_onboard_chat_try:1
+12:10:19   8796 · web_onboard_chat
+12:10:26   8796 · qa_ready_to_add
+12:10:26   8796 · web_add_friends_empty_list
+12:10:26   8796 · web_add_friends_settle
+12:10:31   8796 · web_add_friends_open
+12:10:33   8796 · web_add_friends_search:Andrew
+12:10:38   8796 · web_add_friends_added:3
+12:10:38   8796 · web_add_friends_settle
+12:10:43   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=2 inside=0 dead=0 fail=0
+12:10:45 [3/34] #8815 pocquakayfel@gmail.com k1h0jucj web=False
+12:10:54   8815 · qa_auth_page_seen:signup
+12:10:54   8815 · qa_goto_welcome
+12:11:20   8815 · qa_welcome_visible
+12:11:20   8815 · web_onboard_chat_try:1
+12:11:24   8815 · web_onboard_chat
+12:11:32   8815 · qa_ready_to_add
+12:11:32   8815 · web_add_friends_empty_list
+12:11:32   8815 · web_add_friends_settle
+12:11:38   8815 · web_add_friends_open
+12:11:39   8815 · web_add_friends_search:Ryan
+12:11:43   8815 · web_add_friends_panel_closed
+12:11:43   8815 · web_add_friends_retry
+12:11:46   8815 · web_add_friends_open
+12:11:48   8815 · web_add_friends_search:David
+12:11:50   8815 · web_add_friends_panel_closed
+12:11:50   8815 · web_add_friends_retry
+12:11:54   8815 · web_add_friends_open
+12:11:56   8815 · web_add_friends_search:Jordan
+12:11:59   8815 · web_add_friends_added:4
+12:12:00   8815 · web_add_friends_settle
+12:12:05   → OK:web_add_friends_added:4,web_add_friends_added:4 · ok=3 inside=0 dead=0 fail=0
+12:12:07 [4/34] #8832 srvxslibcrs@gmail.com k1h0l984 web=False
+12:12:16   8832 · qa_auth_page_seen:signup
+12:12:16   8832 · qa_goto_welcome
+12:12:20   8832 · qa_goto_welcome_failed:Page.goto: net::ERR_EMPTY_RESPONSE at https://accounts.snapchat.com/v2/welcome?locale=en-US
+Call log:
+  - navigating to "https://accounts.snapchat.com/v2/welcome?locale=en-US", waiting until "domcontentloaded"
+
+12:12:20   8832 · qa_waiting_session_try:1:…
+12:12:22   8832 · qa_welcome_visible
+12:12:23   8832 · web_onboard_chat_not_found_try:1
+12:12:24   8832 · web_onboard_chat_not_found_try:2
+12:12:24   8832 · web_onboard_chat_not_found_try:3
+12:12:25   8832 · web_onboard_chat_stuck
+12:12:46   8832 · web_not_ready_for_qa
+12:12:46   8832 · web_add_friends_not_found
+12:12:46   8832 · web_add_friends_settle
+12:12:50   → FAIL:not_inside · ok=3 inside=0 dead=0 fail=1
+12:12:52 [5/34] #8833 tupjdfrujdsd@gmail.com k1h0lmb3 web=False
+12:13:02   8833 · qa_auth_page_seen:signup
+12:13:02   8833 · qa_goto_welcome
+12:13:22   8833 · qa_welcome_visible
+12:13:23   8833 · web_onboard_chat_try:1
+12:13:28   8833 · web_onboard_chat
+12:13:44   8833 · web_onboard_next_not_seen
+12:14:00   8833 · web_onboard_skip_not_seen
+12:14:06   8833 · web_onboard_heads_up_dismissed_not_seen
+12:14:06   8833 · qa_ready_to_add
+12:14:06   8833 · web_add_friends_empty_list
+12:14:06   8833 · web_add_friends_settle
+12:14:07   8833 · web_add_friends_not_found
+12:14:07   8833 · web_add_friends_settle
+12:14:12   → INSIDE_NO_ADD · ok=3 inside=1 dead=0 fail=1
+12:14:14 [6/34] #8838 haftezogaga@gmail.com k1h0m3e0 web=False
+12:14:25   8838 · qa_auth_page_seen:signup
+12:14:25   8838 · qa_goto_welcome
+12:14:48   8838 · qa_welcome_visible
+12:14:49   8838 · web_onboard_chat_try:1
+12:14:52   8838 · web_onboard_chat
+12:14:59   8838 · qa_ready_to_add
+12:14:59   8838 · web_add_friends_empty_list
+12:14:59   8838 · web_add_friends_settle
+12:15:04   8838 · web_add_friends_open
+12:15:06   8838 · web_add_friends_search:Christopher
+12:15:11   8838 · web_add_friends_panel_closed
+12:15:11   8838 · web_add_friends_retry
+12:15:14   8838 · web_add_friends_open
+12:15:16   8838 · web_add_friends_search:Anthony
+12:15:18   8838 · web_add_friends_added:3
+12:15:19   8838 · web_add_friends_settle
+12:15:24   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=4 inside=1 dead=0 fail=1
+12:15:26 [7/34] #8839 ienyawsnoimon@gmail.com k1h0mcwp web=False
+12:15:36   8839 · qa_auth_page_seen:signup
+12:15:36   8839 · qa_goto_welcome
+12:15:46   8839 · qa_welcome_visible
+12:15:47   8839 · web_onboard_chat_try:1
+12:15:50   8839 · web_onboard_chat
+12:15:57   8839 · qa_ready_to_add
+12:15:57   8839 · web_add_friends_empty_list
+12:15:57   8839 · web_add_friends_settle
+12:16:02   8839 · web_add_friends_open
+12:16:03   8839 · web_add_friends_search:Adam
+12:16:06   8839 · web_add_friends_panel_closed
+12:16:06   8839 · web_add_friends_retry
+12:16:10   8839 · web_add_friends_open
+12:16:12   8839 · web_add_friends_search:Jason
+12:16:14   8839 · web_add_friends_panel_closed
+12:16:14   8839 · web_add_friends_retry
+12:16:18   8839 · web_add_friends_open
+12:16:20   8839 · web_add_friends_search:Michael
+12:16:22   8839 · web_add_friends_added:3
+12:16:23   8839 · web_add_friends_settle
+12:16:28   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=5 inside=1 dead=0 fail=1
+12:16:30 [8/34] #8840 itshemprodserf@gmail.com k1h0mojn web=False
+12:16:41   8840 · qa_auth_page_seen:signup
+12:16:41   8840 · qa_goto_welcome
+12:17:08   8840 · qa_welcome_visible
+12:17:09   8840 · web_onboard_chat_try:1
+12:17:13   8840 · web_onboard_chat
+12:17:20   8840 · qa_ready_to_add
+12:17:20   8840 · web_add_friends_empty_list
+12:17:20   8840 · web_add_friends_settle
+12:17:26   8840 · web_add_friends_open
+12:17:27   8840 · web_add_friends_search:Dylan
+12:17:31   8840 · web_add_friends_panel_closed
+12:17:31   8840 · web_add_friends_retry
+12:17:35   8840 · web_add_friends_open
+12:17:36   8840 · web_add_friends_search:John
+12:17:38   8840 · web_add_friends_added:2
+12:17:39   8840 · web_add_friends_settle
+12:17:43   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=6 inside=1 dead=0 fail=1
+12:17:45 [9/34] #8841 nixwareurvoid@gmail.com k1h0myeo web=False
+12:17:55   8841 · qa_auth_page_seen:signup
+12:17:55   8841 · qa_goto_welcome
+12:18:37   8841 · qa_waiting_session_try:1:login
+12:18:38   8841 · qa_auth_form_visible:login
+12:18:38   8841 · account_logged_out:login
+12:18:38   8841 · account_logged_out_url:https://accounts.snapchat.com/v2/login?continue=%2Faccounts%2Fsso%3Fclient_id%3Dweb-accounts%26referrer%3Dhttps%253A%252F%252Faccounts.snapchat.com%252Fv2%252Fwelcome%253Flocale%25
+12:18:50   sheet sync rc=0
+12:18:51   → LOGGED_OUT · ok=6 inside=1 dead=1 fail=1
+12:18:53 [10/34] #8842 plugdeftphrelyt@gmail.com k1h0na78 web=False
+12:19:04   8842 · qa_auth_page_seen:signup
+12:19:04   8842 · qa_goto_welcome
+12:19:32   8842 · qa_welcome_visible
+12:19:33   8842 · web_onboard_chat_try:1
+12:19:36   8842 · web_onboard_chat
+12:19:43   8842 · qa_ready_to_add
+12:19:43   8842 · web_add_friends_empty_list
+12:19:43   8842 · web_add_friends_settle
+12:19:49   8842 · web_add_friends_open
+12:19:50   8842 · web_add_friends_search:Josh
+12:19:56   8842 · web_add_friends_added:4
+12:19:57   8842 · web_add_friends_settle
+12:20:01   → OK:web_add_friends_added:4,web_add_friends_added:4 · ok=7 inside=1 dead=1 fail=1
+12:20:03 [11/34] #8843 polquonlishsup@gmail.com k1h0nkj0 web=False
+12:20:13   8843 · qa_auth_page_seen:signup
+12:20:13   8843 · qa_goto_welcome
+12:20:32   8843 · qa_welcome_visible
+12:20:33   8843 · web_onboard_chat_try:1
+12:20:36   8843 · web_onboard_chat
+12:20:42   8843 · qa_ready_to_add
+12:20:42   8843 · web_add_friends_empty_list
+12:20:42   8843 · web_add_friends_settle
+12:20:48   8843 · web_add_friends_open
+12:20:49   8843 · web_add_friends_search:Anthony
+12:20:54   8843 · web_add_friends_added:3
+12:20:55   8843 · web_add_friends_settle
+12:21:00   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=8 inside=1 dead=1 fail=1
+12:21:02 [12/34] #8844 pouvtscyhcaz@gmail.com k1h0nv5r web=False
+12:21:14   8844 · qa_auth_page_seen:signup
+12:21:14   8844 · qa_goto_welcome
+12:21:39   8844 · qa_welcome_visible
+12:21:39   8844 · web_onboard_chat_try:1
+12:21:43   8844 · web_onboard_chat
+12:21:51   8844 · qa_ready_to_add
+12:21:51   8844 · web_add_friends_empty_list
+12:21:51   8844 · web_add_friends_settle
+12:21:56   8844 · web_add_friends_open
+12:21:57   8844 · web_add_friends_search:Josh
+12:22:01   8844 · web_add_friends_panel_closed
+12:22:01   8844 · web_add_friends_retry
+12:22:04   8844 · web_add_friends_open
+12:22:05   8844 · web_add_friends_search:Adam
+12:22:08   8844 · web_add_friends_added:3
+12:22:08   8844 · web_add_friends_settle
+12:22:13   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=9 inside=1 dead=1 fail=1
+12:22:15 [13/34] #9137 treymhgcyg@gmail.com k1h1w36t web=False
+12:22:27   9137 · qa_auth_page_seen:signup
+12:22:27   9137 · qa_goto_welcome
+12:23:12   9137 · qa_goto_welcome_failed:Page.goto: Timeout 45000ms exceeded.
+Call log:
+  - navigating to "https://accounts.snapchat.com/v2/welcome?locale=en-US", waiting until "domcontentloaded"
+
+12:23:12   9137 · qa_welcome_visible
+12:23:13   9137 · web_onboard_chat_not_found_try:1
+12:23:14   9137 · web_onboard_chat_not_found_try:2
+12:23:14   9137 · web_onboard_chat_not_found_try:3
+12:23:15   9137 · web_onboard_chat_stuck
+12:23:35   9137 · web_not_ready_for_qa
+12:23:35   9137 · web_add_friends_not_found
+12:23:35   9137 · web_add_friends_settle
+12:23:40   → FAIL:not_inside · ok=9 inside=1 dead=1 fail=2
+12:23:42 [14/34] #9138 narrownaus@gmail.com k1h1wkih web=False
+12:23:53   9138 · qa_auth_page_seen:signup
+12:23:53   9138 · qa_goto_welcome
+12:24:20   9138 · qa_welcome_visible
+12:24:21   9138 · web_onboard_chat_try:1
+12:24:24   9138 · web_onboard_chat
+12:24:41   9138 · web_onboard_next_not_seen
+12:24:57   9138 · web_onboard_skip_not_seen
+12:25:04   9138 · web_onboard_heads_up_dismissed_not_seen
+12:25:04   9138 · qa_ready_to_add
+12:25:04   9138 · web_add_friends_empty_list
+12:25:04   9138 · web_add_friends_settle
+12:25:05   9138 · web_add_friends_not_found
+12:25:05   9138 · web_add_friends_settle
+12:25:09   → INSIDE_NO_ADD · ok=9 inside=2 dead=1 fail=2
+12:25:11 [15/34] #9139 summersomao@gmail.com k1h1ww43 web=False
+12:25:20   9139 · qa_auth_page_seen:signup
+12:25:20   9139 · qa_goto_welcome
+12:25:23   9139 · qa_waiting_session_try:1:login
+12:25:24   9139 · qa_auth_form_visible:login
+12:25:24   9139 · account_logged_out:login
+12:25:24   9139 · account_logged_out_url:https://accounts.snapchat.com/v2/login?continue=%2Faccounts%2Fsso%3Fclient_id%3Dweb-accounts%26referrer%3Dhttps%253A%252F%252Faccounts.snapchat.com%252Fv2%252Fwelcome%253Flocale%25
+12:25:35   sheet sync rc=0
+12:25:36   → LOGGED_OUT · ok=9 inside=2 dead=2 fail=2
+12:25:38 [16/34] #9140 cautionsau@gmail.com k1h1wxsf web=False
+12:25:49   9140 · qa_auth_page_seen:signup
+12:25:49   9140 · qa_goto_welcome
+12:26:04   9140 · qa_welcome_visible
+12:26:05   9140 · web_onboard_chat_try:1
+12:26:08   9140 · web_onboard_chat
+12:26:15   9140 · qa_ready_to_add
+12:26:15   9140 · web_add_friends_empty_list
+12:26:15   9140 · web_add_friends_settle
+12:26:19   9140 · web_add_friends_open
+12:26:21   9140 · web_add_friends_search:Justin
+12:26:24   9140 · web_add_friends_panel_closed
+12:26:24   9140 · web_add_friends_retry
+12:26:28   9140 · web_add_friends_open
+12:26:30   9140 · web_add_friends_search:Jonathan
+12:26:32   9140 · web_add_friends_panel_closed
+12:26:32   9140 · web_add_friends_retry
+12:26:36   9140 · web_add_friends_open
+12:26:38   9140 · web_add_friends_search:Patrick
+12:26:41   9140 · web_add_friends_added:4
+12:26:41   9140 · web_add_friends_settle
+12:26:46   → OK:web_add_friends_added:4,web_add_friends_added:4 · ok=10 inside=2 dead=2 fail=2
+12:26:48 [17/34] #9141 eusoelakso@gmail.com k1h1x99d web=False
+12:27:01   9141 · qa_auth_page_seen:signup
+12:27:01   9141 · qa_goto_welcome
+12:27:28   9141 · qa_welcome_visible
+12:27:29   9141 · web_onboard_chat_try:1
+12:27:32   9141 · web_onboard_chat
+12:27:39   9141 · qa_ready_to_add
+12:27:39   9141 · web_add_friends_empty_list
+12:27:39   9141 · web_add_friends_settle
+12:27:45   9141 · web_add_friends_open
+12:27:46   9141 · web_add_friends_search:Dylan
+12:27:52   9141 · web_add_friends_panel_closed
+12:27:52   9141 · web_add_friends_retry
+12:27:55   9141 · web_add_friends_open
+12:27:57   9141 · web_add_friends_search:Ethan
+12:27:59   9141 · web_add_friends_added:4
+12:27:59   9141 · web_add_friends_settle
+12:28:04   → OK:web_add_friends_added:4,web_add_friends_added:4 · ok=11 inside=2 dead=2 fail=2
+12:28:06 [18/34] #9142 summersomao@gmail.com k1h26qc0 web=False
+12:28:17   9142 · qa_auth_page_seen:signup
+12:28:17   9142 · qa_goto_welcome
+12:28:19   9142 · qa_goto_welcome_failed:Page.goto: Target page, context or browser has been closed
+Call log:
+  - navigating to "https://accounts.snapchat.com/v2/welcome?locale=en-US", waiting until "domcontentloaded"
+
+12:28:19   9142 · qa_welcome_visible
+12:28:20   → ERROR:Page.wait_for_timeout: Target page, context or browser has been closed · ok=11 inside=2 dead=2 fail=3
+12:28:22 [19/34] #9147 a01033252363@gmail.com k1h27kfc web=False
+12:28:31   9147 · qa_auth_page_seen:signup
+12:28:31   9147 · qa_goto_welcome
+12:28:43   9147 · qa_welcome_visible
+12:28:44   9147 · web_onboard_chat_try:1
+12:28:47   9147 · web_onboard_chat
+12:28:54   9147 · qa_ready_to_add
+12:28:54   9147 · web_add_friends_empty_list
+12:28:54   9147 · web_add_friends_settle
+12:28:59   9147 · web_add_friends_open
+12:29:01   9147 · web_add_friends_search:Benjamin
+12:29:04   9147 · web_add_friends_panel_closed
+12:29:04   9147 · web_add_friends_retry
+12:29:08   9147 · web_add_friends_open
+12:29:09   9147 · web_add_friends_search:Jason
+12:29:13   9147 · web_add_friends_added:3
+12:29:14   9147 · web_add_friends_settle
+12:29:19   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=12 inside=2 dead=2 fail=3
+12:29:21 [20/34] #9158 baleyung032@gmail.com k1h28o8e web=False
+12:29:31   9158 · qa_auth_page_seen:signup
+12:29:31   9158 · qa_goto_welcome
+12:29:48   9158 · qa_welcome_visible
+12:29:49   9158 · web_onboard_chat_try:1
+12:29:52   9158 · web_onboard_chat
+12:30:00   9158 · qa_ready_to_add
+12:30:00   9158 · web_add_friends_empty_list
+12:30:00   9158 · web_add_friends_settle
+12:30:05   9158 · web_add_friends_open
+12:30:07   9158 · web_add_friends_search:Samuel
+12:30:12   9158 · web_add_friends_panel_closed
+12:30:12   9158 · web_add_friends_retry
+12:30:16   9158 · web_add_friends_open
+12:30:18   9158 · web_add_friends_search:Matthew
+12:30:20   9158 · web_add_friends_added:3
+12:30:21   9158 · web_add_friends_settle
+12:30:25   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=13 inside=2 dead=2 fail=3
+12:30:27 [21/34] #9159 bd5511337@gmail.com k1h28yk4 web=False
+12:30:39   9159 · qa_auth_page_seen:signup
+12:30:39   9159 · qa_goto_welcome
+12:31:24   9159 · qa_goto_welcome_failed:Page.goto: Timeout 45000ms exceeded.
+Call log:
+  - navigating to "https://accounts.snapchat.com/v2/welcome?locale=en-US", waiting until "domcontentloaded"
+
+12:31:24   9159 · qa_welcome_visible
+12:31:25   9159 · web_onboard_chat_not_found_try:1
+12:31:25   9159 · web_onboard_chat_not_found_try:2
+12:31:26   9159 · web_onboard_chat_not_found_try:3
+12:31:26   9159 · web_onboard_chat_stuck
+12:31:47   9159 · web_not_ready_for_qa
+12:31:47   9159 · web_add_friends_not_found
+12:31:47   9159 · web_add_friends_settle
+12:31:51   → FAIL:not_inside · ok=13 inside=2 dead=2 fail=4
+12:31:53 [22/34] #9164 coltyung0@gmail.com k1h29rrp web=False
+12:32:02   9164 · qa_auth_page_seen:signup
+12:32:02   9164 · qa_goto_welcome
+12:32:23   9164 · qa_auth_form_visible:login
+12:32:23   9164 · account_logged_out:login
+12:32:23   9164 · account_logged_out_url:https://accounts.snapchat.com/v2/login?continue=%2Faccounts%2Fsso%3Fclient_id%3Dweb-accounts%26referrer%3Dhttps%253A%252F%252Faccounts.snapchat.com%252Fv2%252Fwelcome%253Flocale%25
+12:32:34   sheet sync rc=0
+12:32:35   → LOGGED_OUT · ok=13 inside=2 dead=3 fail=4
+12:32:37 [23/34] #9167 depet023@gmail.com k1h2a5ux web=False
+12:32:48   9167 · qa_auth_page_seen:signup
+12:32:48   9167 · qa_goto_welcome
+12:33:33   9167 · qa_goto_welcome_failed:Page.goto: Timeout 45000ms exceeded.
+Call log:
+  - navigating to "https://accounts.snapchat.com/v2/welcome?locale=en-US", waiting until "domcontentloaded"
+
+12:33:33   9167 · qa_welcome_visible
+12:33:34   9167 · web_onboard_chat_not_found_try:1
+12:33:34   9167 · web_onboard_chat_not_found_try:2
+12:33:35   9167 · web_onboard_chat_not_found_try:3
+12:33:35   9167 · web_onboard_chat_stuck
+12:33:56   9167 · web_not_ready_for_qa
+12:33:56   9167 · web_add_friends_not_found
+12:33:56   9167 · web_add_friends_settle
+12:34:00   → FAIL:not_inside · ok=13 inside=2 dead=3 fail=5
+12:34:02 [24/34] #9183 metzsalt623@gmail.com k1h2at2j web=False
+12:34:14   9183 · qa_auth_page_seen:signup
+12:34:14   9183 · qa_goto_welcome
+12:34:40   9183 · qa_waiting_session_try:1:login
+12:34:41   9183 · qa_auth_form_visible:login
+12:34:41   9183 · account_logged_out:login
+12:34:41   9183 · account_logged_out_url:https://accounts.snapchat.com/v2/login?continue=%2Faccounts%2Fsso%3Fclient_id%3Dweb-accounts%26referrer%3Dhttps%253A%252F%252Faccounts.snapchat.com%252Fv2%252Fwelcome%253Flocale%25
+12:34:52   sheet sync rc=0
+12:34:53   → LOGGED_OUT · ok=13 inside=2 dead=4 fail=5
+12:34:55 [25/34] #9188 muhntoy@gmail.com k1h2b6jw web=False
+12:35:04   9188 · qa_auth_page_seen:signup
+12:35:04   9188 · qa_goto_welcome
+12:35:25   9188 · qa_welcome_visible
+12:35:26   9188 · web_onboard_chat_try:1
+12:35:29   9188 · web_onboard_chat
+12:35:37   9188 · qa_ready_to_add
+12:35:37   9188 · web_add_friends_empty_list
+12:35:37   9188 · web_add_friends_settle
+12:35:42   9188 · web_add_friends_open
+12:35:44   9188 · web_add_friends_search:Owen
+12:35:48   9188 · web_add_friends_panel_closed
+12:35:48   9188 · web_add_friends_retry
+12:35:51   9188 · web_add_friends_open
+12:35:53   9188 · web_add_friends_search:Noah
+12:35:55   9188 · web_add_friends_added:2
+12:35:56   9188 · web_add_friends_settle
+12:36:00   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=14 inside=2 dead=4 fail=5
+12:36:02 [26/34] #9190 purdysalt0@gmail.com k1h2bhyx web=False
+12:36:11   9190 · qa_auth_page_seen:signup
+12:36:11   9190 · qa_goto_welcome
+12:36:28   9190 · qa_auth_form_visible:login
+12:36:28   9190 · account_logged_out:login
+12:36:28   9190 · account_logged_out_url:https://accounts.snapchat.com/v2/login?continue=%2Faccounts%2Fsso%3Fclient_id%3Dweb-accounts%26referrer%3Dhttps%253A%252F%252Faccounts.snapchat.com%252Fv2%252Fwelcome%253Flocale%25
+12:36:39   sheet sync rc=0
+12:36:40   → LOGGED_OUT · ok=14 inside=2 dead=5 fail=5
+12:36:42 [27/34] #9192 raydauch@gmail.com k1h2brkm web=False
+12:36:53   9192 · qa_auth_page_seen:signup
+12:36:53   9192 · qa_goto_welcome
+12:37:33   9192 · qa_waiting_session_try:1:login
+12:37:34   9192 · qa_auth_form_visible:login
+12:37:34   9192 · account_logged_out:login
+12:37:34   9192 · account_logged_out_url:https://accounts.snapchat.com/v2/login?continue=%2Faccounts%2Fsso%3Fclient_id%3Dweb-accounts%26referrer%3Dhttps%253A%252F%252Faccounts.snapchat.com%252Fv2%252Fwelcome%253Flocale%25
+12:37:45   sheet sync rc=0
+12:37:46   → LOGGED_OUT · ok=14 inside=2 dead=6 fail=5
+12:37:48 [28/34] #9193 rokislonj@gmail.com k1h2c12k web=False
+12:37:59   9193 · qa_auth_page_seen:signup
+12:37:59   9193 · qa_goto_welcome
+12:38:44   9193 · qa_goto_welcome_failed:Page.goto: Timeout 45000ms exceeded.
+Call log:
+  - navigating to "https://accounts.snapchat.com/v2/welcome?locale=en-US", waiting until "domcontentloaded"
+
+12:38:44   9193 · qa_welcome_visible
+12:38:45   9193 · web_onboard_chat_not_found_try:1
+12:38:46   9193 · web_onboard_chat_not_found_try:2
+12:38:46   9193 · web_onboard_chat_not_found_try:3
+12:38:47   9193 · web_onboard_chat_stuck
+12:39:07   9193 · web_not_ready_for_qa
+12:39:07   9193 · web_add_friends_not_found
+12:39:07   9193 · web_add_friends_settle
+12:39:12   → FAIL:not_inside · ok=14 inside=2 dead=6 fail=6
+12:39:14 [29/34] #9200 tonidavid827@gmail.com k1h2cdmq web=False
+12:39:24   9200 · qa_auth_page_seen:signup
+12:39:24   9200 · qa_goto_welcome
+12:39:39   9200 · qa_welcome_visible
+12:39:40   9200 · web_onboard_chat_try:1
+12:39:43   9200 · web_onboard_chat
+12:39:50   9200 · qa_ready_to_add
+12:39:50   9200 · web_add_friends_empty_list
+12:39:50   9200 · web_add_friends_settle
+12:39:55   9200 · web_add_friends_open
+12:39:57   9200 · web_add_friends_search:Jonathan
+12:40:02   9200 · web_add_friends_panel_closed
+12:40:02   9200 · web_add_friends_retry
+12:40:06   9200 · web_add_friends_open
+12:40:07   9200 · web_add_friends_search:Owen
+12:40:10   9200 · web_add_friends_panel_closed
+12:40:10   9200 · web_add_friends_retry
+12:40:13   9200 · web_add_friends_open
+12:40:15   9200 · web_add_friends_search:Ryan
+12:40:17   9200 · web_add_friends_added:4
+12:40:18   9200 · web_add_friends_settle
+12:40:22   → OK:web_add_friends_added:4,web_add_friends_added:4 · ok=15 inside=2 dead=6 fail=6
+12:40:24 [30/34] #9201 toy82012@gmail.com k1h2cqsv web=False
+12:40:35   9201 · qa_auth_page_seen:signup
+12:40:35   9201 · qa_goto_welcome
+12:40:56   9201 · qa_welcome_visible
+12:40:56   9201 · web_onboard_chat_try:1
+12:41:00   9201 · web_onboard_chat
+12:41:07   9201 · qa_ready_to_add
+12:41:07   9201 · web_add_friends_empty_list
+12:41:07   9201 · web_add_friends_settle
+12:41:12   9201 · web_add_friends_open
+12:41:14   9201 · web_add_friends_search:Thomas
+12:41:20   9201 · web_add_friends_added:4
+12:41:20   9201 · web_add_friends_settle
+12:41:25   → OK:web_add_friends_added:4,web_add_friends_added:4 · ok=16 inside=2 dead=6 fail=6
+12:41:27 [31/34] #9207 caretoy807@gmail.com k1h2d3d8 web=False
+12:41:39   9207 · qa_auth_page_seen:signup
+12:41:39   9207 · qa_goto_welcome
+12:41:44   9207 · qa_goto_welcome_failed:Page.wait_for_timeout: Target page, context or browser has been closed
+12:41:44   9207 · qa_welcome_visible
+12:41:45   → ERROR:Page.wait_for_timeout: Target page, context or browser has been closed · ok=16 inside=2 dead=6 fail=7
+18:27:38 [32/34] #9208 caretoy807@gmail.com k1h2dbkk web=False
+18:27:44   → ERROR:getaddrinfo ENOTFOUND api-global.adspower.net · ok=16 inside=2 dead=6 fail=8
+18:27:46 [33/34] #9211 purdysalt0@gmail.com k1h2deny web=False
+18:28:09   9211 · qa_auth_page_seen:signup
+18:28:09   9211 · qa_goto_welcome
+18:28:50   9211 · qa_welcome_visible
+18:28:51   9211 · web_onboard_chat_try:1
+18:28:54   9211 · web_onboard_chat
+18:29:03   9211 · web_onboard_next_try:1
+18:29:05   9211 · web_onboard_next
+18:29:05   9211 · web_onboard_skip_try:1
+18:29:06   9211 · web_onboard_skip
+18:29:06   9211 · qa_ready_to_add
+18:29:06   9211 · web_add_friends_empty_list
+18:29:06   9211 · web_add_friends_settle
+18:29:10   9211 · web_add_friends_open
+18:29:11   9211 · web_add_friends_search:Kevin
+18:29:15   9211 · web_add_friends_panel_closed
+18:29:15   9211 · web_add_friends_retry
+18:29:19   9211 · web_add_friends_open
+18:29:21   9211 · web_add_friends_search:William
+18:29:23   9211 · web_add_friends_added:2
+18:29:24   9211 · web_add_friends_settle
+18:29:28   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=17 inside=2 dead=6 fail=8
+18:29:30 stop file present — exiting
+18:29:42   sheet sync rc=0
+18:29:42 done ok=17 inside_no_add=2 dead=6 fail=8 of 34
+08:01:08 Official Gmail warmup Stage 1 · 11 leftover(s) · skip dead + Stage 1 done
+08:01:08 [1/11] #8832 srvxslibcrs@gmail.com k1h0l984 web=False
+08:01:21   8832 · qa_auth_page_seen:signup
+08:01:21   8832 · qa_goto_welcome
+08:01:24   8832 · qa_welcome_visible
+08:01:25   8832 · web_onboard_chat_not_found_try:1
+08:01:25   8832 · web_onboard_chat_not_found_try:2
+08:01:26   8832 · web_onboard_chat_try:3
+08:01:29   8832 · web_onboard_chat
+08:01:36   8832 · qa_ready_to_add
+08:01:36   8832 · web_add_friends_empty_list
+08:01:36   8832 · web_add_friends_settle
+08:01:41   8832 · web_add_friends_open
+08:01:42   8832 · web_add_friends_search:Charles
+08:01:46   8832 · web_add_friends_panel_closed
+08:01:46   8832 · web_add_friends_retry
+08:01:50   8832 · web_add_friends_open
+08:01:51   8832 · web_add_friends_search:Josh
+08:01:55   8832 · web_add_friends_added:4
+08:01:55   8832 · web_add_friends_settle
+08:02:10   sheet sync rc=0
+08:02:11   → OK:web_add_friends_added:4,web_add_friends_added:4 · ok=1 inside=0 dead=0 fail=0
+08:02:13 [2/11] #8833 tupjdfrujdsd@gmail.com k1h0lmb3 web=False
+08:02:26   8833 · qa_auth_page_seen:signup
+08:02:26   8833 · qa_goto_welcome
+08:02:29   8833 · qa_welcome_visible
+08:02:30   8833 · web_onboard_chat_try:1
+08:02:41   8833 · web_onboard_chat
+08:02:50   8833 · qa_ready_to_add
+08:02:50   8833 · web_add_friends_empty_list
+08:02:50   8833 · web_add_friends_settle
+08:02:55   8833 · web_add_friends_open
+08:02:56   8833 · web_add_friends_search:Nicholas
+08:02:59   8833 · web_add_friends_panel_closed
+08:02:59   8833 · web_add_friends_retry
+08:03:03   8833 · web_add_friends_open
+08:03:04   8833 · web_add_friends_search:William
+08:03:06   8833 · web_add_friends_added:2
+08:03:07   8833 · web_add_friends_settle
+08:03:20   sheet sync rc=0
+08:03:21   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=2 inside=0 dead=0 fail=0
+08:03:23 [3/11] #9137 treymhgcyg@gmail.com k1h1w36t web=False
+08:03:34   9137 · qa_auth_page_seen:signup
+08:03:34   9137 · qa_goto_welcome
+08:03:36   9137 · qa_welcome_visible
+08:03:37   9137 · web_onboard_chat_try:1
+08:03:40   9137 · web_onboard_chat
+08:03:49   9137 · qa_ready_to_add
+08:03:49   9137 · web_add_friends_empty_list
+08:03:49   9137 · web_add_friends_settle
+08:03:54   9137 · web_add_friends_open
+08:03:55   9137 · web_add_friends_search:Brian
+08:04:00   9137 · web_add_friends_added:3
+08:04:00   9137 · web_add_friends_settle
+08:04:13   sheet sync rc=0
+08:04:14   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=3 inside=0 dead=0 fail=0
+08:04:16 [4/11] #9138 narrownaus@gmail.com k1h1wkih web=False
+08:04:25   9138 · qa_auth_page_seen:signup
+08:04:25   9138 · qa_goto_welcome
+08:04:28   9138 · qa_welcome_visible
+08:04:29   9138 · web_onboard_chat_try:1
+08:04:32   9138 · web_onboard_chat
+08:04:40   9138 · qa_ready_to_add
+08:04:40   9138 · web_add_friends_empty_list
+08:04:40   9138 · web_add_friends_settle
+08:04:44   9138 · web_add_friends_open
+08:04:45   9138 · web_add_friends_search:Tyler
+08:04:48   9138 · web_add_friends_panel_closed
+08:04:48   9138 · web_add_friends_retry
+08:04:52   9138 · web_add_friends_open
+08:04:53   9138 · web_add_friends_search:Jordan
+08:04:56   9138 · web_add_friends_added:3
+08:04:57   9138 · web_add_friends_settle
+08:05:09   sheet sync rc=0
+08:05:10   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=4 inside=0 dead=0 fail=0
+08:05:12 [5/11] #9142 summersomao@gmail.com k1h26qc0 web=False
+08:05:21   9142 · qa_auth_page_seen:signup
+08:05:21   9142 · qa_goto_welcome
+08:05:33   9142 · qa_welcome_visible
+08:05:34   9142 · web_onboard_chat_try:1
+08:05:36   9142 · web_onboard_chat
+08:05:43   9142 · qa_ready_to_add
+08:05:43   9142 · web_add_friends_empty_list
+08:05:43   9142 · web_add_friends_settle
+08:05:47   9142 · web_add_friends_open
+08:05:49   9142 · web_add_friends_search:Zachary
+08:05:52   9142 · web_add_friends_panel_closed
+08:05:52   9142 · web_add_friends_retry
+08:05:55   9142 · web_add_friends_open
+08:05:56   9142 · web_add_friends_search:Samuel
+08:05:59   9142 · web_add_friends_panel_closed
+08:05:59   9142 · web_add_friends_retry
+08:06:02   9142 · web_add_friends_open
+08:06:03   9142 · web_add_friends_search:Noah
+08:06:06   9142 · web_add_friends_added:4
+08:06:07   9142 · web_add_friends_settle
+08:06:19   sheet sync rc=0
+08:06:20   → OK:web_add_friends_added:4,web_add_friends_added:4 · ok=5 inside=0 dead=0 fail=0
+08:06:22 [6/11] #9159 bd5511337@gmail.com k1h28yk4 web=False
+08:06:32   9159 · qa_auth_page_seen:signup
+08:06:32   9159 · qa_goto_welcome
+08:06:34   9159 · qa_welcome_visible
+08:06:35   9159 · web_onboard_chat_not_found_try:1
+08:06:36   9159 · web_onboard_chat_not_found_try:2
+08:06:36   9159 · web_onboard_chat_not_found_try:3
+08:06:37   9159 · web_onboard_chat_stuck
+08:06:58   9159 · web_not_ready_for_qa
+08:06:58   9159 · web_add_friends_not_found
+08:06:58   9159 · web_add_friends_settle
+08:07:02   → FAIL:not_inside · ok=5 inside=0 dead=0 fail=1
+08:07:04 [7/11] #9167 depet023@gmail.com k1h2a5ux web=False
+08:07:14   9167 · qa_auth_page_seen:signup
+08:07:14   9167 · qa_goto_welcome
+08:07:23   9167 · qa_welcome_visible
+08:07:24   9167 · web_onboard_chat_try:1
+08:07:27   9167 · web_onboard_chat
+08:07:34   9167 · qa_ready_to_add
+08:07:34   9167 · web_add_friends_empty_list
+08:07:34   9167 · web_add_friends_settle
+08:07:38   9167 · web_add_friends_open
+08:07:40   9167 · web_add_friends_search:Alexander
+08:07:44   9167 · web_add_friends_panel_closed
+08:07:44   9167 · web_add_friends_retry
+08:07:47   9167 · web_add_friends_open
+08:07:48   9167 · web_add_friends_search:Luke
+08:07:55   9167 · web_add_friends_added:3
+08:07:55   9167 · web_add_friends_settle
+08:08:08   sheet sync rc=0
+08:08:09   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=6 inside=0 dead=0 fail=1
+08:08:11 [8/11] #9193 rokislonj@gmail.com k1h2c12k web=False
+08:08:21   9193 · qa_auth_page_seen:signup
+08:08:21   9193 · qa_goto_welcome
+08:08:29   9193 · qa_welcome_visible
+08:08:30   9193 · web_onboard_chat_try:1
+08:08:34   9193 · web_onboard_chat
+08:08:41   9193 · qa_ready_to_add
+08:08:41   9193 · web_add_friends_empty_list
+08:08:41   9193 · web_add_friends_settle
+08:08:46   9193 · web_add_friends_open
+08:08:47   9193 · web_add_friends_search:Michael
+08:08:52   9193 · web_add_friends_panel_closed
+08:08:52   9193 · web_add_friends_retry
+08:08:55   9193 · web_add_friends_open
+08:08:56   9193 · web_add_friends_search:John
+08:08:58   9193 · web_add_friends_added:4
+08:08:59   9193 · web_add_friends_settle
+08:09:11   sheet sync rc=0
+08:09:12   → OK:web_add_friends_added:4,web_add_friends_added:4 · ok=7 inside=0 dead=0 fail=1
+08:09:14 [9/11] #9207 caretoy807@gmail.com k1h2d3d8 web=False
+08:09:24   9207 · qa_auth_page_seen:signup
+08:09:24   9207 · qa_goto_welcome
+08:09:26   9207 · qa_waiting_session_try:1:login
+08:09:31   9207 · qa_waiting_session_try:10:login
+08:09:37   9207 · qa_waiting_session_try:20:login
+08:09:42   9207 · account_logged_out:login
+08:09:42   9207 · account_logged_out_url:https://accounts.snapchat.com/v2/login?continue=%2Faccounts%2Fsso%3Fclient_id%3Dweb-accounts%26referrer%3Dhttps%253A%252F%252Faccounts.snapchat.com%252Fv2%252Fwelcome%253Flocale%25
+08:09:53   sheet sync rc=0
+08:09:54   → LOGGED_OUT · ok=7 inside=0 dead=1 fail=1
+08:09:56 [10/11] #9208 caretoy807@gmail.com k1h2dbkk web=False
+08:10:06   9208 · qa_auth_page_seen:signup
+08:10:06   9208 · qa_goto_welcome
+08:10:21   9208 · qa_welcome_visible
+08:10:22   9208 · web_onboard_chat_try:1
+08:10:27   9208 · web_onboard_chat
+08:10:43   9208 · web_onboard_next_not_seen
+08:10:49   9208 · qa_ready_to_add
+08:10:49   9208 · web_add_friends_empty_list
+08:10:49   9208 · web_add_friends_settle
+08:10:54   9208 · web_add_friends_open
+08:10:55   9208 · web_add_friends_search:David
+08:11:03   9208 · web_add_friends_retry
+08:11:04   9208 · web_add_friends_search:Owen
+08:11:10   9208 · web_add_friends_panel_closed
+08:11:10   9208 · web_add_friends_retry
+08:11:10   9208 · web_add_friends_panel_closed
+08:11:10   9208 · web_add_friends_added:3
+08:11:10   9208 · web_add_friends_settle
+08:11:22   sheet sync rc=0
+08:11:23   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=8 inside=0 dead=1 fail=1
+08:11:26 [11/11] #9212 raydauch@gmail.com k1h2dp11 web=False
+08:11:36   9212 · qa_auth_page_seen:signup
+08:11:36   9212 · qa_goto_welcome
+08:11:55   9212 · qa_welcome_visible
+08:11:56   9212 · web_onboard_chat_try:1
+08:11:59   9212 · web_onboard_chat
+08:12:06   9212 · qa_ready_to_add
+08:12:06   9212 · web_add_friends_empty_list
+08:12:06   9212 · web_add_friends_settle
+08:12:11   9212 · web_add_friends_open
+08:12:12   9212 · web_add_friends_search:Steven
+08:12:20   9212 · web_add_friends_retry
+08:12:21   9212 · web_add_friends_search:Austin
+08:12:27   9212 · web_add_friends_added:3
+08:12:27   9212 · web_add_friends_settle
+08:12:40   sheet sync rc=0
+08:12:41   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=9 inside=0 dead=1 fail=1
+08:12:52   sheet sync rc=0
+08:12:52 done ok=9 inside_no_add=0 dead=1 fail=1 of 11
+15:36:14 Official Gmail warmup Stage 1 · 1 leftover(s) · skip dead + Stage 1 done
+15:36:14 [1/1] #9159 bd5511337@gmail.com k1h28yk4 web=False
+15:36:26   9159 · qa_auth_page_seen:signup
+15:36:26   9159 · qa_goto_welcome
+15:36:47   9159 · qa_welcome_visible
+15:36:48   9159 · web_onboard_chat_try:1
+15:36:52   9159 · web_onboard_chat
+15:37:00   9159 · qa_ready_to_add
+15:37:00   9159 · web_add_friends_empty_list
+15:37:00   9159 · web_add_friends_settle
+15:37:05   9159 · web_add_friends_open
+15:37:07   9159 · web_add_friends_search:Nicholas
+15:37:15   9159 · web_add_friends_added:4
+15:37:15   9159 · web_add_friends_settle
+15:37:32   sheet sync rc=0
+15:37:33   → OK:web_add_friends_added:4,web_add_friends_added:4 · ok=1 inside=0 dead=0 fail=0
+15:37:49   sheet sync rc=0
+15:37:49 done ok=1 inside_no_add=0 dead=0 fail=0 of 1

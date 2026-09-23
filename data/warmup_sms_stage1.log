@@ -1,0 +1,1998 @@
+10:26:01 SMS warmup Stage 1 · 80 account(s) ≥ 24h
+10:26:01 [1/80] SMS-0001 k1h3h6xq age=33.9h web=True
+10:26:20   SMS-0001 · qa_reuse_snapchat_web_tab
+10:26:30   SMS-0001 · qa_ready_to_add
+10:26:30   SMS-0001 · web_add_friends_empty_list
+10:26:30   SMS-0001 · web_add_friends_settle
+10:26:35   SMS-0001 · web_add_friends_open
+10:26:37   SMS-0001 · web_add_friends_search:David
+10:26:41   SMS-0001 · web_add_friends_added:3
+10:26:41   SMS-0001 · web_add_friends_settle
+10:26:46   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=1 fail=0
+10:26:48 [2/80] SMS-0003 k1h3hqvr age=33.6h web=True
+10:27:01   SMS-0003 · qa_reuse_snapchat_web_tab
+10:27:17   SMS-0003 · qa_ready_to_add
+10:27:17   SMS-0003 · web_add_friends_empty_list
+10:27:17   SMS-0003 · web_add_friends_settle
+10:27:22   SMS-0003 · web_add_friends_open
+10:27:23   SMS-0003 · web_add_friends_search:Steven
+10:27:27   SMS-0003 · web_add_friends_panel_closed
+10:27:27   SMS-0003 · web_add_friends_retry
+10:27:30   SMS-0003 · web_add_friends_open
+10:27:31   SMS-0003 · web_add_friends_search:Ryan
+10:27:34   SMS-0003 · web_add_friends_added:4
+10:27:34   SMS-0003 · web_add_friends_settle
+10:27:39   → OK:web_add_friends_added:4,web_add_friends_added:4 · ok=2 fail=0
+10:27:41 [3/80] SMS-0004 k1h3hv96 age=33.6h web=True
+10:27:52   SMS-0004 · qa_reuse_snapchat_web_tab
+10:28:02   SMS-0004 · qa_ready_to_add
+10:28:02   SMS-0004 · web_add_friends_empty_list
+10:28:02   SMS-0004 · web_add_friends_settle
+10:28:07   SMS-0004 · web_add_friends_open
+10:28:08   SMS-0004 · web_add_friends_search:Kyle
+10:28:11   SMS-0004 · web_add_friends_panel_closed
+10:28:11   SMS-0004 · web_add_friends_retry
+10:28:14   SMS-0004 · web_add_friends_open
+10:28:15   SMS-0004 · web_add_friends_search:Benjamin
+10:28:17   SMS-0004 · web_add_friends_added:2
+10:28:17   SMS-0004 · web_add_friends_settle
+10:28:22   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=3 fail=0
+10:28:24 [4/80] SMS-0005 k1h3hyqj age=33.5h web=False
+10:28:34   SMS-0005 · qa_auth_page_seen:signup
+10:28:34   SMS-0005 · qa_goto_welcome
+10:28:50   SMS-0005 · qa_welcome_visible
+10:28:50   SMS-0005 · web_onboard_chat_try:1
+10:29:01   SMS-0005 · web_onboard_chat
+10:29:09   SMS-0005 · web_onboard_next_try:1
+10:29:11   SMS-0005 · web_onboard_next
+10:29:12   SMS-0005 · web_onboard_skip_try:1
+10:29:13   SMS-0005 · web_onboard_skip
+10:29:13   SMS-0005 · qa_ready_to_add
+10:29:13   SMS-0005 · web_add_friends_empty_list
+10:29:13   SMS-0005 · web_add_friends_settle
+10:29:16   SMS-0005 · web_add_friends_open
+10:29:18   SMS-0005 · web_add_friends_search:Jason
+10:29:22   SMS-0005 · web_add_friends_added:3
+10:29:23   SMS-0005 · web_add_friends_settle
+10:29:28   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=4 fail=0
+10:29:30 [5/80] SMS-0011 k1h3id1m age=33.3h web=True
+10:29:39   SMS-0011 · qa_reuse_snapchat_web_tab
+10:29:49   SMS-0011 · qa_ready_to_add
+10:29:49   SMS-0011 · web_add_friends_empty_list
+10:29:49   SMS-0011 · web_add_friends_settle
+10:29:54   SMS-0011 · web_add_friends_open
+10:29:55   SMS-0011 · web_add_friends_search:Daniel
+10:29:58   SMS-0011 · web_add_friends_panel_closed
+10:29:58   SMS-0011 · web_add_friends_retry
+10:30:01   SMS-0011 · web_add_friends_open
+10:30:02   SMS-0011 · web_add_friends_search:Thomas
+10:30:04   SMS-0011 · web_add_friends_added:2
+10:30:04   SMS-0011 · web_add_friends_settle
+10:30:09   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=5 fail=0
+10:30:11 [6/80] SMS-0014 k1h3il1v age=33.2h web=False
+10:30:22   SMS-0014 · qa_auth_page_seen:signup
+10:30:22   SMS-0014 · qa_goto_welcome
+10:31:07   SMS-0014 · qa_goto_welcome_failed:Page.goto: Timeout 45000ms exceeded.
+Call log:
+  - navigating to "https://accounts.snapchat.com/v2/welcome?locale=en-US", waiting until "domcontentloaded"
+
+10:31:07   SMS-0014 · qa_welcome_visible
+10:31:08   SMS-0014 · web_onboard_chat_not_found_try:1
+10:31:08   SMS-0014 · web_onboard_chat_not_found_try:2
+10:31:09   SMS-0014 · web_onboard_chat_not_found_try:3
+10:31:09   SMS-0014 · web_onboard_chat_stuck
+10:31:30   SMS-0014 · web_not_ready_for_qa
+10:31:30   SMS-0014 · web_add_friends_not_found
+10:31:30   SMS-0014 · web_add_friends_settle
+10:31:34   → FAIL_ADD:no_add · ok=5 fail=1
+10:31:36 [7/80] SMS-0017 k1h3it2g age=33.0h web=True
+10:31:58   SMS-0017 · qa_reuse_snapchat_web_tab
+10:32:15   SMS-0017 · web_onboard_next_not_seen
+10:32:30   SMS-0017 · qa_ready_to_add
+10:32:30   SMS-0017 · web_add_friends_empty_list
+10:32:30   SMS-0017 · web_add_friends_settle
+10:32:31   SMS-0017 · web_add_friends_not_found
+10:32:31   SMS-0017 · web_add_friends_settle
+10:32:35   → FAIL_ADD:no_add · ok=5 fail=2
+10:32:37 [8/80] SMS-0018 k1h3ixrv age=33.0h web=True
+10:32:48   SMS-0018 · qa_reuse_snapchat_web_tab
+10:32:58   SMS-0018 · qa_ready_to_add
+10:32:58   SMS-0018 · web_add_friends_empty_list
+10:32:58   SMS-0018 · web_add_friends_settle
+10:33:03   SMS-0018 · web_add_friends_open
+10:33:04   SMS-0018 · web_add_friends_search:Christopher
+10:33:11   SMS-0018 · web_add_friends_added:3
+10:33:11   SMS-0018 · web_add_friends_settle
+10:33:16   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=6 fail=2
+10:33:18 [9/80] SMS-0020 k1h3j40w age=32.9h web=False
+10:33:28   SMS-0020 · qa_auth_page_seen:signup
+10:33:28   SMS-0020 · qa_goto_welcome
+10:34:03   SMS-0020 · qa_welcome_visible
+10:34:04   SMS-0020 · web_onboard_chat_try:1
+10:34:17   SMS-0020 · web_onboard_chat
+10:34:30   SMS-0020 · web_onboard_next_try:1
+10:34:32   SMS-0020 · web_onboard_next
+10:34:33   SMS-0020 · web_onboard_skip_try:1
+10:34:33   SMS-0020 · web_onboard_skip
+10:34:33   SMS-0020 · qa_ready_to_add
+10:34:33   SMS-0020 · web_add_friends_empty_list
+10:34:33   SMS-0020 · web_add_friends_settle
+10:34:38   SMS-0020 · web_add_friends_open
+10:34:39   SMS-0020 · web_add_friends_search:Chris
+10:34:44   SMS-0020 · web_add_friends_panel_closed
+10:34:44   SMS-0020 · web_add_friends_retry
+10:34:47   SMS-0020 · web_add_friends_open
+10:34:49   SMS-0020 · web_add_friends_search:Aaron
+10:34:52   SMS-0020 · web_add_friends_added:3
+10:34:53   SMS-0020 · web_add_friends_settle
+10:34:58   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=7 fail=2
+10:35:00 [10/80] SMS-0022 k1h3jaio age=32.8h web=False
+10:35:11   SMS-0022 · qa_auth_page_seen:signup
+10:35:11   SMS-0022 · qa_goto_welcome
+10:35:39   SMS-0022 · qa_welcome_visible
+10:35:40   SMS-0022 · web_onboard_chat_try:1
+10:35:59   SMS-0022 · web_onboard_chat
+10:36:16   SMS-0022 · web_onboard_next_not_seen
+10:36:31   SMS-0022 · web_onboard_skip_not_seen
+10:36:37   SMS-0022 · web_onboard_heads_up_dismissed_not_seen
+10:36:37   SMS-0022 · qa_ready_to_add
+10:36:37   SMS-0022 · web_add_friends_empty_list
+10:36:37   SMS-0022 · web_add_friends_settle
+10:36:38   SMS-0022 · web_add_friends_not_found
+10:36:38   SMS-0022 · web_add_friends_settle
+10:36:42   → FAIL_ADD:no_add · ok=7 fail=3
+10:36:44 [11/80] SMS-0030 k1h3jspx age=32.5h web=False
+10:36:54   SMS-0030 · qa_auth_page_seen:signup
+10:36:54   SMS-0030 · qa_goto_welcome
+10:37:16   SMS-0030 · qa_waiting_session_try:1:login
+10:37:19   SMS-0030 · qa_auth_form_visible:login
+10:37:19   SMS-0030 · account_logged_out:login
+10:37:19   SMS-0030 · account_logged_out_url:https://accounts.snapchat.com/v2/login?continue=%2Faccounts%2Fsso%3Fclient_id%3Dweb-accounts%26referrer%3Dhttps%253A%252F%252Faccounts.snapchat.com%252Fv2%252Fwelcome%253Flocale%25
+10:37:22   → LOGGED_OUT · ok=7 fail=4
+10:37:24 [12/80] SMS-0034 k1h3k3vh age=32.3h web=True
+10:37:45   SMS-0034 · qa_reuse_snapchat_web_tab
+10:38:02   SMS-0034 · web_onboard_next_not_seen
+10:38:09   SMS-0034 · qa_ready_to_add
+10:38:09   SMS-0034 · web_add_friends_empty_list
+10:38:09   SMS-0034 · web_add_friends_settle
+10:38:13   SMS-0034 · web_add_friends_open
+10:38:14   SMS-0034 · web_add_friends_search:Ryan
+10:38:20   SMS-0034 · web_add_friends_added:2
+10:38:20   SMS-0034 · web_add_friends_settle
+10:38:25   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=8 fail=4
+10:38:27 [13/80] SMS-0038 k1h3kebr age=32.2h web=True
+10:38:36   SMS-0038 · qa_reuse_snapchat_web_tab
+10:38:53   SMS-0038 · qa_ready_to_add
+10:38:53   SMS-0038 · web_add_friends_empty_list
+10:38:53   SMS-0038 · web_add_friends_settle
+10:38:58   SMS-0038 · web_add_friends_open
+10:38:59   SMS-0038 · web_add_friends_search:Eric
+10:39:03   SMS-0038 · web_add_friends_added:3
+10:39:04   SMS-0038 · web_add_friends_settle
+10:39:08   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=9 fail=4
+10:39:10 [14/80] SMS-0039 k1h3kibw age=32.1h web=False
+10:39:20   SMS-0039 · qa_auth_page_seen:signup
+10:39:20   SMS-0039 · qa_goto_welcome
+10:39:43   SMS-0039 · qa_waiting_session_try:1:login
+10:39:43   SMS-0039 · qa_auth_form_visible:login
+10:39:43   SMS-0039 · account_logged_out:login
+10:39:43   SMS-0039 · account_logged_out_url:https://accounts.snapchat.com/v2/login?continue=%2Faccounts%2Fsso%3Fclient_id%3Dweb-accounts%26referrer%3Dhttps%253A%252F%252Faccounts.snapchat.com%252Fv2%252Fwelcome%253Flocale%25
+10:39:46   → LOGGED_OUT · ok=9 fail=5
+10:39:48 [15/80] SMS-0043 k1h3ktoq age=32.0h web=False
+10:39:58   SMS-0043 · qa_auth_page_seen:signup
+10:39:58   SMS-0043 · qa_goto_welcome
+10:40:19   SMS-0043 · qa_welcome_visible
+10:40:20   SMS-0043 · web_onboard_chat_try:1
+10:40:24   SMS-0043 · web_onboard_chat
+10:40:32   SMS-0043 · web_onboard_next_try:1
+10:40:34   SMS-0043 · web_onboard_next
+10:40:34   SMS-0043 · web_onboard_skip_try:1
+10:40:35   SMS-0043 · web_onboard_skip
+10:40:35   SMS-0043 · qa_ready_to_add
+10:40:35   SMS-0043 · web_add_friends_empty_list
+10:40:35   SMS-0043 · web_add_friends_settle
+10:40:39   SMS-0043 · web_add_friends_open
+10:40:41   SMS-0043 · web_add_friends_search:David
+10:41:17   SMS-0043 · web_add_friends_added:4
+10:41:17   SMS-0043 · web_add_friends_settle
+10:41:22   → OK:web_add_friends_added:4,web_add_friends_added:4 · ok=10 fail=5
+10:41:24 [16/80] SMS-0046 k1h3l2t7 age=31.8h web=True
+10:41:34   SMS-0046 · qa_reuse_snapchat_web_tab
+10:41:49   SMS-0046 · qa_ready_to_add
+10:41:49   SMS-0046 · web_add_friends_empty_list
+10:41:49   SMS-0046 · web_add_friends_settle
+10:41:53   SMS-0046 · web_add_friends_open
+10:41:54   SMS-0046 · web_add_friends_search:John
+10:42:00   SMS-0046 · web_add_friends_panel_closed
+10:42:00   SMS-0046 · web_add_friends_retry
+10:42:03   SMS-0046 · web_add_friends_open
+10:42:04   SMS-0046 · web_add_friends_search:Adam
+10:42:07   SMS-0046 · web_add_friends_added:2
+10:42:07   SMS-0046 · web_add_friends_settle
+10:42:12   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=11 fail=5
+10:42:14 [17/80] SMS-0047 k1h3l7xo age=31.7h web=True
+10:42:24   SMS-0047 · qa_reuse_snapchat_web_tab
+10:42:33   SMS-0047 · qa_ready_to_add
+10:42:33   SMS-0047 · web_add_friends_empty_list
+10:42:33   SMS-0047 · web_add_friends_settle
+10:42:37   SMS-0047 · web_add_friends_open
+10:42:38   SMS-0047 · web_add_friends_search:Adam
+10:42:42   SMS-0047 · web_add_friends_panel_closed
+10:42:42   SMS-0047 · web_add_friends_retry
+10:42:46   SMS-0047 · web_add_friends_open
+10:42:47   SMS-0047 · web_add_friends_search:Andrew
+10:42:49   SMS-0047 · web_add_friends_added:3
+10:42:50   SMS-0047 · web_add_friends_settle
+10:42:55   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=12 fail=5
+10:42:57 [18/80] SMS-0048 k1h3lbfw age=31.7h web=True
+10:43:07   SMS-0048 · qa_reuse_snapchat_web_tab
+10:43:17   SMS-0048 · qa_ready_to_add
+10:43:17   SMS-0048 · web_add_friends_empty_list
+10:43:17   SMS-0048 · web_add_friends_settle
+10:43:21   SMS-0048 · web_add_friends_open
+10:43:23   SMS-0048 · web_add_friends_search:Hunter
+10:43:27   SMS-0048 · web_add_friends_added:3
+10:43:28   SMS-0048 · web_add_friends_settle
+10:43:32   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=13 fail=5
+10:43:34 [19/80] SMS-0052 k1h3lk5j age=31.5h web=False
+10:43:44   SMS-0052 · qa_auth_page_seen:signup
+10:43:44   SMS-0052 · qa_goto_welcome
+10:43:57   SMS-0052 · qa_auth_form_visible:login
+10:43:57   SMS-0052 · account_logged_out:login
+10:43:57   SMS-0052 · account_logged_out_url:https://accounts.snapchat.com/v2/login?continue=%2Faccounts%2Fsso%3Fclient_id%3Dweb-accounts%26referrer%3Dhttps%253A%252F%252Faccounts.snapchat.com%252Fv2%252Fwelcome%253Flocale%25
+10:44:00   → LOGGED_OUT · ok=13 fail=6
+10:44:02 [20/80] SMS-0053 k1h3lm7a age=31.5h web=False
+10:44:11   SMS-0053 · qa_auth_page_seen:signup
+10:44:11   SMS-0053 · qa_goto_welcome
+10:44:30   SMS-0053 · qa_welcome_visible
+10:44:31   SMS-0053 · web_onboard_chat_try:1
+10:44:37   SMS-0053 · web_onboard_chat
+10:44:44   SMS-0053 · web_onboard_next_try:1
+10:44:45   SMS-0053 · web_onboard_next
+10:44:46   SMS-0053 · web_onboard_skip_try:1
+10:44:52   SMS-0053 · web_onboard_skip_try:2
+10:45:04   SMS-0053 · web_onboard_skip_try:3
+10:45:15   SMS-0053 · web_onboard_skip_stuck
+10:45:21   SMS-0053 · web_onboard_heads_up_dismissed_not_seen
+10:45:21   SMS-0053 · qa_ready_to_add
+10:45:21   SMS-0053 · web_add_friends_empty_list
+10:45:21   SMS-0053 · web_add_friends_settle
+10:45:22   SMS-0053 · web_add_friends_not_found
+10:45:22   SMS-0053 · web_add_friends_settle
+10:45:26   → FAIL_ADD:no_add · ok=13 fail=7
+10:45:28 [21/80] SMS-0056 k1h3lt8l age=31.4h web=True
+10:45:38   SMS-0056 · qa_reuse_snapchat_web_tab
+10:45:48   SMS-0056 · qa_ready_to_add
+10:45:48   SMS-0056 · web_add_friends_empty_list
+10:45:48   SMS-0056 · web_add_friends_settle
+10:45:53   SMS-0056 · web_add_friends_open
+10:45:54   SMS-0056 · web_add_friends_search:Charles
+10:45:57   SMS-0056 · web_add_friends_panel_closed
+10:45:57   SMS-0056 · web_add_friends_retry
+10:46:00   SMS-0056 · web_add_friends_open
+10:46:02   SMS-0056 · web_add_friends_search:Alexander
+10:46:04   SMS-0056 · web_add_friends_added:2
+10:46:04   SMS-0056 · web_add_friends_settle
+10:46:09   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=14 fail=7
+10:46:11 [22/80] SMS-0057 k1h3lwip age=31.3h web=True
+10:46:25   SMS-0057 · qa_reuse_snapchat_web_tab
+10:46:42   SMS-0057 · qa_ready_to_add
+10:46:42   SMS-0057 · web_add_friends_empty_list
+10:46:42   SMS-0057 · web_add_friends_settle
+10:46:46   SMS-0057 · web_add_friends_open
+10:46:47   SMS-0057 · web_add_friends_search:Paul
+10:46:55   SMS-0057 · web_add_friends_added:2
+10:46:56   SMS-0057 · web_add_friends_settle
+10:47:00   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=15 fail=7
+10:47:02 [23/80] SMS-0059 k1h3m45j age=31.2h web=True
+10:47:13   SMS-0059 · qa_reuse_snapchat_web_tab
+10:47:28   SMS-0059 · qa_ready_to_add
+10:47:28   SMS-0059 · web_add_friends_empty_list
+10:47:28   SMS-0059 · web_add_friends_settle
+10:47:32   SMS-0059 · web_add_friends_open
+10:47:34   SMS-0059 · web_add_friends_search:Nicholas
+10:47:37   SMS-0059 · web_add_friends_panel_closed
+10:47:37   SMS-0059 · web_add_friends_retry
+10:47:41   SMS-0059 · web_add_friends_open
+10:47:42   SMS-0059 · web_add_friends_search:Mark
+10:47:44   SMS-0059 · web_add_friends_added:2
+10:47:45   SMS-0059 · web_add_friends_settle
+10:47:49   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=16 fail=7
+10:47:51 [24/80] SMS-0061 k1h3ma5r age=31.1h web=True
+10:48:01   SMS-0061 · qa_reuse_snapchat_web_tab
+10:48:11   SMS-0061 · qa_ready_to_add
+10:48:11   SMS-0061 · web_add_friends_empty_list
+10:48:11   SMS-0061 · web_add_friends_settle
+10:48:15   SMS-0061 · web_add_friends_open
+10:48:17   SMS-0061 · web_add_friends_search:Owen
+10:48:20   SMS-0061 · web_add_friends_added:2
+10:48:20   SMS-0061 · web_add_friends_settle
+10:48:25   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=17 fail=7
+10:48:27 [25/80] SMS-0062 k1h3mdwo age=31.0h web=True
+10:48:38   SMS-0062 · qa_reuse_snapchat_web_tab
+10:48:49   SMS-0062 · qa_ready_to_add
+10:48:49   SMS-0062 · web_add_friends_empty_list
+10:48:49   SMS-0062 · web_add_friends_settle
+10:48:54   SMS-0062 · web_add_friends_open
+10:48:55   SMS-0062 · web_add_friends_search:Mark
+10:48:59   SMS-0062 · web_add_friends_panel_closed
+10:48:59   SMS-0062 · web_add_friends_retry
+10:49:02   SMS-0062 · web_add_friends_open
+10:49:03   SMS-0062 · web_add_friends_search:Paul
+10:49:07   SMS-0062 · web_add_friends_added:4
+10:49:07   SMS-0062 · web_add_friends_settle
+10:49:12   → OK:web_add_friends_added:4,web_add_friends_added:4 · ok=18 fail=7
+10:49:14 [26/80] SMS-0064 k1h3mit6 age=30.9h web=True
+10:49:26   SMS-0064 · qa_reuse_snapchat_web_tab
+10:49:36   SMS-0064 · qa_ready_to_add
+10:49:36   SMS-0064 · web_add_friends_empty_list
+10:49:36   SMS-0064 · web_add_friends_settle
+10:49:41   SMS-0064 · web_add_friends_open
+10:49:43   SMS-0064 · web_add_friends_search:Patrick
+10:49:47   SMS-0064 · web_add_friends_panel_closed
+10:49:47   SMS-0064 · web_add_friends_retry
+10:49:50   SMS-0064 · web_add_friends_open
+10:49:51   SMS-0064 · web_add_friends_search:Andrew
+10:49:53   SMS-0064 · web_add_friends_added:3
+10:49:53   SMS-0064 · web_add_friends_settle
+10:49:58   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=19 fail=7
+10:50:00 [27/80] SMS-0066 k1h3moj1 age=30.8h web=False
+10:50:10   SMS-0066 · qa_auth_page_seen:signup
+10:50:10   SMS-0066 · qa_goto_welcome
+10:50:29   SMS-0066 · qa_waiting_session_try:1:login
+10:50:30   SMS-0066 · qa_auth_form_visible:login
+10:50:30   SMS-0066 · account_logged_out:login
+10:50:30   SMS-0066 · account_logged_out_url:https://accounts.snapchat.com/v2/login?continue=%2Faccounts%2Fsso%3Fclient_id%3Dweb-accounts%26referrer%3Dhttps%253A%252F%252Faccounts.snapchat.com%252Fv2%252Fwelcome%253Flocale%25
+10:50:33   → LOGGED_OUT · ok=19 fail=8
+10:50:35 [28/80] SMS-0067 k1h3mvar age=30.7h web=True
+10:50:45   SMS-0067 · qa_reuse_snapchat_web_tab
+10:50:57   SMS-0067 · qa_ready_to_add
+10:50:57   SMS-0067 · web_add_friends_empty_list
+10:50:57   SMS-0067 · web_add_friends_settle
+10:51:01   SMS-0067 · web_add_friends_open
+10:51:03   SMS-0067 · web_add_friends_search:Daniel
+10:51:08   SMS-0067 · web_add_friends_added:3
+10:51:08   SMS-0067 · web_add_friends_settle
+10:51:13   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=20 fail=8
+10:51:15 [29/80] SMS-0068 k1h3mxuq age=30.6h web=True
+10:51:24   SMS-0068 · qa_reuse_snapchat_web_tab
+10:51:34   SMS-0068 · qa_ready_to_add
+10:51:34   SMS-0068 · web_add_friends_empty_list
+10:51:34   SMS-0068 · web_add_friends_settle
+10:51:38   SMS-0068 · web_add_friends_open
+10:51:39   SMS-0068 · web_add_friends_search:Owen
+10:51:42   SMS-0068 · web_add_friends_added:2
+10:51:43   SMS-0068 · web_add_friends_settle
+10:51:48   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=21 fail=8
+10:51:50 [30/80] SMS-0073 k1h3nfi5 age=30.3h web=True
+10:52:00   SMS-0073 · qa_reuse_snapchat_web_tab
+10:52:11   SMS-0073 · qa_ready_to_add
+10:52:11   SMS-0073 · web_add_friends_empty_list
+10:52:11   SMS-0073 · web_add_friends_settle
+10:52:16   SMS-0073 · web_add_friends_open
+10:52:17   SMS-0073 · web_add_friends_search:Adam
+10:52:20   SMS-0073 · web_add_friends_added:2
+10:52:21   SMS-0073 · web_add_friends_settle
+10:52:26   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=22 fail=8
+10:52:28 [31/80] SMS-0075 k1h3njp0 age=30.3h web=False
+10:52:37   SMS-0075 · qa_auth_page_seen:signup
+10:52:37   SMS-0075 · qa_goto_welcome
+10:52:58   SMS-0075 · qa_welcome_visible
+10:52:59   SMS-0075 · web_onboard_chat_not_found_try:1
+10:52:59   SMS-0075 · web_onboard_chat_not_found_try:2
+10:53:00   SMS-0075 · web_onboard_chat_not_found_try:3
+10:53:00   SMS-0075 · web_onboard_chat_stuck
+10:53:21   SMS-0075 · web_not_ready_for_qa
+10:53:21   SMS-0075 · web_add_friends_not_found
+10:53:21   SMS-0075 · web_add_friends_settle
+10:53:25   → FAIL_ADD:no_add · ok=22 fail=9
+10:53:27 [32/80] SMS-0077 k1h3np9e age=30.2h web=True
+10:53:36   SMS-0077 · qa_reuse_snapchat_web_tab
+10:53:46   SMS-0077 · qa_ready_to_add
+10:53:46   SMS-0077 · web_add_friends_empty_list
+10:53:46   SMS-0077 · web_add_friends_settle
+10:53:50   SMS-0077 · web_add_friends_open
+10:53:52   SMS-0077 · web_add_friends_search:Nathaniel
+10:53:55   SMS-0077 · web_add_friends_added:2
+10:53:56   SMS-0077 · web_add_friends_settle
+10:54:00   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=23 fail=9
+10:54:02 [33/80] SMS-0080 k1h3o28c age=30.0h web=False
+10:54:16   SMS-0080 · qa_auth_page_seen:signup
+10:54:16   SMS-0080 · qa_goto_welcome
+10:54:47   SMS-0080 · qa_waiting_session_try:1:login
+10:54:50   SMS-0080 · qa_auth_form_visible:login
+10:54:50   SMS-0080 · account_logged_out:login
+10:54:50   SMS-0080 · account_logged_out_url:https://accounts.snapchat.com/v2/login?continue=%2Faccounts%2Fsso%3Fclient_id%3Dweb-accounts%26referrer%3Dhttps%253A%252F%252Faccounts.snapchat.com%252Fv2%252Fwelcome%253Flocale%25
+10:54:53   → LOGGED_OUT · ok=23 fail=10
+10:54:55 [34/80] SMS-0081 k1h3o6xm age=29.9h web=True
+10:55:05   SMS-0081 · qa_reuse_snapchat_web_tab
+10:55:21   SMS-0081 · web_onboard_next_not_seen
+10:55:21   SMS-0081 · qa_ready_to_add
+10:55:21   SMS-0081 · web_add_friends_empty_list
+10:55:21   SMS-0081 · web_add_friends_settle
+10:55:22   SMS-0081 · web_add_friends_not_found
+10:55:22   SMS-0081 · web_add_friends_settle
+10:55:27   → FAIL_ADD:no_add · ok=23 fail=11
+10:55:29 [35/80] SMS-0083 k1h3ogom age=29.8h web=False
+10:55:40   SMS-0083 · qa_auth_page_seen:signup
+10:55:40   SMS-0083 · qa_goto_welcome
+10:55:54   SMS-0083 · qa_welcome_visible
+10:55:55   SMS-0083 · web_onboard_chat_try:1
+10:55:59   SMS-0083 · web_onboard_chat
+10:56:11   SMS-0083 · web_onboard_next_try:1
+10:56:13   SMS-0083 · web_onboard_next
+10:56:14   SMS-0083 · web_onboard_skip_try:1
+10:56:15   SMS-0083 · web_onboard_skip
+10:56:15   SMS-0083 · qa_ready_to_add
+10:56:15   SMS-0083 · web_add_friends_empty_list
+10:56:15   SMS-0083 · web_add_friends_settle
+10:56:19   SMS-0083 · web_add_friends_open
+10:56:21   SMS-0083 · web_add_friends_search:Jacob
+10:56:25   SMS-0083 · web_add_friends_panel_closed
+10:56:25   SMS-0083 · web_add_friends_retry
+10:56:28   SMS-0083 · web_add_friends_open
+10:56:29   SMS-0083 · web_add_friends_search:Thomas
+10:56:32   SMS-0083 · web_add_friends_panel_closed
+10:56:32   SMS-0083 · web_add_friends_retry
+10:56:35   SMS-0083 · web_add_friends_open
+10:56:36   SMS-0083 · web_add_friends_search:Nathan
+10:56:38   SMS-0083 · web_add_friends_added:4
+10:56:39   SMS-0083 · web_add_friends_settle
+10:56:45   → OK:web_add_friends_added:4,web_add_friends_added:4 · ok=24 fail=11
+10:56:47 [36/80] SMS-0084 k1h3omi9 age=29.7h web=True
+10:57:02   SMS-0084 · qa_reuse_snapchat_web_tab
+10:57:12   SMS-0084 · qa_ready_to_add
+10:57:12   SMS-0084 · web_add_friends_empty_list
+10:57:12   SMS-0084 · web_add_friends_settle
+10:57:17   SMS-0084 · web_add_friends_open
+10:57:18   SMS-0084 · web_add_friends_search:Caleb
+10:57:21   SMS-0084 · web_add_friends_panel_closed
+10:57:21   SMS-0084 · web_add_friends_retry
+10:57:25   SMS-0084 · web_add_friends_open
+10:57:26   SMS-0084 · web_add_friends_search:Anthony
+10:57:29   SMS-0084 · web_add_friends_added:3
+10:57:30   SMS-0084 · web_add_friends_settle
+10:57:34   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=25 fail=11
+10:57:36 [37/80] SMS-0085 k1h3osbm age=29.6h web=True
+10:57:47   SMS-0085 · qa_reuse_snapchat_web_tab
+10:57:55   SMS-0085 · qa_ready_to_add
+10:57:55   SMS-0085 · web_add_friends_empty_list
+10:57:55   SMS-0085 · web_add_friends_settle
+10:58:00   SMS-0085 · web_add_friends_open
+10:58:02   SMS-0085 · web_add_friends_search:Zachary
+10:58:05   SMS-0085 · web_add_friends_added:2
+10:58:05   SMS-0085 · web_add_friends_settle
+10:58:10   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=26 fail=11
+10:58:12 [38/80] SMS-0086 k1h3p0q3 age=29.5h web=True
+10:58:23   SMS-0086 · qa_reuse_snapchat_web_tab
+10:58:39   SMS-0086 · web_onboard_next_not_seen
+10:58:41   SMS-0086 · qa_ready_to_add
+10:58:41   SMS-0086 · web_add_friends_empty_list
+10:58:41   SMS-0086 · web_add_friends_settle
+10:58:46   SMS-0086 · web_add_friends_open
+10:58:47   SMS-0086 · web_add_friends_search:James
+10:58:55   SMS-0086 · web_add_friends_added:2
+10:58:55   SMS-0086 · web_add_friends_settle
+10:59:00   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=27 fail=11
+10:59:02 [39/80] SMS-0087 k1h3p40g age=29.4h web=True
+10:59:11   SMS-0087 · qa_reuse_snapchat_web_tab
+10:59:27   SMS-0087 · qa_ready_to_add
+10:59:27   SMS-0087 · web_add_friends_empty_list
+10:59:27   SMS-0087 · web_add_friends_settle
+10:59:32   SMS-0087 · web_add_friends_open
+10:59:33   SMS-0087 · web_add_friends_search:Luke
+10:59:41   SMS-0087 · web_add_friends_retry
+10:59:42   SMS-0087 · web_add_friends_search:Trevor
+10:59:46   SMS-0087 · web_add_friends_panel_closed
+10:59:46   SMS-0087 · web_add_friends_retry
+10:59:49   SMS-0087 · web_add_friends_open
+10:59:51   SMS-0087 · web_add_friends_search:Chris
+10:59:53   SMS-0087 · web_add_friends_panel_closed
+10:59:53   SMS-0087 · web_add_friends_added:2
+10:59:54   SMS-0087 · web_add_friends_settle
+10:59:59   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=28 fail=11
+11:00:01 [40/80] SMS-0088 k1h3p73a age=29.4h web=False
+11:00:10   SMS-0088 · qa_goto_welcome
+11:00:32   SMS-0088 · qa_welcome_visible
+11:00:33   SMS-0088 · web_onboard_chat_try:1
+11:00:38   SMS-0088 · web_onboard_chat
+11:00:46   SMS-0088 · web_onboard_next_try:1
+11:00:48   SMS-0088 · web_onboard_next
+11:00:48   SMS-0088 · web_onboard_skip_try:1
+11:00:55   SMS-0088 · web_onboard_skip_try:2
+11:01:06   SMS-0088 · web_onboard_skip_try:3
+11:01:17   SMS-0088 · web_onboard_skip_stuck
+11:01:24   SMS-0088 · web_onboard_heads_up_dismissed_not_seen
+11:01:24   SMS-0088 · qa_ready_to_add
+11:01:24   SMS-0088 · web_add_friends_empty_list
+11:01:24   SMS-0088 · web_add_friends_settle
+11:01:25   SMS-0088 · web_add_friends_not_found
+11:01:25   SMS-0088 · web_add_friends_settle
+11:01:30   → FAIL_ADD:no_add · ok=28 fail=12
+11:01:32 [41/80] SMS-0090 k1h3pcce age=29.3h web=True
+11:01:43   SMS-0090 · qa_reuse_snapchat_web_tab
+11:01:52   SMS-0090 · qa_ready_to_add
+11:01:52   SMS-0090 · web_add_friends_empty_list
+11:01:52   SMS-0090 · web_add_friends_settle
+11:01:57   SMS-0090 · web_add_friends_open
+11:01:59   SMS-0090 · web_add_friends_search:William
+11:02:03   SMS-0090 · web_add_friends_added:3
+11:02:04   SMS-0090 · web_add_friends_settle
+11:02:08   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=29 fail=12
+11:02:10 [42/80] SMS-0094 k1h3pmai age=29.1h web=True
+11:02:26   SMS-0094 · qa_reuse_snapchat_web_tab
+11:02:41   SMS-0094 · qa_ready_to_add
+11:02:41   SMS-0094 · web_add_friends_empty_list
+11:02:41   SMS-0094 · web_add_friends_settle
+11:02:45   SMS-0094 · web_add_friends_open
+11:02:46   SMS-0094 · web_add_friends_search:Logan
+11:02:56   SMS-0094 · web_add_friends_added:4
+11:02:57   SMS-0094 · web_add_friends_settle
+11:03:02   → OK:web_add_friends_added:4,web_add_friends_added:4 · ok=30 fail=12
+11:03:04 [43/80] SMS-0098 k1h3ptm1 age=28.9h web=True
+11:03:16   SMS-0098 · qa_reuse_snapchat_web_tab
+11:03:32   SMS-0098 · web_onboard_next_not_seen
+11:03:38   SMS-0098 · qa_ready_to_add
+11:03:38   SMS-0098 · web_add_friends_empty_list
+11:03:38   SMS-0098 · web_add_friends_settle
+11:03:42   SMS-0098 · web_add_friends_open
+11:03:44   SMS-0098 · web_add_friends_search:Connor
+11:03:48   SMS-0098 · web_add_friends_panel_closed
+11:03:48   SMS-0098 · web_add_friends_retry
+11:03:52   SMS-0098 · web_add_friends_open
+11:03:53   SMS-0098 · web_add_friends_search:Michael
+11:03:55   SMS-0098 · web_add_friends_added:3
+11:03:56   SMS-0098 · web_add_friends_settle
+11:04:01   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=31 fail=12
+11:04:03 [44/80] SMS-0100 k1h3px7p age=28.8h web=False
+11:04:16   SMS-0100 · qa_goto_welcome
+11:04:20   SMS-0100 · qa_goto_welcome_failed:Page.goto: net::ERR_EMPTY_RESPONSE at https://accounts.snapchat.com/v2/welcome?locale=en-US
+Call log:
+  - navigating to "https://accounts.snapchat.com/v2/welcome?locale=en-US", waiting until "domcontentloaded"
+
+11:04:20   SMS-0100 · qa_waiting_session_try:1:…
+11:04:23   SMS-0100 · qa_welcome_visible
+11:04:24   SMS-0100 · web_onboard_chat_not_found_try:1
+11:04:24   SMS-0100 · web_onboard_chat_not_found_try:2
+11:04:25   SMS-0100 · web_onboard_chat_not_found_try:3
+11:04:25   SMS-0100 · web_onboard_chat_stuck
+11:04:46   SMS-0100 · web_not_ready_for_qa
+11:04:46   SMS-0100 · web_add_friends_not_found
+11:04:46   SMS-0100 · web_add_friends_settle
+11:04:50   → FAIL_ADD:no_add · ok=31 fail=13
+11:04:53 [45/80] SMS-0101 k1h3q164 age=28.7h web=True
+11:05:03   SMS-0101 · qa_reuse_snapchat_web_tab
+11:05:14   SMS-0101 · qa_ready_to_add
+11:05:14   SMS-0101 · web_add_friends_empty_list
+11:05:14   SMS-0101 · web_add_friends_settle
+11:05:19   SMS-0101 · web_add_friends_open
+11:05:20   SMS-0101 · web_add_friends_search:Jack
+11:05:25   SMS-0101 · web_add_friends_added:4
+11:05:25   SMS-0101 · web_add_friends_settle
+11:05:30   → OK:web_add_friends_added:4,web_add_friends_added:4 · ok=32 fail=13
+11:05:32 [46/80] SMS-0103 k1h3q3xg age=28.6h web=True
+11:05:40   SMS-0103 · qa_reuse_snapchat_web_tab
+11:05:57   SMS-0103 · web_onboard_next_not_seen
+11:06:01   SMS-0103 · qa_ready_to_add
+11:06:01   SMS-0103 · web_add_friends_empty_list
+11:06:01   SMS-0103 · web_add_friends_settle
+11:06:06   SMS-0103 · web_add_friends_open
+11:06:07   SMS-0103 · web_add_friends_search:Daniel
+11:06:11   SMS-0103 · web_add_friends_panel_closed
+11:06:11   SMS-0103 · web_add_friends_retry
+11:06:15   SMS-0103 · web_add_friends_open
+11:06:16   SMS-0103 · web_add_friends_search:Eric
+11:06:19   SMS-0103 · web_add_friends_panel_closed
+11:06:19   SMS-0103 · web_add_friends_retry
+11:06:23   SMS-0103 · web_add_friends_open
+11:06:24   SMS-0103 · web_add_friends_search:Ethan
+11:06:27   SMS-0103 · web_add_friends_added:3
+11:06:27   SMS-0103 · web_add_friends_settle
+11:06:32   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=33 fail=13
+11:06:34 [47/80] SMS-0106 k1h3qb1h age=28.5h web=False
+11:06:43   SMS-0106 · qa_auth_page_seen:signup
+11:06:43   SMS-0106 · qa_goto_welcome
+11:07:05   SMS-0106 · qa_auth_form_visible:login
+11:07:05   SMS-0106 · account_logged_out:login
+11:07:05   SMS-0106 · account_logged_out_url:https://accounts.snapchat.com/v2/login?continue=%2Faccounts%2Fsso%3Fclient_id%3Dweb-accounts%26referrer%3Dhttps%253A%252F%252Faccounts.snapchat.com%252Fv2%252Fwelcome%253Flocale%25
+11:07:08   → LOGGED_OUT · ok=33 fail=14
+11:07:10 [48/80] SMS-0112 k1h3qndd age=28.2h web=False
+11:07:19   SMS-0112 · qa_auth_page_seen:signup
+11:07:19   SMS-0112 · qa_goto_welcome
+11:07:36   SMS-0112 · qa_auth_form_visible:login
+11:07:36   SMS-0112 · account_logged_out:login
+11:07:36   SMS-0112 · account_logged_out_url:https://accounts.snapchat.com/v2/login?continue=%2Faccounts%2Fsso%3Fclient_id%3Dweb-accounts%26referrer%3Dhttps%253A%252F%252Faccounts.snapchat.com%252Fv2%252Fwelcome%253Flocale%25
+11:07:39   → LOGGED_OUT · ok=33 fail=15
+11:07:41 [49/80] SMS-0113 k1h3qoys age=28.2h web=False
+11:07:53   SMS-0113 · qa_auth_page_seen:signup
+11:07:53   SMS-0113 · qa_goto_welcome
+11:08:09   SMS-0113 · qa_waiting_session_try:1:login
+11:08:10   SMS-0113 · qa_auth_form_visible:login
+11:08:10   SMS-0113 · account_logged_out:login
+11:08:10   SMS-0113 · account_logged_out_url:https://accounts.snapchat.com/v2/login?continue=%2Faccounts%2Fsso%3Fclient_id%3Dweb-accounts%26referrer%3Dhttps%253A%252F%252Faccounts.snapchat.com%252Fv2%252Fwelcome%253Flocale%25
+11:08:13   → LOGGED_OUT · ok=33 fail=16
+11:08:15 [50/80] SMS-0114 k1h3qx00 age=28.0h web=False
+11:08:24   SMS-0114 · qa_auth_page_seen:signup
+11:08:24   SMS-0114 · qa_goto_welcome
+11:08:50   SMS-0114 · qa_auth_form_visible:login
+11:08:50   SMS-0114 · account_logged_out:login
+11:08:50   SMS-0114 · account_logged_out_url:https://accounts.snapchat.com/v2/login?continue=%2Faccounts%2Fsso%3Fclient_id%3Dweb-accounts%26referrer%3Dhttps%253A%252F%252Faccounts.snapchat.com%252Fv2%252Fwelcome%253Flocale%25
+11:08:53   → LOGGED_OUT · ok=33 fail=17
+11:08:55 [51/80] SMS-0119 k1h3r4if age=27.8h web=True
+11:09:05   SMS-0119 · qa_reuse_snapchat_web_tab
+11:09:15   SMS-0119 · qa_ready_to_add
+11:09:15   SMS-0119 · web_add_friends_empty_list
+11:09:15   SMS-0119 · web_add_friends_settle
+11:09:20   SMS-0119 · web_add_friends_open
+11:09:21   SMS-0119 · web_add_friends_search:Steven
+11:09:24   SMS-0119 · web_add_friends_added:2
+11:09:25   SMS-0119 · web_add_friends_settle
+11:09:30   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=34 fail=17
+11:09:32 [52/80] SMS-0120 k1h3r7es age=27.8h web=True
+11:09:43   SMS-0120 · qa_reuse_snapchat_web_tab
+11:09:52   SMS-0120 · qa_ready_to_add
+11:09:52   SMS-0120 · web_add_friends_empty_list
+11:09:52   SMS-0120 · web_add_friends_settle
+11:09:57   SMS-0120 · web_add_friends_open
+11:09:58   SMS-0120 · web_add_friends_search:Ethan
+11:10:00   SMS-0120 · web_add_friends_panel_closed
+11:10:00   SMS-0120 · web_add_friends_retry
+11:10:04   SMS-0120 · web_add_friends_open
+11:10:06   SMS-0120 · web_add_friends_search:Anthony
+11:10:08   SMS-0120 · web_add_friends_added:3
+11:10:09   SMS-0120 · web_add_friends_settle
+11:10:13   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=35 fail=17
+11:10:15 [53/80] SMS-0126 k1h3rj8k age=27.5h web=True
+11:10:27   SMS-0126 · qa_reuse_snapchat_web_tab
+11:10:37   SMS-0126 · qa_ready_to_add
+11:10:37   SMS-0126 · web_add_friends_empty_list
+11:10:37   SMS-0126 · web_add_friends_settle
+11:10:42   SMS-0126 · web_add_friends_open
+11:10:43   SMS-0126 · web_add_friends_search:Benjamin
+11:10:47   SMS-0126 · web_add_friends_panel_closed
+11:10:47   SMS-0126 · web_add_friends_retry
+11:10:50   SMS-0126 · web_add_friends_open
+11:10:51   SMS-0126 · web_add_friends_search:Jacob
+11:10:54   SMS-0126 · web_add_friends_added:2
+11:10:54   SMS-0126 · web_add_friends_settle
+11:10:59   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=36 fail=17
+11:11:01 [54/80] SMS-0127 k1h3rlut age=27.4h web=True
+11:11:12   SMS-0127 · qa_reuse_snapchat_web_tab
+11:11:26   SMS-0127 · qa_ready_to_add
+11:11:26   SMS-0127 · web_add_friends_empty_list
+11:11:26   SMS-0127 · web_add_friends_settle
+11:11:30   SMS-0127 · web_add_friends_open
+11:11:32   SMS-0127 · web_add_friends_search:Nicholas
+11:11:37   SMS-0127 · web_add_friends_added:4
+11:11:38   SMS-0127 · web_add_friends_settle
+11:11:43   → OK:web_add_friends_added:4,web_add_friends_added:4 · ok=37 fail=17
+11:11:45 [55/80] SMS-0129 k1h3rpsh age=27.3h web=True
+11:11:54   SMS-0129 · qa_reuse_snapchat_web_tab
+11:12:04   SMS-0129 · qa_ready_to_add
+11:12:04   SMS-0129 · web_add_friends_empty_list
+11:12:04   SMS-0129 · web_add_friends_settle
+11:12:08   SMS-0129 · web_add_friends_open
+11:12:10   SMS-0129 · web_add_friends_search:William
+11:12:15   SMS-0129 · web_add_friends_added:4
+11:12:16   SMS-0129 · web_add_friends_settle
+11:12:21   → OK:web_add_friends_added:4,web_add_friends_added:4 · ok=38 fail=17
+11:12:23 [56/80] SMS-0131 k1h3rts3 age=27.2h web=True
+11:12:33   SMS-0131 · qa_reuse_snapchat_web_tab
+11:12:43   SMS-0131 · qa_ready_to_add
+11:12:43   SMS-0131 · web_add_friends_empty_list
+11:12:43   SMS-0131 · web_add_friends_settle
+11:12:48   SMS-0131 · web_add_friends_open
+11:12:50   SMS-0131 · web_add_friends_search:Jonathan
+11:12:54   SMS-0131 · web_add_friends_added:2
+11:12:54   SMS-0131 · web_add_friends_settle
+11:12:59   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=39 fail=17
+11:13:01 [57/80] SMS-0133 k1h3ry2k age=27.2h web=True
+11:13:13   SMS-0133 · qa_reuse_snapchat_web_tab
+11:13:24   SMS-0133 · qa_ready_to_add
+11:13:24   SMS-0133 · web_add_friends_empty_list
+11:13:24   SMS-0133 · web_add_friends_settle
+11:13:28   SMS-0133 · web_add_friends_open
+11:13:29   SMS-0133 · web_add_friends_search:Samuel
+11:13:35   SMS-0133 · web_add_friends_added:4
+11:13:36   SMS-0133 · web_add_friends_settle
+11:13:41   → OK:web_add_friends_added:4,web_add_friends_added:4 · ok=40 fail=17
+11:13:43 [58/80] SMS-0136 k1h3s41r age=27.0h web=False
+11:13:53   SMS-0136 · qa_auth_page_seen:signup
+11:13:53   SMS-0136 · qa_goto_welcome
+11:14:01   SMS-0136 · qa_welcome_visible
+11:14:02   SMS-0136 · web_onboard_chat_not_found_try:1
+11:14:02   SMS-0136 · web_onboard_chat_not_found_try:2
+11:14:03   SMS-0136 · web_onboard_chat_not_found_try:3
+11:14:03   SMS-0136 · web_onboard_chat_stuck
+11:14:24   SMS-0136 · web_not_ready_for_qa
+11:14:24   SMS-0136 · web_add_friends_not_found
+11:14:24   SMS-0136 · web_add_friends_settle
+11:14:29   → FAIL_ADD:no_add · ok=40 fail=18
+11:14:31 [59/80] SMS-0137 k1h3s5ba age=27.0h web=True
+11:14:41   SMS-0137 · qa_reuse_snapchat_web_tab
+11:14:54   SMS-0137 · qa_ready_to_add
+11:14:54   SMS-0137 · web_add_friends_empty_list
+11:14:54   SMS-0137 · web_add_friends_settle
+11:14:58   SMS-0137 · web_add_friends_open
+11:14:59   SMS-0137 · web_add_friends_search:Caleb
+11:15:10   SMS-0137 · web_add_friends_added:3
+11:15:10   SMS-0137 · web_add_friends_settle
+11:15:15   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=41 fail=18
+11:15:17 [60/80] SMS-0138 k1h3s877 age=26.9h web=True
+11:15:30   SMS-0138 · qa_reuse_snapchat_web_tab
+11:15:43   SMS-0138 · qa_ready_to_add
+11:15:43   SMS-0138 · web_add_friends_empty_list
+11:15:43   SMS-0138 · web_add_friends_settle
+11:15:48   SMS-0138 · web_add_friends_open
+11:15:49   SMS-0138 · web_add_friends_search:Brandon
+11:15:54   SMS-0138 · web_add_friends_panel_closed
+11:15:54   SMS-0138 · web_add_friends_retry
+11:15:58   SMS-0138 · web_add_friends_open
+11:15:59   SMS-0138 · web_add_friends_search:Michael
+11:16:03   SMS-0138 · web_add_friends_added:4
+11:16:03   SMS-0138 · web_add_friends_settle
+11:16:08   → OK:web_add_friends_added:4,web_add_friends_added:4 · ok=42 fail=18
+11:16:10 [61/80] SMS-0140 k1h3sk6u age=26.6h web=True
+11:16:22   SMS-0140 · qa_reuse_snapchat_web_tab
+11:16:33   SMS-0140 · qa_ready_to_add
+11:16:33   SMS-0140 · web_add_friends_empty_list
+11:16:33   SMS-0140 · web_add_friends_settle
+11:16:38   SMS-0140 · web_add_friends_open
+11:16:39   SMS-0140 · web_add_friends_search:Joseph
+11:16:43   SMS-0140 · web_add_friends_added:2
+11:16:44   SMS-0140 · web_add_friends_settle
+11:16:49   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=43 fail=18
+11:16:51 [62/80] SMS-0142 k1h3so6l age=26.5h web=True
+11:17:02   SMS-0142 · qa_reuse_snapchat_web_tab
+11:17:13   SMS-0142 · qa_ready_to_add
+11:17:13   SMS-0142 · web_add_friends_empty_list
+11:17:13   SMS-0142 · web_add_friends_settle
+11:17:17   SMS-0142 · web_add_friends_open
+11:17:19   SMS-0142 · web_add_friends_search:Trevor
+11:17:27   SMS-0142 · web_add_friends_added:2
+11:17:28   SMS-0142 · web_add_friends_settle
+11:17:32   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=44 fail=18
+11:17:34 [63/80] SMS-0147 k1h3sxnq age=26.3h web=True
+11:17:44   SMS-0147 · qa_goto_web_session:https://www.snapchat.com/web/75837167-1f74-5a7b-9f7d-7d2a1456afee
+11:17:52   SMS-0147 · qa_web_session_ok
+11:18:00   SMS-0147 · qa_ready_to_add
+11:18:00   SMS-0147 · web_add_friends_empty_list
+11:18:00   SMS-0147 · web_add_friends_settle
+11:18:04   SMS-0147 · web_add_friends_open
+11:18:05   SMS-0147 · web_add_friends_search:Noah
+11:18:10   SMS-0147 · web_add_friends_panel_closed
+11:18:10   SMS-0147 · web_add_friends_retry
+11:18:13   SMS-0147 · web_add_friends_open
+11:18:15   SMS-0147 · web_add_friends_search:Charles
+11:18:17   SMS-0147 · web_add_friends_added:3
+11:18:17   SMS-0147 · web_add_friends_settle
+11:18:22   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=45 fail=18
+11:18:24 [64/80] SMS-0152 k1h3t9aw age=26.1h web=False
+11:18:36   SMS-0152 · qa_auth_page_seen:signup
+11:18:36   SMS-0152 · qa_goto_welcome
+11:18:54   SMS-0152 · qa_waiting_session_try:1:login
+11:18:55   SMS-0152 · qa_auth_form_visible:login
+11:18:55   SMS-0152 · account_logged_out:login
+11:18:55   SMS-0152 · account_logged_out_url:https://accounts.snapchat.com/v2/login?continue=%2Faccounts%2Fsso%3Fclient_id%3Dweb-accounts%26referrer%3Dhttps%253A%252F%252Faccounts.snapchat.com%252Fv2%252Fwelcome%253Flocale%25
+11:18:58   → LOGGED_OUT · ok=45 fail=19
+11:19:00 [65/80] SMS-0155 k1h3teft age=26.0h web=True
+11:19:11   SMS-0155 · qa_reuse_snapchat_web_tab
+11:19:24   SMS-0155 · qa_ready_to_add
+11:19:24   SMS-0155 · web_add_friends_empty_list
+11:19:24   SMS-0155 · web_add_friends_settle
+11:19:29   SMS-0155 · web_add_friends_open
+11:19:30   SMS-0155 · web_add_friends_search:Sean
+11:19:38   SMS-0155 · web_add_friends_retry
+11:19:40   SMS-0155 · web_add_friends_search:Benjamin
+11:19:42   SMS-0155 · web_add_friends_added:2
+11:19:43   SMS-0155 · web_add_friends_settle
+11:19:47   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=46 fail=19
+11:19:49 [66/80] SMS-0158 k1h3tlcd age=25.8h web=True
+11:20:01   SMS-0158 · qa_reuse_snapchat_web_tab
+11:20:12   SMS-0158 · qa_ready_to_add
+11:20:12   SMS-0158 · web_add_friends_empty_list
+11:20:12   SMS-0158 · web_add_friends_settle
+11:20:16   SMS-0158 · web_add_friends_open
+11:20:17   SMS-0158 · web_add_friends_search:Kyle
+11:20:22   SMS-0158 · web_add_friends_panel_closed
+11:20:22   SMS-0158 · web_add_friends_retry
+11:20:25   SMS-0158 · web_add_friends_open
+11:20:27   SMS-0158 · web_add_friends_search:Jason
+11:20:30   SMS-0158 · web_add_friends_added:4
+11:20:31   SMS-0158 · web_add_friends_settle
+11:20:35   → OK:web_add_friends_added:4,web_add_friends_added:4 · ok=47 fail=19
+11:20:37 [67/80] SMS-0164 k1h3u05j age=25.6h web=True
+11:20:50   SMS-0164 · qa_reuse_snapchat_web_tab
+11:21:03   SMS-0164 · qa_ready_to_add
+11:21:03   SMS-0164 · web_add_friends_empty_list
+11:21:03   SMS-0164 · web_add_friends_settle
+11:21:08   SMS-0164 · web_add_friends_open
+11:21:09   SMS-0164 · web_add_friends_search:Ethan
+11:21:15   SMS-0164 · web_add_friends_panel_closed
+11:21:15   SMS-0164 · web_add_friends_retry
+11:21:18   SMS-0164 · web_add_friends_open
+11:21:20   SMS-0164 · web_add_friends_search:Nathan
+11:21:22   SMS-0164 · web_add_friends_added:3
+11:21:23   SMS-0164 · web_add_friends_settle
+11:21:28   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=48 fail=19
+11:21:30 [68/80] SMS-0165 k1h3u34g age=25.5h web=False
+11:21:43   SMS-0165 · qa_auth_page_seen:signup
+11:21:43   SMS-0165 · qa_goto_welcome
+11:22:04   SMS-0165 · qa_waiting_session_try:1:login
+11:22:05   SMS-0165 · qa_auth_form_visible:login
+11:22:05   SMS-0165 · account_logged_out:login
+11:22:05   SMS-0165 · account_logged_out_url:https://accounts.snapchat.com/v2/login?continue=%2Faccounts%2Fsso%3Fclient_id%3Dweb-accounts%26referrer%3Dhttps%253A%252F%252Faccounts.snapchat.com%252Fv2%252Fwelcome%253Flocale%25
+11:22:08   → LOGGED_OUT · ok=48 fail=20
+11:22:10 [69/80] SMS-0166 k1h3uc1q age=25.4h web=True
+11:22:20   SMS-0166 · qa_reuse_snapchat_web_tab
+11:22:31   SMS-0166 · qa_ready_to_add
+11:22:31   SMS-0166 · web_add_friends_empty_list
+11:22:31   SMS-0166 · web_add_friends_settle
+11:22:36   SMS-0166 · web_add_friends_open
+11:22:38   SMS-0166 · web_add_friends_search:Patrick
+11:22:42   SMS-0166 · web_add_friends_added:2
+11:22:42   SMS-0166 · web_add_friends_settle
+11:22:47   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=49 fail=20
+11:22:49 [70/80] SMS-0168 k1h3uh87 age=25.3h web=True
+11:23:00   SMS-0168 · qa_reuse_snapchat_web_tab
+11:23:09   SMS-0168 · qa_ready_to_add
+11:23:09   SMS-0168 · web_add_friends_empty_list
+11:23:09   SMS-0168 · web_add_friends_settle
+11:23:14   SMS-0168 · web_add_friends_open
+11:23:16   SMS-0168 · web_add_friends_search:Jordan
+11:23:20   SMS-0168 · web_add_friends_added:3
+11:23:21   SMS-0168 · web_add_friends_settle
+11:23:26   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=50 fail=20
+11:23:28 [71/80] SMS-0169 k1h3ul2t age=25.2h web=True
+11:23:39   SMS-0169 · qa_reuse_snapchat_web_tab
+11:23:56   SMS-0169 · web_onboard_next_not_seen
+11:24:07   SMS-0169 · qa_ready_to_add
+11:24:07   SMS-0169 · web_add_friends_empty_list
+11:24:07   SMS-0169 · web_add_friends_settle
+11:24:11   SMS-0169 · web_add_friends_open
+11:24:12   SMS-0169 · web_add_friends_search:Nathan
+11:24:18   SMS-0169 · web_add_friends_panel_closed
+11:24:18   SMS-0169 · web_add_friends_retry
+11:24:21   SMS-0169 · web_add_friends_open
+11:24:23   SMS-0169 · web_add_friends_search:Zachary
+11:24:28   SMS-0169 · web_add_friends_added:4
+11:24:28   SMS-0169 · web_add_friends_settle
+11:24:33   → OK:web_add_friends_added:4,web_add_friends_added:4 · ok=51 fail=20
+11:24:35 [72/80] SMS-0174 k1h3uxnl age=25.0h web=True
+11:24:49   SMS-0174 · qa_reuse_snapchat_web_tab
+11:24:59   SMS-0174 · qa_ready_to_add
+11:24:59   SMS-0174 · web_add_friends_empty_list
+11:24:59   SMS-0174 · web_add_friends_settle
+11:25:04   SMS-0174 · web_add_friends_open
+11:25:06   SMS-0174 · web_add_friends_search:Connor
+11:25:42   SMS-0174 · web_add_friends_added:3
+11:25:42   SMS-0174 · web_add_friends_settle
+11:25:47   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=52 fail=20
+11:25:49 [73/80] SMS-0175 k1h3v2ol age=24.9h web=True
+11:25:59   SMS-0175 · qa_reuse_snapchat_web_tab
+11:26:11   SMS-0175 · qa_ready_to_add
+11:26:11   SMS-0175 · web_add_friends_empty_list
+11:26:11   SMS-0175 · web_add_friends_settle
+11:26:16   SMS-0175 · web_add_friends_open
+11:26:17   SMS-0175 · web_add_friends_search:Steven
+11:26:23   SMS-0175 · web_add_friends_added:4
+11:26:24   SMS-0175 · web_add_friends_settle
+11:26:28   → OK:web_add_friends_added:4,web_add_friends_added:4 · ok=53 fail=20
+11:26:30 [74/80] SMS-0176 k1h3v6q3 age=24.9h web=False
+11:26:40   SMS-0176 · qa_auth_page_seen:signup
+11:26:40   SMS-0176 · qa_goto_welcome
+11:27:00   SMS-0176 · qa_welcome_visible
+11:27:01   SMS-0176 · web_onboard_chat_try:1
+11:27:05   SMS-0176 · web_onboard_chat
+11:27:18   SMS-0176 · web_onboard_next_try:1
+11:27:20   SMS-0176 · web_onboard_next
+11:27:21   SMS-0176 · web_onboard_skip_try:1
+11:27:22   SMS-0176 · web_onboard_skip
+11:27:22   SMS-0176 · qa_ready_to_add
+11:27:22   SMS-0176 · web_add_friends_empty_list
+11:27:22   SMS-0176 · web_add_friends_settle
+11:27:26   SMS-0176 · web_add_friends_open
+11:27:27   SMS-0176 · web_add_friends_search:Anthony
+11:27:38   SMS-0176 · web_add_friends_added:4
+11:27:39   SMS-0176 · web_add_friends_settle
+11:27:44   → OK:web_add_friends_added:4,web_add_friends_added:4 · ok=54 fail=20
+11:27:46 [75/80] SMS-0185 k1h3vr8b age=24.5h web=True
+11:27:56   SMS-0185 · qa_reuse_snapchat_web_tab
+11:28:06   SMS-0185 · qa_ready_to_add
+11:28:06   SMS-0185 · web_add_friends_empty_list
+11:28:06   SMS-0185 · web_add_friends_settle
+11:28:11   SMS-0185 · web_add_friends_open
+11:28:12   SMS-0185 · web_add_friends_search:Patrick
+11:28:15   SMS-0185 · web_add_friends_panel_closed
+11:28:15   SMS-0185 · web_add_friends_retry
+11:28:19   SMS-0185 · web_add_friends_open
+11:28:20   SMS-0185 · web_add_friends_search:Josh
+11:28:22   SMS-0185 · web_add_friends_added:2
+11:28:22   SMS-0185 · web_add_friends_settle
+11:28:27   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=55 fail=20
+11:28:29 [76/80] SMS-0186 k1h3vvxc age=24.5h web=True
+11:28:40   SMS-0186 · qa_reuse_snapchat_web_tab
+11:28:57   SMS-0186 · web_onboard_next_not_seen
+11:28:57   SMS-0186 · qa_ready_to_add
+11:28:57   SMS-0186 · web_add_friends_empty_list
+11:28:57   SMS-0186 · web_add_friends_settle
+11:29:01   SMS-0186 · web_add_friends_open
+11:29:03   SMS-0186 · web_add_friends_search:Anthony
+11:29:11   SMS-0186 · web_add_friends_added:4
+11:29:11   SMS-0186 · web_add_friends_settle
+11:29:16   → OK:web_add_friends_added:4,web_add_friends_added:4 · ok=56 fail=20
+11:29:18 [77/80] SMS-0189 k1h3w5to age=24.3h web=True
+11:29:28   SMS-0189 · qa_reuse_snapchat_web_tab
+11:29:45   SMS-0189 · web_onboard_next_not_seen
+11:29:45   SMS-0189 · qa_ready_to_add
+11:29:45   SMS-0189 · web_add_friends_empty_list
+11:29:45   SMS-0189 · web_add_friends_settle
+11:29:49   SMS-0189 · web_add_friends_open
+11:29:50   SMS-0189 · web_add_friends_search:Brandon
+11:29:55   SMS-0189 · web_add_friends_added:2
+11:29:55   SMS-0189 · web_add_friends_settle
+11:30:00   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=57 fail=20
+11:30:02 [78/80] SMS-0191 k1h3wdb0 age=24.2h web=True
+11:30:14   SMS-0191 · qa_reuse_snapchat_web_tab
+11:30:26   SMS-0191 · qa_ready_to_add
+11:30:26   SMS-0191 · web_add_friends_empty_list
+11:30:26   SMS-0191 · web_add_friends_settle
+11:30:30   SMS-0191 · web_add_friends_open
+11:30:32   SMS-0191 · web_add_friends_search:Anthony
+11:30:36   SMS-0191 · web_add_friends_panel_closed
+11:30:36   SMS-0191 · web_add_friends_retry
+11:30:39   SMS-0191 · web_add_friends_open
+11:30:40   SMS-0191 · web_add_friends_search:Logan
+11:30:43   SMS-0191 · web_add_friends_added:2
+11:30:44   SMS-0191 · web_add_friends_settle
+11:30:48   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=58 fail=20
+11:30:50 [79/80] SMS-0192 k1h3wie2 age=24.1h web=True
+11:31:00   SMS-0192 · qa_reuse_snapchat_web_tab
+11:31:11   SMS-0192 · qa_ready_to_add
+11:31:11   SMS-0192 · web_add_friends_empty_list
+11:31:11   SMS-0192 · web_add_friends_settle
+11:31:16   SMS-0192 · web_add_friends_open
+11:31:17   SMS-0192 · web_add_friends_search:Paul
+11:31:22   SMS-0192 · web_add_friends_added:4
+11:31:23   SMS-0192 · web_add_friends_settle
+11:31:28   → OK:web_add_friends_added:4,web_add_friends_added:4 · ok=59 fail=20
+11:31:30 [80/80] SMS-0193 k1h3wms0 age=24.1h web=True
+11:31:42   SMS-0193 · qa_reuse_snapchat_web_tab
+11:31:58   SMS-0193 · qa_ready_to_add
+11:31:58   SMS-0193 · web_add_friends_empty_list
+11:31:58   SMS-0193 · web_add_friends_settle
+11:32:03   SMS-0193 · web_add_friends_open
+11:32:05   SMS-0193 · web_add_friends_search:Jonathan
+11:32:13   SMS-0193 · web_add_friends_retry
+11:32:14   SMS-0193 · web_add_friends_search:Justin
+11:32:25   SMS-0193 · web_add_friends_added:4
+11:32:25   SMS-0193 · web_add_friends_settle
+11:32:30   → OK:web_add_friends_added:4,web_add_friends_added:4 · ok=60 fail=20
+11:32:32 done ok=60 fail=20 skip=0 of 80
+11:36:13 SMS warmup Stage 1 · 19 account(s) · retry failed
+11:36:13 [1/19] SMS-0014 k1h3il1v age=34.3h web=False
+11:36:22   SMS-0014 · qa_auth_page_seen:signup
+11:36:23   SMS-0014 · qa_goto_welcome
+11:36:25   SMS-0014 · qa_welcome_visible
+11:36:26   SMS-0014 · web_onboard_chat_try:1
+11:36:30   SMS-0014 · web_onboard_chat
+11:36:39   SMS-0014 · web_onboard_next_try:1
+11:36:41   SMS-0014 · web_onboard_next
+11:36:42   SMS-0014 · web_onboard_skip_try:1
+11:36:43   SMS-0014 · web_onboard_skip
+11:36:43   SMS-0014 · qa_ready_to_add
+11:36:43   SMS-0014 · web_add_friends_empty_list
+11:36:43   SMS-0014 · web_add_friends_settle
+11:36:47   SMS-0014 · web_add_friends_open
+11:36:49   SMS-0014 · web_add_friends_search:Jordan
+11:36:53   SMS-0014 · web_add_friends_added:3
+11:36:54   SMS-0014 · web_add_friends_settle
+11:37:04   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=1 fail=0
+11:37:06 [2/19] SMS-0022 k1h3jaio age=33.9h web=False
+11:37:15   SMS-0022 · qa_auth_page_seen:signup
+11:37:15   SMS-0022 · qa_goto_welcome
+11:37:18   SMS-0022 · qa_welcome_visible
+11:37:19   SMS-0022 · web_onboard_chat_try:1
+11:37:23   SMS-0022 · web_onboard_chat
+11:37:31   SMS-0022 · web_onboard_next_try:1
+11:37:32   SMS-0022 · web_onboard_next
+11:37:33   SMS-0022 · web_onboard_skip_try:1
+11:37:34   SMS-0022 · web_onboard_skip
+11:37:34   SMS-0022 · qa_ready_to_add
+11:37:34   SMS-0022 · web_add_friends_empty_list
+11:37:34   SMS-0022 · web_add_friends_settle
+11:37:39   SMS-0022 · web_add_friends_open
+11:37:40   SMS-0022 · web_add_friends_search:Nathaniel
+11:37:44   SMS-0022 · web_add_friends_added:2
+11:37:45   SMS-0022 · web_add_friends_settle
+11:37:54   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=2 fail=0
+11:37:56 [3/19] SMS-0030 k1h3jspx age=33.7h web=False
+11:38:07   SMS-0030 · qa_auth_page_seen:signup
+11:38:07   SMS-0030 · qa_goto_welcome
+11:38:10   SMS-0030 · qa_waiting_session_try:1:login
+11:38:11   SMS-0030 · qa_auth_form_visible:login
+11:38:11   SMS-0030 · account_logged_out:login
+11:38:11   SMS-0030 · account_logged_out_url:https://accounts.snapchat.com/v2/login?continue=%2Faccounts%2Fsso%3Fclient_id%3Dweb-accounts%26referrer%3Dhttps%253A%252F%252Faccounts.snapchat.com%252Fv2%252Fwelcome%253Flocale%25
+11:38:16   → LOGGED_OUT · ok=2 fail=1
+11:38:18 [4/19] SMS-0039 k1h3kibw age=33.3h web=False
+11:38:27   SMS-0039 · qa_auth_page_seen:signup
+11:38:27   SMS-0039 · qa_goto_welcome
+11:38:30   SMS-0039 · qa_waiting_session_try:1:login
+11:38:30   SMS-0039 · qa_auth_form_visible:login
+11:38:30   SMS-0039 · account_logged_out:login
+11:38:30   SMS-0039 · account_logged_out_url:https://accounts.snapchat.com/v2/login?continue=%2Faccounts%2Fsso%3Fclient_id%3Dweb-accounts%26referrer%3Dhttps%253A%252F%252Faccounts.snapchat.com%252Fv2%252Fwelcome%253Flocale%25
+11:38:33   → LOGGED_OUT · ok=2 fail=2
+11:44:40 SMS warmup Stage 1 · 16 account(s) · retry failed
+11:44:40 [1/16] SMS-0039 k1h3kibw age=33.4h web=False
+11:44:51   SMS-0039 · qa_auth_page_seen:signup
+11:44:51   SMS-0039 · qa_goto_welcome
+11:44:54   SMS-0039 · qa_waiting_session_try:1:login
+11:44:55   SMS-0039 · qa_auth_form_visible:login
+11:44:55   SMS-0039 · account_logged_out:login
+11:44:55   SMS-0039 · account_logged_out_url:https://accounts.snapchat.com/v2/login?continue=%2Faccounts%2Fsso%3Fclient_id%3Dweb-accounts%26referrer%3Dhttps%253A%252F%252Faccounts.snapchat.com%252Fv2%252Fwelcome%253Flocale%25
+11:44:58   → LOGGED_OUT · ok=0 fail=1
+11:45:00 [2/16] SMS-0052 k1h3lk5j age=32.8h web=False
+11:45:09   SMS-0052 · qa_auth_page_seen:signup
+11:45:09   SMS-0052 · qa_goto_welcome
+11:45:12   SMS-0052 · qa_waiting_session_try:1:login
+11:45:12   SMS-0052 · qa_auth_form_visible:login
+11:45:12   SMS-0052 · account_logged_out:login
+11:45:12   SMS-0052 · account_logged_out_url:https://accounts.snapchat.com/v2/login?continue=%2Faccounts%2Fsso%3Fclient_id%3Dweb-accounts%26referrer%3Dhttps%253A%252F%252Faccounts.snapchat.com%252Fv2%252Fwelcome%253Flocale%25
+11:45:15   → LOGGED_OUT · ok=0 fail=2
+11:45:17 [3/16] SMS-0053 k1h3lm7a age=32.8h web=False
+11:45:30   SMS-0053 · qa_auth_page_seen:signup
+11:45:30   SMS-0053 · qa_goto_welcome
+11:45:32   SMS-0053 · qa_welcome_visible
+11:45:33   SMS-0053 · web_onboard_chat_not_found_try:1
+11:45:33   SMS-0053 · web_onboard_chat_not_found_try:2
+11:45:34   SMS-0053 · web_onboard_chat_not_found_try:3
+11:45:35   SMS-0053 · web_onboard_chat_stuck
+11:45:55   SMS-0053 · web_not_ready_for_qa
+11:45:55   SMS-0053 · web_add_friends_not_found
+11:45:55   SMS-0053 · web_add_friends_settle
+11:45:59   → FAIL_ADD:no_add · ok=0 fail=3
+11:46:01 [4/16] SMS-0066 k1h3moj1 age=32.1h web=False
+11:46:13   → ERROR:[Errno 28] No space left on device · ok=0 fail=4
+11:46:15 [5/16] SMS-0075 k1h3njp0 age=31.6h web=False
+11:46:26   SMS-0075 · qa_auth_page_seen:signup
+11:46:26   SMS-0075 · qa_goto_welcome
+11:46:29   SMS-0075 · qa_welcome_visible
+11:46:30   SMS-0075 · web_onboard_chat_try:1
+11:46:40   SMS-0075 · web_onboard_chat
+11:46:50   SMS-0075 · web_onboard_next_try:1
+11:46:52   SMS-0075 · web_onboard_next
+11:46:53   SMS-0075 · web_onboard_skip_try:1
+11:46:54   SMS-0075 · web_onboard_skip
+11:46:54   SMS-0075 · qa_ready_to_add
+11:46:54   SMS-0075 · web_add_friends_empty_list
+11:46:54   SMS-0075 · web_add_friends_settle
+11:46:58   SMS-0075 · web_add_friends_open
+11:47:00   SMS-0075 · web_add_friends_search:Nicholas
+11:47:08   SMS-0075 · web_add_friends_retry
+11:47:09   SMS-0075 · web_add_friends_search:Eric
+11:47:14   SMS-0075 · web_add_friends_panel_closed
+11:47:14   SMS-0075 · web_add_friends_retry
+11:47:18   SMS-0075 · web_add_friends_open
+11:47:19   SMS-0075 · web_add_friends_search:Kevin
+11:47:25   SMS-0075 · web_add_friends_added:2
+11:47:26   SMS-0075 · web_add_friends_settle
+11:47:36   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=1 fail=4
+11:47:38 [6/16] SMS-0080 k1h3o28c age=31.3h web=False
+11:47:48   SMS-0080 · qa_auth_page_seen:signup
+11:47:48   SMS-0080 · qa_goto_welcome
+11:47:53   SMS-0080 · qa_waiting_session_try:1:…
+11:47:57   SMS-0080 · qa_auth_form_visible:login
+11:47:57   SMS-0080 · account_logged_out:login
+11:47:57   SMS-0080 · account_logged_out_url:https://accounts.snapchat.com/v2/login?continue=%2Faccounts%2Fsso%3Fclient_id%3Dweb-accounts%26referrer%3Dhttps%253A%252F%252Faccounts.snapchat.com%252Fv2%252Fwelcome%253Flocale%25
+11:48:00   → LOGGED_OUT · ok=1 fail=5
+11:48:02 [7/16] SMS-0081 k1h3o6xm age=31.2h web=True
+11:48:14   SMS-0081 · qa_reuse_snapchat_web_tab
+11:48:31   SMS-0081 · web_onboard_next_not_seen
+11:48:31   SMS-0081 · qa_ready_to_add
+11:48:31   SMS-0081 · web_add_friends_empty_list
+11:48:31   SMS-0081 · web_add_friends_settle
+11:48:33   SMS-0081 · web_add_friends_open
+11:48:35   SMS-0081 · web_add_friends_search:Aaron
+11:48:40   SMS-0081 · web_add_friends_panel_closed
+11:48:40   SMS-0081 · web_add_friends_retry
+11:48:41   SMS-0081 · web_add_friends_open
+11:48:42   SMS-0081 · web_add_friends_search:David
+11:48:46   SMS-0081 · web_add_friends_added:4
+11:48:46   SMS-0081 · web_add_friends_settle
+11:48:56   → OK:web_add_friends_added:4,web_add_friends_added:4 · ok=2 fail=5
+11:48:58 [8/16] SMS-0088 k1h3p73a age=30.7h web=False
+11:49:08   SMS-0088 · qa_auth_page_seen:signup
+11:49:08   SMS-0088 · qa_goto_welcome
+11:49:11   SMS-0088 · qa_welcome_visible
+11:49:12   SMS-0088 · web_onboard_chat_try:1
+11:49:17   SMS-0088 · web_onboard_chat
+11:49:33   SMS-0088 · web_onboard_next_not_seen
+11:49:49   SMS-0088 · web_onboard_skip_not_seen
+11:49:55   SMS-0088 · web_onboard_heads_up_dismissed_not_seen
+11:49:55   SMS-0088 · qa_ready_to_add
+11:49:55   SMS-0088 · web_add_friends_empty_list
+11:49:55   SMS-0088 · web_add_friends_settle
+11:49:58   SMS-0088 · web_add_friends_open
+11:49:59   SMS-0088 · web_add_friends_search:Aaron
+11:50:02   SMS-0088 · web_add_friends_panel_closed
+11:50:02   SMS-0088 · web_add_friends_retry
+11:50:03   SMS-0088 · web_add_friends_open
+11:50:05   SMS-0088 · web_add_friends_search:Jason
+11:50:08   SMS-0088 · web_add_friends_added:3
+11:50:09   SMS-0088 · web_add_friends_settle
+11:50:18   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=3 fail=5
+11:50:20 [9/16] SMS-0100 k1h3px7p age=30.1h web=False
+11:50:31   SMS-0100 · qa_auth_page_seen:signup
+11:50:31   SMS-0100 · qa_goto_welcome
+11:50:34   SMS-0100 · qa_welcome_visible
+11:50:35   SMS-0100 · web_onboard_chat_try:1
+11:50:40   SMS-0100 · web_onboard_chat
+11:50:53   SMS-0100 · web_onboard_next_try:1
+11:50:55   SMS-0100 · web_onboard_next
+11:50:55   SMS-0100 · web_onboard_skip_try:1
+11:50:56   SMS-0100 · web_onboard_skip
+11:50:56   SMS-0100 · qa_ready_to_add
+11:50:56   SMS-0100 · web_add_friends_empty_list
+11:50:56   SMS-0100 · web_add_friends_settle
+11:51:01   SMS-0100 · web_add_friends_open
+11:51:03   SMS-0100 · web_add_friends_search:Jack
+11:51:07   SMS-0100 · web_add_friends_added:3
+11:51:08   SMS-0100 · web_add_friends_settle
+11:51:18   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=4 fail=5
+11:51:20 [10/16] SMS-0106 k1h3qb1h age=29.8h web=False
+11:51:29   SMS-0106 · qa_auth_page_seen:signup
+11:51:29   SMS-0106 · qa_goto_welcome
+11:51:31   SMS-0106 · qa_waiting_session_try:1:login
+11:51:34   SMS-0106 · qa_auth_form_visible:login
+11:51:34   SMS-0106 · account_logged_out:login
+11:51:34   SMS-0106 · account_logged_out_url:https://accounts.snapchat.com/v2/login?continue=%2Faccounts%2Fsso%3Fclient_id%3Dweb-accounts%26referrer%3Dhttps%253A%252F%252Faccounts.snapchat.com%252Fv2%252Fwelcome%253Flocale%25
+11:51:37   → LOGGED_OUT · ok=4 fail=6
+11:51:39 [11/16] SMS-0112 k1h3qndd age=29.5h web=False
+11:51:48   SMS-0112 · qa_auth_page_seen:signup
+11:51:48   SMS-0112 · qa_goto_welcome
+11:51:50   SMS-0112 · qa_waiting_session_try:1:login
+11:51:51   SMS-0112 · qa_auth_form_visible:login
+11:51:51   SMS-0112 · account_logged_out:login
+11:51:51   SMS-0112 · account_logged_out_url:https://accounts.snapchat.com/v2/login?continue=%2Faccounts%2Fsso%3Fclient_id%3Dweb-accounts%26referrer%3Dhttps%253A%252F%252Faccounts.snapchat.com%252Fv2%252Fwelcome%253Flocale%25
+11:51:54   → LOGGED_OUT · ok=4 fail=7
+11:51:56 [12/16] SMS-0113 k1h3qoys age=29.5h web=False
+11:52:08   SMS-0113 · qa_auth_page_seen:signup
+11:52:08   SMS-0113 · qa_goto_welcome
+11:52:11   SMS-0113 · qa_auth_form_visible:login
+11:52:11   SMS-0113 · account_logged_out:login
+11:52:11   SMS-0113 · account_logged_out_url:https://accounts.snapchat.com/v2/login?continue=%2Faccounts%2Fsso%3Fclient_id%3Dweb-accounts%26referrer%3Dhttps%253A%252F%252Faccounts.snapchat.com%252Fv2%252Fwelcome%253Flocale%25
+11:52:15   → LOGGED_OUT · ok=4 fail=8
+11:52:17 [13/16] SMS-0114 k1h3qx00 age=29.3h web=False
+11:52:27   SMS-0114 · qa_auth_page_seen:signup
+11:52:27   SMS-0114 · qa_goto_welcome
+11:52:29   SMS-0114 · qa_auth_form_visible:login
+11:52:29   SMS-0114 · account_logged_out:login
+11:52:29   SMS-0114 · account_logged_out_url:https://accounts.snapchat.com/v2/login?continue=%2Faccounts%2Fsso%3Fclient_id%3Dweb-accounts%26referrer%3Dhttps%253A%252F%252Faccounts.snapchat.com%252Fv2%252Fwelcome%253Flocale%25
+11:52:32   → LOGGED_OUT · ok=4 fail=9
+11:52:34 [14/16] SMS-0136 k1h3s41r age=28.3h web=False
+11:52:47   SMS-0136 · qa_auth_page_seen:signup
+11:52:47   SMS-0136 · qa_goto_welcome
+11:53:05   SMS-0136 · qa_waiting_session_try:1:login
+11:53:06   SMS-0136 · qa_auth_form_visible:login
+11:53:06   SMS-0136 · account_logged_out:login
+11:53:06   SMS-0136 · account_logged_out_url:https://accounts.snapchat.com/v2/login?continue=%2Faccounts%2Fsso%3Fclient_id%3Dweb-accounts%26referrer%3Dhttps%253A%252F%252Faccounts.snapchat.com%252Fv2%252Fwelcome%253Flocale%25
+11:53:09   → LOGGED_OUT · ok=4 fail=10
+11:53:11 [15/16] SMS-0152 k1h3t9aw age=27.4h web=False
+11:53:23   SMS-0152 · qa_auth_form_visible:signup
+11:53:23   SMS-0152 · account_logged_out:signup
+11:53:23   SMS-0152 · account_logged_out_url:https://accounts.snapchat.com/v2/signup
+11:53:26   → LOGGED_OUT · ok=4 fail=11
+11:53:28 [16/16] SMS-0165 k1h3u34g age=26.8h web=False
+11:53:37   SMS-0165 · qa_auth_page_seen:signup
+11:53:37   SMS-0165 · qa_goto_welcome
+11:53:39   SMS-0165 · qa_waiting_session_try:1:login
+11:53:40   SMS-0165 · qa_auth_form_visible:login
+11:53:40   SMS-0165 · account_logged_out:login
+11:53:40   SMS-0165 · account_logged_out_url:https://accounts.snapchat.com/v2/login?continue=%2Faccounts%2Fsso%3Fclient_id%3Dweb-accounts%26referrer%3Dhttps%253A%252F%252Faccounts.snapchat.com%252Fv2%252Fwelcome%253Flocale%25
+11:53:43   → LOGGED_OUT · ok=4 fail=12
+11:53:45 done ok=4 fail=12 skip=0 of 16
+15:46:59 SMS warmup Stage 1 · 60 account(s) · ≥ 24h
+15:46:59 [1/60] SMS-0053 k1h3lm7a age=60.8h web=False
+15:47:11   SMS-0053 · qa_auth_page_seen:signup
+15:47:11   SMS-0053 · qa_goto_welcome
+15:47:38   SMS-0053 · qa_welcome_visible
+15:47:39   SMS-0053 · web_onboard_chat_try:1
+15:47:44   SMS-0053 · web_onboard_chat
+15:48:01   SMS-0053 · web_onboard_next_not_seen
+15:48:16   SMS-0053 · web_onboard_skip_not_seen
+15:48:22   SMS-0053 · web_onboard_heads_up_dismissed_not_seen
+15:48:22   SMS-0053 · qa_ready_to_add
+15:48:22   SMS-0053 · web_add_friends_empty_list
+15:48:22   SMS-0053 · web_add_friends_settle
+15:48:24   SMS-0053 · web_add_friends_open
+15:48:26   SMS-0053 · web_add_friends_search:Andrew
+15:48:29   SMS-0053 · web_add_friends_panel_closed
+15:48:29   SMS-0053 · web_add_friends_retry
+15:48:30   SMS-0053 · web_add_friends_open
+15:48:31   SMS-0053 · web_add_friends_search:James
+15:48:33   SMS-0053 · web_add_friends_added:2
+15:48:34   SMS-0053 · web_add_friends_settle
+15:48:50   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=1 fail=0
+15:48:52 [2/60] SMS-0066 k1h3moj1 age=60.2h web=False
+15:49:04   SMS-0066 · qa_auth_page_seen:signup
+15:49:04   SMS-0066 · qa_goto_welcome
+15:49:37   SMS-0066 · qa_waiting_session_try:1:login
+15:49:39   SMS-0066 · qa_auth_form_visible:login
+15:49:39   SMS-0066 · account_logged_out:login
+15:49:39   SMS-0066 · account_logged_out_url:https://accounts.snapchat.com/v2/login?continue=%2Faccounts%2Fsso%3Fclient_id%3Dweb-accounts%26referrer%3Dhttps%253A%252F%252Faccounts.snapchat.com%252Fv2%252Fwelcome%253Flocale%25
+15:49:46   → LOGGED_OUT · ok=1 fail=1
+15:49:48 [3/60] SMS-0194 k1h3wxj9 age=53.3h web=True
+15:49:58   SMS-0194 · qa_reuse_snapchat_web_tab
+15:50:14   SMS-0194 · web_onboard_next_not_seen
+15:50:25   SMS-0194 · qa_ready_to_add
+15:50:25   SMS-0194 · web_add_friends_empty_list
+15:50:25   SMS-0194 · web_add_friends_settle
+15:50:30   SMS-0194 · web_add_friends_open
+15:50:31   SMS-0194 · web_add_friends_search:Adam
+15:50:35   SMS-0194 · web_add_friends_added:2
+15:50:35   SMS-0194 · web_add_friends_settle
+15:50:48   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=2 fail=1
+15:50:50 [4/60] SMS-0198 k1h3x8rc age=53.1h web=True
+15:51:02   SMS-0198 · qa_reuse_snapchat_web_tab
+15:51:19   SMS-0198 · web_onboard_next_not_seen
+15:51:34   SMS-0198 · web_onboard_skip_not_seen
+15:51:41   SMS-0198 · web_onboard_heads_up_dismissed_not_seen
+15:51:41   SMS-0198 · qa_ready_to_add
+15:51:41   SMS-0198 · web_add_friends_empty_list
+15:51:41   SMS-0198 · web_add_friends_settle
+15:51:42   SMS-0198 · web_add_friends_not_found
+15:51:42   SMS-0198 · web_add_friends_settle
+15:51:46   → FAIL_ADD:no_add · ok=2 fail=2
+15:51:48 [5/60] SMS-0199 k1h3xffx age=53.1h web=True
+15:52:00   SMS-0199 · qa_reuse_snapchat_web_tab
+15:52:17   SMS-0199 · web_onboard_next_not_seen
+15:52:32   SMS-0199 · web_onboard_skip_not_seen
+15:52:39   SMS-0199 · web_onboard_heads_up_dismissed_not_seen
+15:52:39   SMS-0199 · qa_ready_to_add
+15:52:39   SMS-0199 · web_add_friends_empty_list
+15:52:39   SMS-0199 · web_add_friends_settle
+15:52:40   SMS-0199 · web_add_friends_not_found
+15:52:40   SMS-0199 · web_add_friends_settle
+15:52:44   → FAIL_ADD:no_add · ok=2 fail=3
+15:52:46 [6/60] SMS-0204 k1h3xtpu age=52.9h web=True
+15:52:58   SMS-0204 · qa_reuse_snapchat_web_tab
+15:53:08   SMS-0204 · qa_ready_to_add
+15:53:08   SMS-0204 · web_add_friends_empty_list
+15:53:08   SMS-0204 · web_add_friends_settle
+15:53:13   SMS-0204 · web_add_friends_open
+15:53:14   SMS-0204 · web_add_friends_search:Josh
+15:53:17   SMS-0204 · web_add_friends_panel_closed
+15:53:17   SMS-0204 · web_add_friends_retry
+15:53:20   SMS-0204 · web_add_friends_open
+15:53:21   SMS-0204 · web_add_friends_search:Chris
+15:53:24   SMS-0204 · web_add_friends_added:2
+15:53:24   SMS-0204 · web_add_friends_settle
+15:53:34   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=3 fail=3
+15:53:36 [7/60] SMS-0205 k1h3y0fk age=52.8h web=True
+15:53:46   SMS-0205 · qa_reuse_snapchat_web_tab
+15:53:57   SMS-0205 · qa_ready_to_add
+15:53:57   SMS-0205 · web_add_friends_empty_list
+15:53:57   SMS-0205 · web_add_friends_settle
+15:54:01   SMS-0205 · web_add_friends_open
+15:54:02   SMS-0205 · web_add_friends_search:Patrick
+15:54:05   SMS-0205 · web_add_friends_panel_closed
+15:54:05   SMS-0205 · web_add_friends_retry
+15:54:08   SMS-0205 · web_add_friends_open
+15:54:09   SMS-0205 · web_add_friends_search:William
+15:54:12   SMS-0205 · web_add_friends_added:3
+15:54:13   SMS-0205 · web_add_friends_settle
+15:54:23   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=4 fail=3
+15:54:25 [8/60] SMS-0206 k1h3y67k age=52.7h web=True
+15:54:36   SMS-0206 · qa_reuse_snapchat_web_tab
+15:54:48   SMS-0206 · qa_ready_to_add
+15:54:48   SMS-0206 · web_add_friends_empty_list
+15:54:48   SMS-0206 · web_add_friends_settle
+15:54:54   SMS-0206 · web_add_friends_open
+15:54:55   SMS-0206 · web_add_friends_search:Thomas
+15:54:59   SMS-0206 · web_add_friends_added:2
+15:55:00   SMS-0206 · web_add_friends_settle
+15:55:10   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=5 fail=3
+15:55:12 [9/60] SMS-0212 k1h3yk3v age=52.5h web=True
+15:55:22   SMS-0212 · qa_reuse_snapchat_web_tab
+15:55:38   SMS-0212 · web_onboard_next_not_seen
+15:55:45   SMS-0212 · qa_ready_to_add
+15:55:45   SMS-0212 · web_add_friends_empty_list
+15:55:45   SMS-0212 · web_add_friends_settle
+15:55:51   SMS-0212 · web_add_friends_open
+15:55:52   SMS-0212 · web_add_friends_search:Brandon
+15:56:00   SMS-0212 · web_add_friends_retry
+15:56:01   SMS-0212 · web_add_friends_search:Mark
+15:56:09   SMS-0212 · web_add_friends_retry
+15:56:10   SMS-0212 · web_add_friends_search:Noah
+15:56:18   SMS-0212 · web_add_friends_add_failed
+15:56:18   SMS-0212 · web_add_friends_settle
+15:56:23   → FAIL_ADD:web_add_friends_add_failed · ok=5 fail=4
+15:56:25 [10/60] SMS-0216 k1h3ywaa age=52.3h web=True
+15:56:36   SMS-0216 · qa_reuse_snapchat_web_tab
+15:56:48   SMS-0216 · qa_ready_to_add
+15:56:48   SMS-0216 · web_add_friends_empty_list
+15:56:48   SMS-0216 · web_add_friends_settle
+15:56:52   SMS-0216 · web_add_friends_open
+15:56:54   SMS-0216 · web_add_friends_search:Ryan
+15:56:57   SMS-0216 · web_add_friends_panel_closed
+15:56:57   SMS-0216 · web_add_friends_retry
+15:57:00   SMS-0216 · web_add_friends_open
+15:57:02   SMS-0216 · web_add_friends_search:Ethan
+15:57:04   SMS-0216 · web_add_friends_added:2
+15:57:05   SMS-0216 · web_add_friends_settle
+15:57:16   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=6 fail=4
+15:57:18 [11/60] SMS-0219 k1h408ot age=52.2h web=False
+15:57:27   SMS-0219 · qa_auth_page_seen:signup
+15:57:27   SMS-0219 · qa_goto_welcome
+15:57:41   SMS-0219 · qa_waiting_session_try:1:login
+15:57:42   SMS-0219 · qa_auth_form_visible:login
+15:57:42   SMS-0219 · account_logged_out:login
+15:57:42   SMS-0219 · account_logged_out_url:https://accounts.snapchat.com/v2/login?continue=%2Faccounts%2Fsso%3Fclient_id%3Dweb-accounts%26referrer%3Dhttps%253A%252F%252Faccounts.snapchat.com%252Fv2%252Fwelcome%253Flocale%25
+15:57:55   → LOGGED_OUT · ok=6 fail=5
+15:57:57 [12/60] SMS-0221 k1h40krc age=52.0h web=False
+15:58:10   SMS-0221 · qa_auth_page_seen:signup
+15:58:10   SMS-0221 · qa_goto_welcome
+15:58:33   SMS-0221 · qa_waiting_session_try:1:login
+15:58:34   SMS-0221 · qa_auth_form_visible:login
+15:58:34   SMS-0221 · account_logged_out:login
+15:58:34   SMS-0221 · account_logged_out_url:https://accounts.snapchat.com/v2/login?continue=%2Faccounts%2Fsso%3Fclient_id%3Dweb-accounts%26referrer%3Dhttps%253A%252F%252Faccounts.snapchat.com%252Fv2%252Fwelcome%253Flocale%25
+15:58:42   → LOGGED_OUT · ok=6 fail=6
+15:58:44 [13/60] SMS-0222 k1h40nms age=51.9h web=True
+15:58:59   SMS-0222 · qa_reuse_snapchat_web_tab
+15:59:11   SMS-0222 · qa_ready_to_add
+15:59:11   SMS-0222 · web_add_friends_empty_list
+15:59:11   SMS-0222 · web_add_friends_settle
+15:59:16   SMS-0222 · web_add_friends_open
+15:59:18   SMS-0222 · web_add_friends_search:Jordan
+15:59:24   SMS-0222 · web_add_friends_added:4
+15:59:25   SMS-0222 · web_add_friends_settle
+15:59:35   → OK:web_add_friends_added:4,web_add_friends_added:4 · ok=7 fail=6
+15:59:37 [14/60] SMS-0227 k1h411j8 age=51.7h web=True
+15:59:49   SMS-0227 · qa_reuse_snapchat_web_tab
+16:00:01   SMS-0227 · qa_ready_to_add
+16:00:01   SMS-0227 · web_add_friends_empty_list
+16:00:01   SMS-0227 · web_add_friends_settle
+16:00:05   SMS-0227 · web_add_friends_open
+16:00:07   SMS-0227 · web_add_friends_search:Trevor
+16:00:10   SMS-0227 · web_add_friends_panel_closed
+16:00:10   SMS-0227 · web_add_friends_retry
+16:00:14   SMS-0227 · web_add_friends_open
+16:00:15   SMS-0227 · web_add_friends_search:Caleb
+16:00:17   SMS-0227 · web_add_friends_added:3
+16:00:18   SMS-0227 · web_add_friends_settle
+16:00:28   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=8 fail=6
+16:00:30 [15/60] SMS-0229 k1h416rq age=51.6h web=False
+16:00:41   SMS-0229 · qa_auth_page_seen:signup
+16:00:41   SMS-0229 · qa_goto_welcome
+16:01:02   SMS-0229 · qa_waiting_session_try:1:login
+16:01:04   SMS-0229 · qa_auth_form_visible:login
+16:01:04   SMS-0229 · account_logged_out:login
+16:01:04   SMS-0229 · account_logged_out_url:https://accounts.snapchat.com/v2/login?continue=%2Faccounts%2Fsso%3Fclient_id%3Dweb-accounts%26referrer%3Dhttps%253A%252F%252Faccounts.snapchat.com%252Fv2%252Fwelcome%253Flocale%25
+16:01:13   → LOGGED_OUT · ok=8 fail=7
+16:01:15 [16/60] SMS-0230 k1h418ri age=51.6h web=True
+16:01:27   SMS-0230 · qa_reuse_snapchat_web_tab
+16:01:40   SMS-0230 · qa_ready_to_add
+16:01:40   SMS-0230 · web_add_friends_empty_list
+16:01:40   SMS-0230 · web_add_friends_settle
+16:01:45   SMS-0230 · web_add_friends_open
+16:01:47   SMS-0230 · web_add_friends_search:Jack
+16:01:50   SMS-0230 · web_add_friends_panel_closed
+16:01:50   SMS-0230 · web_add_friends_retry
+16:01:53   SMS-0230 · web_add_friends_open
+16:01:55   SMS-0230 · web_add_friends_search:Tyler
+16:01:57   SMS-0230 · web_add_friends_added:2
+16:01:58   SMS-0230 · web_add_friends_settle
+16:02:08   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=9 fail=7
+16:02:10 [17/60] SMS-0234 k1h41ktm age=51.4h web=False
+16:02:27   SMS-0234 · qa_auth_page_seen:signup
+16:02:27   SMS-0234 · qa_goto_welcome
+16:03:01   SMS-0234 · qa_welcome_visible
+16:03:02   SMS-0234 · web_onboard_chat_try:1
+16:03:13   SMS-0234 · web_onboard_chat
+16:03:22   SMS-0234 · web_onboard_next_try:1
+16:03:25   SMS-0234 · web_onboard_next
+16:03:25   SMS-0234 · web_onboard_skip_try:1
+16:03:26   SMS-0234 · web_onboard_skip
+16:03:26   SMS-0234 · qa_ready_to_add
+16:03:26   SMS-0234 · web_add_friends_empty_list
+16:03:26   SMS-0234 · web_add_friends_settle
+16:03:31   SMS-0234 · web_add_friends_open
+16:03:32   SMS-0234 · web_add_friends_search:Thomas
+16:03:38   SMS-0234 · web_add_friends_panel_closed
+16:03:38   SMS-0234 · web_add_friends_retry
+16:03:41   SMS-0234 · web_add_friends_open
+16:03:43   SMS-0234 · web_add_friends_search:Connor
+16:03:45   SMS-0234 · web_add_friends_panel_closed
+16:03:45   SMS-0234 · web_add_friends_retry
+16:03:49   SMS-0234 · web_add_friends_open
+16:03:50   SMS-0234 · web_add_friends_search:Paul
+16:03:52   SMS-0234 · web_add_friends_panel_closed
+16:03:52   SMS-0234 · web_add_friends_added:3
+16:03:53   SMS-0234 · web_add_friends_settle
+16:04:03   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=10 fail=7
+16:04:05 [18/60] SMS-0235 k1h41pqa age=51.3h web=True
+16:04:16   SMS-0235 · qa_reuse_snapchat_web_tab
+16:04:27   SMS-0235 · qa_ready_to_add
+16:04:27   SMS-0235 · web_add_friends_empty_list
+16:04:27   SMS-0235 · web_add_friends_settle
+16:04:31   SMS-0235 · web_add_friends_open
+16:04:32   SMS-0235 · web_add_friends_search:Paul
+16:04:36   SMS-0235 · web_add_friends_panel_closed
+16:04:36   SMS-0235 · web_add_friends_retry
+16:04:39   SMS-0235 · web_add_friends_open
+16:04:40   SMS-0235 · web_add_friends_search:Caleb
+16:04:42   SMS-0235 · web_add_friends_added:2
+16:04:43   SMS-0235 · web_add_friends_settle
+16:04:53   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=11 fail=7
+16:04:55 [19/60] SMS-0236 k1h41u5b age=51.2h web=True
+16:05:08   SMS-0236 · qa_reuse_snapchat_web_tab
+16:05:22   SMS-0236 · qa_ready_to_add
+16:05:22   SMS-0236 · web_add_friends_empty_list
+16:05:22   SMS-0236 · web_add_friends_settle
+16:05:27   SMS-0236 · web_add_friends_open
+16:05:29   SMS-0236 · web_add_friends_search:Jacob
+16:05:31   SMS-0236 · web_add_friends_panel_closed
+16:05:31   SMS-0236 · web_add_friends_retry
+16:05:34   SMS-0236 · web_add_friends_open
+16:05:36   SMS-0236 · web_add_friends_search:James
+16:05:39   SMS-0236 · web_add_friends_added:3
+16:05:40   SMS-0236 · web_add_friends_settle
+16:05:50   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=12 fail=7
+16:05:52 [20/60] SMS-0239 k1h42429 age=51.1h web=True
+16:06:04   SMS-0239 · qa_reuse_snapchat_web_tab
+16:06:17   SMS-0239 · qa_ready_to_add
+16:06:17   SMS-0239 · web_add_friends_empty_list
+16:06:17   SMS-0239 · web_add_friends_settle
+16:06:22   SMS-0239 · web_add_friends_open
+16:06:23   SMS-0239 · web_add_friends_search:David
+16:06:29   SMS-0239 · web_add_friends_added:3
+16:06:30   SMS-0239 · web_add_friends_settle
+16:06:40   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=13 fail=7
+16:06:42 [21/60] SMS-0242 k1h42bro age=50.9h web=True
+16:06:53   SMS-0242 · qa_reuse_snapchat_web_tab
+16:07:10   SMS-0242 · qa_ready_to_add
+16:07:10   SMS-0242 · web_add_friends_empty_list
+16:07:10   SMS-0242 · web_add_friends_settle
+16:07:14   SMS-0242 · web_add_friends_open
+16:07:15   SMS-0242 · web_add_friends_search:David
+16:07:19   SMS-0242 · web_add_friends_panel_closed
+16:07:19   SMS-0242 · web_add_friends_retry
+16:07:22   SMS-0242 · web_add_friends_open
+16:07:23   SMS-0242 · web_add_friends_search:Aaron
+16:07:26   SMS-0242 · web_add_friends_panel_closed
+16:07:26   SMS-0242 · web_add_friends_retry
+16:07:30   SMS-0242 · web_add_friends_open
+16:07:31   SMS-0242 · web_add_friends_search:William
+16:07:33   SMS-0242 · web_add_friends_added:3
+16:07:34   SMS-0242 · web_add_friends_settle
+16:07:44   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=14 fail=7
+16:07:46 [22/60] SMS-0246 k1h42n07 age=50.8h web=False
+16:07:55   SMS-0246 · qa_auth_page_seen:signup
+16:07:55   SMS-0246 · qa_goto_welcome
+16:08:39   SMS-0246 · qa_welcome_visible
+16:08:40   SMS-0246 · web_onboard_chat_not_found_try:1
+16:08:41   SMS-0246 · web_onboard_chat_not_found_try:2
+16:08:41   SMS-0246 · web_onboard_chat_not_found_try:3
+16:08:42   SMS-0246 · web_onboard_chat_stuck
+16:09:02   SMS-0246 · web_not_ready_for_qa
+16:09:03   SMS-0246 · web_add_friends_not_found
+16:09:03   SMS-0246 · web_add_friends_settle
+16:09:07   → FAIL_ADD:no_add · ok=14 fail=8
+16:09:09 [23/60] SMS-0247 k1h42tau age=50.7h web=True
+16:09:20   SMS-0247 · qa_reuse_snapchat_web_tab
+16:09:30   SMS-0247 · qa_ready_to_add
+16:09:30   SMS-0247 · web_add_friends_empty_list
+16:09:30   SMS-0247 · web_add_friends_settle
+16:09:35   SMS-0247 · web_add_friends_open
+16:09:36   SMS-0247 · web_add_friends_search:Charles
+16:09:46   SMS-0247 · web_add_friends_added:3
+16:09:47   SMS-0247 · web_add_friends_settle
+16:09:57   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=15 fail=8
+16:09:59 [24/60] SMS-0248 k1h42xnw age=50.6h web=False
+16:10:10   SMS-0248 · qa_auth_page_seen:signup
+16:10:10   SMS-0248 · qa_goto_welcome
+16:10:50   SMS-0248 · qa_welcome_visible
+16:10:50   SMS-0248 · web_onboard_chat_try:1
+16:10:56   SMS-0248 · web_onboard_chat
+16:11:10   SMS-0248 · web_onboard_next_try:1
+16:11:12   SMS-0248 · web_onboard_next
+16:11:13   SMS-0248 · web_onboard_skip_try:1
+16:11:13   SMS-0248 · web_onboard_skip
+16:11:14   SMS-0248 · qa_ready_to_add
+16:11:14   SMS-0248 · web_add_friends_empty_list
+16:11:14   SMS-0248 · web_add_friends_settle
+16:11:17   SMS-0248 · web_add_friends_open
+16:11:19   SMS-0248 · web_add_friends_search:Christopher
+16:11:23   SMS-0248 · web_add_friends_panel_closed
+16:11:23   SMS-0248 · web_add_friends_retry
+16:11:26   SMS-0248 · web_add_friends_open
+16:11:27   SMS-0248 · web_add_friends_search:Caleb
+16:11:29   SMS-0248 · web_add_friends_added:2
+16:11:30   SMS-0248 · web_add_friends_settle
+16:11:40   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=16 fail=8
+16:11:42 [25/60] SMS-0249 k1h434ni age=50.5h web=False
+16:11:52   SMS-0249 · qa_auth_page_seen:signup
+16:11:52   SMS-0249 · qa_goto_welcome
+16:12:37   SMS-0249 · qa_goto_welcome_failed:Page.goto: Timeout 45000ms exceeded.
+Call log:
+  - navigating to "https://accounts.snapchat.com/v2/welcome?locale=en-US", waiting until "domcontentloaded"
+
+16:12:38   SMS-0249 · qa_welcome_visible
+16:12:38   SMS-0249 · web_onboard_chat_not_found_try:1
+16:12:39   SMS-0249 · web_onboard_chat_not_found_try:2
+16:12:39   SMS-0249 · web_onboard_chat_not_found_try:3
+16:12:40   SMS-0249 · web_onboard_chat_stuck
+16:13:02   SMS-0249 · account_logged_out:login
+16:13:02   SMS-0249 · account_logged_out_url:https://accounts.snapchat.com/v2/login?continue=%2Faccounts%2Fsso%3Fclient_id%3Dweb-accounts%26referrer%3Dhttps%253A%252F%252Faccounts.snapchat.com%252Fv2%252Fwelcome%253Flocale%25
+16:13:10   → LOGGED_OUT · ok=16 fail=9
+16:13:12 [26/60] SMS-0255 k1h43imv age=50.3h web=True
+16:13:21   SMS-0255 · qa_reuse_snapchat_web_tab
+16:13:34   SMS-0255 · qa_ready_to_add
+16:13:34   SMS-0255 · web_add_friends_empty_list
+16:13:34   SMS-0255 · web_add_friends_settle
+16:13:37   SMS-0255 · web_add_friends_open
+16:13:38   SMS-0255 · web_add_friends_search:Mark
+16:13:42   SMS-0255 · web_add_friends_panel_closed
+16:13:42   SMS-0255 · web_add_friends_retry
+16:13:45   SMS-0255 · web_add_friends_open
+16:13:47   SMS-0255 · web_add_friends_search:Steven
+16:13:49   SMS-0255 · web_add_friends_added:2
+16:13:49   SMS-0255 · web_add_friends_settle
+16:13:59   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=17 fail=9
+16:14:01 [27/60] SMS-0258 k1h43rn2 age=50.2h web=False
+16:14:13   SMS-0258 · qa_auth_page_seen:signup
+16:14:13   SMS-0258 · qa_goto_welcome
+16:14:31   SMS-0258 · qa_welcome_visible
+16:14:32   SMS-0258 · web_onboard_chat_try:1
+16:14:36   SMS-0258 · web_onboard_chat
+16:14:43   SMS-0258 · web_onboard_next_try:1
+16:14:45   SMS-0258 · web_onboard_next
+16:14:46   SMS-0258 · web_onboard_skip_try:1
+16:14:47   SMS-0258 · web_onboard_skip
+16:14:47   SMS-0258 · qa_ready_to_add
+16:14:47   SMS-0258 · web_add_friends_empty_list
+16:14:47   SMS-0258 · web_add_friends_settle
+16:14:52   SMS-0258 · web_add_friends_open
+16:14:53   SMS-0258 · web_add_friends_search:Eric
+16:14:56   SMS-0258 · web_add_friends_panel_closed
+16:14:56   SMS-0258 · web_add_friends_retry
+16:15:00   SMS-0258 · web_add_friends_open
+16:15:01   SMS-0258 · web_add_friends_search:Connor
+16:15:03   SMS-0258 · web_add_friends_added:2
+16:15:04   SMS-0258 · web_add_friends_settle
+16:15:14   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=18 fail=9
+16:15:16 [28/60] SMS-0261 k1h445nf age=50.0h web=True
+16:15:26   SMS-0261 · qa_reuse_snapchat_web_tab
+16:15:43   SMS-0261 · web_onboard_next_not_seen
+16:15:58   SMS-0261 · web_onboard_skip_not_seen
+16:16:05   SMS-0261 · web_onboard_heads_up_dismissed_not_seen
+16:16:05   SMS-0261 · qa_ready_to_add
+16:16:05   SMS-0261 · web_add_friends_empty_list
+16:16:05   SMS-0261 · web_add_friends_settle
+16:16:06   SMS-0261 · web_add_friends_not_found
+16:16:06   SMS-0261 · web_add_friends_settle
+16:16:10   → FAIL_ADD:no_add · ok=18 fail=10
+16:16:12 [29/60] SMS-0266 k1h44h5o age=49.8h web=True
+16:16:24   SMS-0266 · qa_reuse_snapchat_web_tab
+16:16:40   SMS-0266 · web_onboard_next_not_seen
+16:16:56   SMS-0266 · web_onboard_skip_not_seen
+16:17:02   SMS-0266 · web_onboard_heads_up_dismissed_not_seen
+16:17:02   SMS-0266 · qa_ready_to_add
+16:17:02   SMS-0266 · web_add_friends_empty_list
+16:17:02   SMS-0266 · web_add_friends_settle
+16:17:04   SMS-0266 · web_add_friends_not_found
+16:17:04   SMS-0266 · web_add_friends_settle
+16:17:08   → FAIL_ADD:no_add · ok=18 fail=11
+16:17:10 [30/60] SMS-0267 k1h44kye age=49.8h web=False
+16:17:21   SMS-0267 · qa_auth_page_seen:signup
+16:17:21   SMS-0267 · qa_goto_welcome
+16:18:06   SMS-0267 · qa_goto_welcome_failed:Page.goto: Timeout 45000ms exceeded.
+Call log:
+  - navigating to "https://accounts.snapchat.com/v2/welcome?locale=en-US", waiting until "domcontentloaded"
+
+16:18:06   SMS-0267 · qa_welcome_visible
+16:18:07   SMS-0267 · web_onboard_chat_not_found_try:1
+16:18:07   SMS-0267 · web_onboard_chat_not_found_try:2
+16:18:08   SMS-0267 · web_onboard_chat_not_found_try:3
+16:18:08   SMS-0267 · web_onboard_chat_stuck
+16:18:29   SMS-0267 · web_not_ready_for_qa
+16:18:29   SMS-0267 · web_add_friends_not_found
+16:18:29   SMS-0267 · web_add_friends_settle
+16:18:34   → FAIL_ADD:no_add · ok=18 fail=12
+16:18:36 [31/60] SMS-0268 k1h44nwh age=49.7h web=False
+16:18:45   SMS-0268 · qa_auth_page_seen:signup
+16:18:45   SMS-0268 · qa_goto_welcome
+16:19:03   SMS-0268 · qa_welcome_visible
+16:19:04   SMS-0268 · web_onboard_chat_try:1
+16:19:09   SMS-0268 · web_onboard_chat
+16:19:18   SMS-0268 · web_onboard_next_try:1
+16:19:20   SMS-0268 · web_onboard_next
+16:19:20   SMS-0268 · web_onboard_skip_try:1
+16:19:21   SMS-0268 · web_onboard_skip
+16:19:21   SMS-0268 · qa_ready_to_add
+16:19:21   SMS-0268 · web_add_friends_empty_list
+16:19:21   SMS-0268 · web_add_friends_settle
+16:19:26   SMS-0268 · web_add_friends_open
+16:19:27   SMS-0268 · web_add_friends_search:Jordan
+16:19:31   SMS-0268 · web_add_friends_added:2
+16:19:32   SMS-0268 · web_add_friends_settle
+16:19:42   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=19 fail=12
+16:19:44 [32/60] SMS-0270 k1h44xmo age=49.6h web=True
+16:19:54   SMS-0270 · qa_reuse_snapchat_web_tab
+16:20:06   SMS-0270 · qa_ready_to_add
+16:20:06   SMS-0270 · web_add_friends_empty_list
+16:20:06   SMS-0270 · web_add_friends_settle
+16:20:11   SMS-0270 · web_add_friends_open
+16:20:12   SMS-0270 · web_add_friends_search:Jack
+16:20:15   SMS-0270 · web_add_friends_panel_closed
+16:20:15   SMS-0270 · web_add_friends_retry
+16:20:18   SMS-0270 · web_add_friends_open
+16:20:19   SMS-0270 · web_add_friends_search:Noah
+16:20:21   SMS-0270 · web_add_friends_added:2
+16:20:22   SMS-0270 · web_add_friends_settle
+16:20:32   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=20 fail=12
+16:20:34 [33/60] SMS-0271 k1h4534n age=49.5h web=True
+16:20:44   SMS-0271 · qa_reuse_snapchat_web_tab
+16:21:00   SMS-0271 · web_onboard_next_not_seen
+16:21:16   SMS-0271 · web_onboard_skip_not_seen
+16:21:23   SMS-0271 · web_onboard_heads_up_dismissed_not_seen
+16:21:23   SMS-0271 · qa_ready_to_add
+16:21:23   SMS-0271 · web_add_friends_empty_list
+16:21:23   SMS-0271 · web_add_friends_settle
+16:21:24   SMS-0271 · web_add_friends_not_found
+16:21:24   SMS-0271 · web_add_friends_settle
+16:21:27   → FAIL_ADD:no_add · ok=20 fail=13
+16:21:29 [34/60] SMS-0272 k1h457u3 age=49.5h web=True
+16:21:41   SMS-0272 · qa_reuse_snapchat_web_tab
+16:21:53   SMS-0272 · qa_ready_to_add
+16:21:53   SMS-0272 · web_add_friends_empty_list
+16:21:53   SMS-0272 · web_add_friends_settle
+16:21:58   SMS-0272 · web_add_friends_open
+16:22:00   SMS-0272 · web_add_friends_search:Nicholas
+16:22:05   SMS-0272 · web_add_friends_added:4
+16:22:06   SMS-0272 · web_add_friends_settle
+16:22:16   → OK:web_add_friends_added:4,web_add_friends_added:4 · ok=21 fail=13
+16:22:18 [35/60] SMS-0273 k1h45cda age=49.4h web=True
+16:22:30   SMS-0273 · qa_reuse_snapchat_web_tab
+16:22:42   SMS-0273 · qa_ready_to_add
+16:22:42   SMS-0273 · web_add_friends_empty_list
+16:22:42   SMS-0273 · web_add_friends_settle
+16:22:46   SMS-0273 · web_add_friends_open
+16:22:48   SMS-0273 · web_add_friends_search:Steven
+16:22:53   SMS-0273 · web_add_friends_added:4
+16:22:54   SMS-0273 · web_add_friends_settle
+16:23:04   → OK:web_add_friends_added:4,web_add_friends_added:4 · ok=22 fail=13
+16:23:06 [36/60] SMS-0275 k1h45jb2 age=49.3h web=False
+16:23:16   SMS-0275 · qa_auth_page_seen:signup
+16:23:16   SMS-0275 · qa_goto_welcome
+16:23:37   SMS-0275 · qa_welcome_visible
+16:23:39   SMS-0275 · web_onboard_chat_try:1
+16:23:55   SMS-0275 · web_onboard_chat
+16:24:08   SMS-0275 · web_onboard_next_try:1
+16:24:12   SMS-0275 · web_onboard_next
+16:24:13   SMS-0275 · web_onboard_skip_try:1
+16:24:13   SMS-0275 · web_onboard_skip
+16:24:13   SMS-0275 · qa_ready_to_add
+16:24:13   SMS-0275 · web_add_friends_empty_list
+16:24:13   SMS-0275 · web_add_friends_settle
+16:24:18   SMS-0275 · web_add_friends_open
+16:24:20   SMS-0275 · web_add_friends_search:Michael
+16:24:28   SMS-0275 · web_add_friends_retry
+16:24:30   SMS-0275 · web_add_friends_search:Steven
+16:24:38   SMS-0275 · web_add_friends_panel_closed
+16:24:38   SMS-0275 · web_add_friends_retry
+16:24:38   SMS-0275 · web_add_friends_panel_closed
+16:24:38   SMS-0275 · web_add_friends_add_failed
+16:24:39   SMS-0275 · web_add_friends_settle
+16:24:43   → FAIL_ADD:web_add_friends_add_failed · ok=22 fail=14
+16:24:45 [37/60] SMS-0277 k1h45rnl age=49.2h web=True
+16:24:57   SMS-0277 · qa_reuse_snapchat_web_tab
+16:25:08   SMS-0277 · qa_ready_to_add
+16:25:08   SMS-0277 · web_add_friends_empty_list
+16:25:08   SMS-0277 · web_add_friends_settle
+16:25:12   SMS-0277 · web_add_friends_open
+16:25:14   SMS-0277 · web_add_friends_search:Thomas
+16:25:18   SMS-0277 · web_add_friends_panel_closed
+16:25:18   SMS-0277 · web_add_friends_retry
+16:25:21   SMS-0277 · web_add_friends_open
+16:25:23   SMS-0277 · web_add_friends_search:Nathan
+16:25:25   SMS-0277 · web_add_friends_added:3
+16:25:25   SMS-0277 · web_add_friends_settle
+16:25:35   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=23 fail=14
+16:25:37 [38/60] SMS-0279 k1h45xfx age=49.1h web=True
+16:25:48   SMS-0279 · qa_reuse_snapchat_web_tab
+16:26:04   SMS-0279 · web_onboard_next_not_seen
+16:26:20   SMS-0279 · web_onboard_skip_not_seen
+16:26:26   SMS-0279 · web_onboard_heads_up_dismissed_not_seen
+16:26:26   SMS-0279 · qa_ready_to_add
+16:26:26   SMS-0279 · web_add_friends_empty_list
+16:26:26   SMS-0279 · web_add_friends_settle
+16:26:27   SMS-0279 · web_add_friends_not_found
+16:26:27   SMS-0279 · web_add_friends_settle
+16:26:32   → FAIL_ADD:no_add · ok=23 fail=15
+16:26:34 [39/60] SMS-0282 k1h46bin age=48.9h web=True
+16:26:44   SMS-0282 · qa_reuse_snapchat_web_tab
+16:26:54   SMS-0282 · qa_ready_to_add
+16:26:54   SMS-0282 · web_add_friends_empty_list
+16:26:54   SMS-0282 · web_add_friends_settle
+16:26:58   SMS-0282 · web_add_friends_open
+16:27:00   SMS-0282 · web_add_friends_search:Benjamin
+16:27:04   SMS-0282 · web_add_friends_added:3
+16:27:05   SMS-0282 · web_add_friends_settle
+16:27:15   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=24 fail=15
+16:27:17 [40/60] SMS-0286 k1h46lla age=48.8h web=True
+16:27:28   SMS-0286 · qa_reuse_snapchat_web_tab
+16:27:41   SMS-0286 · qa_ready_to_add
+16:27:41   SMS-0286 · web_add_friends_empty_list
+16:27:41   SMS-0286 · web_add_friends_settle
+16:27:46   SMS-0286 · web_add_friends_open
+16:27:47   SMS-0286 · web_add_friends_search:Zachary
+16:28:23   SMS-0286 · web_add_friends_added:3
+16:28:24   SMS-0286 · web_add_friends_settle
+16:28:34   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=25 fail=15
+16:28:36 [41/60] SMS-0289 k1h46scs age=48.7h web=True
+16:28:48   SMS-0289 · qa_reuse_snapchat_web_tab
+16:28:58   SMS-0289 · qa_ready_to_add
+16:28:58   SMS-0289 · web_add_friends_empty_list
+16:28:58   SMS-0289 · web_add_friends_settle
+16:29:03   SMS-0289 · web_add_friends_open
+16:29:05   SMS-0289 · web_add_friends_search:Austin
+16:29:09   SMS-0289 · web_add_friends_panel_closed
+16:29:09   SMS-0289 · web_add_friends_retry
+16:29:12   SMS-0289 · web_add_friends_open
+16:29:13   SMS-0289 · web_add_friends_search:Ryan
+16:29:15   SMS-0289 · web_add_friends_added:3
+16:29:16   SMS-0289 · web_add_friends_settle
+16:29:26   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=26 fail=15
+16:29:28 [42/60] SMS-0291 k1h477oy age=48.5h web=True
+16:29:41   SMS-0291 · qa_reuse_snapchat_web_tab
+16:29:55   SMS-0291 · qa_ready_to_add
+16:29:55   SMS-0291 · web_add_friends_empty_list
+16:29:55   SMS-0291 · web_add_friends_settle
+16:30:00   SMS-0291 · web_add_friends_open
+16:30:02   SMS-0291 · web_add_friends_search:Matthew
+16:30:06   SMS-0291 · web_add_friends_added:2
+16:30:06   SMS-0291 · web_add_friends_settle
+16:30:16   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=27 fail=15
+16:30:18 [43/60] SMS-0292 k1h47cac age=48.5h web=True
+16:30:30   SMS-0292 · qa_reuse_snapchat_web_tab
+16:30:46   SMS-0292 · web_onboard_next_not_seen
+16:31:01   SMS-0292 · web_onboard_skip_not_seen
+16:31:08   SMS-0292 · web_onboard_heads_up_dismissed_not_seen
+16:31:08   SMS-0292 · qa_ready_to_add
+16:31:08   SMS-0292 · web_add_friends_empty_list
+16:31:08   SMS-0292 · web_add_friends_settle
+16:31:09   SMS-0292 · web_add_friends_not_found
+16:31:09   SMS-0292 · web_add_friends_settle
+16:31:13   → FAIL_ADD:no_add · ok=27 fail=16
+16:31:15 [44/60] SMS-0295 k1h47njy age=48.3h web=True
+16:31:25   SMS-0295 · qa_reuse_snapchat_web_tab
+16:31:37   SMS-0295 · qa_ready_to_add
+16:31:37   SMS-0295 · web_add_friends_empty_list
+16:31:37   SMS-0295 · web_add_friends_settle
+16:31:42   SMS-0295 · web_add_friends_open
+16:31:43   SMS-0295 · web_add_friends_search:Jacob
+16:32:19   SMS-0295 · web_add_friends_added:3
+16:32:20   SMS-0295 · web_add_friends_settle
+16:32:30   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=28 fail=16
+16:32:32 [45/60] SMS-0299 k1h47xsx age=48.2h web=True
+16:32:43   SMS-0299 · qa_reuse_snapchat_web_tab
+16:32:56   SMS-0299 · qa_ready_to_add
+16:32:56   SMS-0299 · web_add_friends_empty_list
+16:32:56   SMS-0299 · web_add_friends_settle
+16:33:01   SMS-0299 · web_add_friends_open
+16:33:02   SMS-0299 · web_add_friends_search:Zachary
+16:33:05   SMS-0299 · web_add_friends_panel_closed
+16:33:05   SMS-0299 · web_add_friends_retry
+16:33:09   SMS-0299 · web_add_friends_open
+16:33:10   SMS-0299 · web_add_friends_search:Caleb
+16:33:12   SMS-0299 · web_add_friends_added:2
+16:33:13   SMS-0299 · web_add_friends_settle
+16:33:24   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=29 fail=16
+16:33:26 [46/60] SMS-0300 k1h4861b age=48.1h web=True
+16:33:37   SMS-0300 · qa_reuse_snapchat_web_tab
+16:33:50   SMS-0300 · qa_ready_to_add
+16:33:50   SMS-0300 · web_add_friends_empty_list
+16:33:50   SMS-0300 · web_add_friends_settle
+16:33:55   SMS-0300 · web_add_friends_open
+16:33:57   SMS-0300 · web_add_friends_search:Michael
+16:34:02   SMS-0300 · web_add_friends_panel_closed
+16:34:02   SMS-0300 · web_add_friends_retry
+16:34:05   SMS-0300 · web_add_friends_open
+16:34:07   SMS-0300 · web_add_friends_search:Anthony
+16:34:09   SMS-0300 · web_add_friends_added:4
+16:34:09   SMS-0300 · web_add_friends_settle
+16:34:19   → OK:web_add_friends_added:4,web_add_friends_added:4 · ok=30 fail=16
+16:34:21 [47/60] SMS-0301 k1h48a7y age=48.0h web=True
+16:34:34   SMS-0301 · qa_reuse_snapchat_web_tab
+16:34:46   SMS-0301 · qa_ready_to_add
+16:34:46   SMS-0301 · web_add_friends_empty_list
+16:34:46   SMS-0301 · web_add_friends_settle
+16:34:50   SMS-0301 · web_add_friends_open
+16:34:52   SMS-0301 · web_add_friends_search:Ethan
+16:34:55   SMS-0301 · web_add_friends_panel_closed
+16:34:55   SMS-0301 · web_add_friends_retry
+16:34:58   SMS-0301 · web_add_friends_open
+16:35:00   SMS-0301 · web_add_friends_search:Robert
+16:35:04   SMS-0301 · web_add_friends_added:4
+16:35:05   SMS-0301 · web_add_friends_settle
+16:35:15   → OK:web_add_friends_added:4,web_add_friends_added:4 · ok=31 fail=16
+16:35:17 [48/60] SMS-0302 k1h48ei4 age=48.0h web=True
+16:35:29   SMS-0302 · qa_reuse_snapchat_web_tab
+16:35:40   SMS-0302 · qa_ready_to_add
+16:35:40   SMS-0302 · web_add_friends_empty_list
+16:35:40   SMS-0302 · web_add_friends_settle
+16:35:45   SMS-0302 · web_add_friends_open
+16:35:46   SMS-0302 · web_add_friends_search:David
+16:35:49   SMS-0302 · web_add_friends_added:2
+16:35:50   SMS-0302 · web_add_friends_settle
+16:36:01   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=32 fail=16
+16:36:03 [49/60] SMS-0306 k1h48q46 age=47.8h web=True
+16:36:17   SMS-0306 · qa_goto_web_session:https://www.snapchat.com/web/8a170958-e7c0-5d42-969d-056e85f1d758
+16:36:23   SMS-0306 · qa_web_session_ok
+16:36:32   SMS-0306 · qa_ready_to_add
+16:36:32   SMS-0306 · web_add_friends_empty_list
+16:36:32   SMS-0306 · web_add_friends_settle
+16:36:37   SMS-0306 · web_add_friends_open
+16:36:39   SMS-0306 · web_add_friends_search:Brian
+16:36:45   SMS-0306 · web_add_friends_added:4
+16:36:46   SMS-0306 · web_add_friends_settle
+16:36:56   → OK:web_add_friends_added:4,web_add_friends_added:4 · ok=33 fail=16
+16:36:58 [50/60] SMS-0307 k1h48v3w age=47.8h web=False
+16:37:09   SMS-0307 · qa_auth_page_seen:signup
+16:37:09   SMS-0307 · qa_goto_welcome
+16:37:20   SMS-0307 · qa_welcome_visible
+16:37:20   SMS-0307 · web_onboard_chat_try:1
+16:37:26   SMS-0307 · web_onboard_chat
+16:37:40   SMS-0307 · web_onboard_next_try:1
+16:37:43   SMS-0307 · web_onboard_next
+16:37:44   SMS-0307 · web_onboard_skip_try:1
+16:37:44   SMS-0307 · web_onboard_skip
+16:37:44   SMS-0307 · qa_ready_to_add
+16:37:44   SMS-0307 · web_add_friends_empty_list
+16:37:44   SMS-0307 · web_add_friends_settle
+16:37:49   SMS-0307 · web_add_friends_open
+16:37:50   SMS-0307 · web_add_friends_search:Caleb
+16:37:58   SMS-0307 · web_add_friends_retry
+16:37:59   SMS-0307 · web_add_friends_search:Jason
+16:38:08   SMS-0307 · web_add_friends_added:2
+16:38:09   SMS-0307 · web_add_friends_settle
+16:38:18   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=34 fail=16
+16:38:20 [51/60] SMS-0308 k1h491wm age=47.7h web=True
+16:38:34   SMS-0308 · qa_reuse_snapchat_web_tab
+16:38:44   SMS-0308 · qa_ready_to_add
+16:38:44   SMS-0308 · web_add_friends_empty_list
+16:38:44   SMS-0308 · web_add_friends_settle
+16:38:49   SMS-0308 · web_add_friends_open
+16:38:50   SMS-0308 · web_add_friends_search:Benjamin
+16:38:54   SMS-0308 · web_add_friends_added:2
+16:38:54   SMS-0308 · web_add_friends_settle
+16:39:04   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=35 fail=16
+16:39:06 [52/60] SMS-0312 k1h49e39 age=47.5h web=True
+16:39:20   SMS-0312 · qa_goto_web_session:https://www.snapchat.com/web/fdb6e3a3-9249-526d-b6a2-6a47a416a599
+16:39:26   SMS-0312 · qa_web_session_ok
+16:39:33   SMS-0312 · qa_ready_to_add
+16:39:33   SMS-0312 · web_add_friends_empty_list
+16:39:33   SMS-0312 · web_add_friends_settle
+16:39:37   SMS-0312 · web_add_friends_open
+16:39:38   SMS-0312 · web_add_friends_search:Sean
+16:39:42   SMS-0312 · web_add_friends_panel_closed
+16:39:42   SMS-0312 · web_add_friends_retry
+16:39:46   SMS-0312 · web_add_friends_open
+16:39:47   SMS-0312 · web_add_friends_search:Connor
+16:39:50   SMS-0312 · web_add_friends_added:4
+16:39:51   SMS-0312 · web_add_friends_settle
+16:40:01   → OK:web_add_friends_added:4,web_add_friends_added:4 · ok=36 fail=16
+16:40:03 [53/60] SMS-0313 k1h49hre age=47.5h web=True
+16:40:13   SMS-0313 · qa_reuse_snapchat_web_tab
+16:40:30   SMS-0313 · web_onboard_next_not_seen
+16:40:33   SMS-0313 · qa_ready_to_add
+16:40:33   SMS-0313 · web_add_friends_empty_list
+16:40:33   SMS-0313 · web_add_friends_settle
+16:40:38   SMS-0313 · web_add_friends_open
+16:40:39   SMS-0313 · web_add_friends_search:Ethan
+16:40:43   SMS-0313 · web_add_friends_panel_closed
+16:40:43   SMS-0313 · web_add_friends_retry
+16:40:46   SMS-0313 · web_add_friends_open
+16:40:48   SMS-0313 · web_add_friends_search:Nathaniel
+16:40:52   SMS-0313 · web_add_friends_panel_closed
+16:40:52   SMS-0313 · web_add_friends_retry
+16:40:55   SMS-0313 · web_add_friends_open
+16:40:57   SMS-0313 · web_add_friends_search:Michael
+16:40:59   SMS-0313 · web_add_friends_panel_closed
+16:40:59   SMS-0313 · web_add_friends_added:3
+16:41:00   SMS-0313 · web_add_friends_settle
+16:41:17   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=37 fail=16
+16:41:19 [54/60] SMS-0314 k1h49na2 age=47.4h web=False
+16:41:30   SMS-0314 · qa_auth_page_seen:signup
+16:41:30   SMS-0314 · qa_goto_welcome
+16:42:02   SMS-0314 · qa_welcome_visible
+16:42:03   SMS-0314 · web_onboard_chat_try:1
+16:42:08   SMS-0314 · web_onboard_chat
+16:42:17   SMS-0314 · web_onboard_next_try:1
+16:42:19   SMS-0314 · web_onboard_next
+16:42:20   SMS-0314 · web_onboard_skip_try:1
+16:42:21   SMS-0314 · web_onboard_skip
+16:42:21   SMS-0314 · qa_ready_to_add
+16:42:21   SMS-0314 · web_add_friends_empty_list
+16:42:21   SMS-0314 · web_add_friends_settle
+16:42:26   SMS-0314 · web_add_friends_open
+16:42:27   SMS-0314 · web_add_friends_search:James
+16:43:02   SMS-0314 · web_add_friends_added:3
+16:43:02   SMS-0314 · web_add_friends_settle
+16:43:12   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=38 fail=16
+16:43:14 [55/60] SMS-0317 k1h4c22l age=46.3h web=True
+16:43:27   SMS-0317 · qa_reuse_snapchat_web_tab
+16:43:40   SMS-0317 · qa_ready_to_add
+16:43:40   SMS-0317 · web_add_friends_empty_list
+16:43:40   SMS-0317 · web_add_friends_settle
+16:43:45   SMS-0317 · web_add_friends_open
+16:43:46   SMS-0317 · web_add_friends_search:Chris
+16:43:50   SMS-0317 · web_add_friends_added:2
+16:43:51   SMS-0317 · web_add_friends_settle
+16:44:01   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=39 fail=16
+16:44:03 [56/60] SMS-0319 k1h4c9u0 age=46.2h web=True
+16:44:15   SMS-0319 · qa_reuse_snapchat_web_tab
+16:44:28   SMS-0319 · qa_ready_to_add
+16:44:28   SMS-0319 · web_add_friends_empty_list
+16:44:28   SMS-0319 · web_add_friends_settle
+16:44:33   SMS-0319 · web_add_friends_open
+16:44:35   SMS-0319 · web_add_friends_search:Jonathan
+16:44:37   SMS-0319 · web_add_friends_panel_closed
+16:44:37   SMS-0319 · web_add_friends_retry
+16:44:41   SMS-0319 · web_add_friends_open
+16:44:42   SMS-0319 · web_add_friends_search:Benjamin
+16:44:44   SMS-0319 · web_add_friends_added:2
+16:44:45   SMS-0319 · web_add_friends_settle
+16:44:55   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=40 fail=16
+16:44:57 [57/60] SMS-0320 k1h4cfs0 age=46.1h web=True
+16:45:08   SMS-0320 · qa_reuse_snapchat_web_tab
+16:45:17   SMS-0320 · qa_ready_to_add
+16:45:17   SMS-0320 · web_add_friends_empty_list
+16:45:17   SMS-0320 · web_add_friends_settle
+16:45:22   SMS-0320 · web_add_friends_open
+16:45:23   SMS-0320 · web_add_friends_search:Jack
+16:45:27   SMS-0320 · web_add_friends_added:3
+16:45:28   SMS-0320 · web_add_friends_settle
+16:45:38   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=41 fail=16
+16:45:40 [58/60] SMS-0322 k1h4cosb age=46.0h web=True
+16:45:49   SMS-0322 · qa_goto_web_session:https://www.snapchat.com/web/21837035-0a25-506f-8322-3f2402110ac4
+16:45:55   SMS-0322 · qa_web_session_ok
+16:46:03   SMS-0322 · qa_ready_to_add
+16:46:03   SMS-0322 · web_add_friends_empty_list
+16:46:03   SMS-0322 · web_add_friends_settle
+16:46:07   SMS-0322 · web_add_friends_open
+16:46:10   SMS-0322 · web_add_friends_search:David
+16:46:13   SMS-0322 · web_add_friends_panel_closed
+16:46:13   SMS-0322 · web_add_friends_retry
+16:46:16   SMS-0322 · web_add_friends_open
+16:46:17   SMS-0322 · web_add_friends_search:Kyle
+16:46:21   SMS-0322 · web_add_friends_added:3
+16:46:22   SMS-0322 · web_add_friends_settle
+16:46:32   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=42 fail=16
+16:46:34 [59/60] SMS-0325 k1h4cy9i age=45.9h web=True
+16:46:47   SMS-0325 · qa_goto_web_session:https://www.snapchat.com/web/49d9effb-7036-57a4-8773-9e5b3b56f4cc
+16:46:53   SMS-0325 · qa_web_session_ok
+16:47:04   SMS-0325 · qa_ready_to_add
+16:47:04   SMS-0325 · web_add_friends_empty_list
+16:47:04   SMS-0325 · web_add_friends_settle
+16:47:09   SMS-0325 · web_add_friends_open
+16:47:11   SMS-0325 · web_add_friends_search:Daniel
+16:47:16   SMS-0325 · web_add_friends_added:2
+16:47:16   SMS-0325 · web_add_friends_settle
+16:47:26   → OK:web_add_friends_added:2,web_add_friends_added:2 · ok=43 fail=16
+16:47:28 [60/60] SMS-0327 k1h4d5nn age=45.8h web=True
+16:47:37   SMS-0327 · qa_reuse_snapchat_web_tab
+16:47:48   SMS-0327 · web_onboard_next_try:1
+16:47:50   SMS-0327 · web_onboard_next
+16:47:50   SMS-0327 · web_onboard_skip_try:1
+16:47:51   SMS-0327 · web_onboard_skip
+16:47:51   SMS-0327 · qa_ready_to_add
+16:47:51   SMS-0327 · web_add_friends_empty_list
+16:47:51   SMS-0327 · web_add_friends_settle
+16:47:55   SMS-0327 · web_add_friends_open
+16:47:57   SMS-0327 · web_add_friends_search:Nathaniel
+16:48:02   SMS-0327 · web_add_friends_added:3
+16:48:02   SMS-0327 · web_add_friends_settle
+16:48:12   → OK:web_add_friends_added:3,web_add_friends_added:3 · ok=44 fail=16
+16:48:14 done ok=44 fail=16 skip=0 of 60
