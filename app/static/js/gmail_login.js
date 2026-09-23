@@ -3,9 +3,16 @@ const $ = (id) => document.getElementById(id);
 let POOL = { total: 0, logged_in: 0, pending: 0, signed_up: 0, codes_total: 0, codes_used: 0, codes_left: 0, accounts: [] };
 let FILTER = "all";
 
-const LOGIN_STATES = ["pending", "login_ok", "captcha", "selfie", "error"];
+const LOGIN_STATES = ["pending", "login_ok", "wrong_password", "captcha", "selfie", "error"];
 const SNAP_STATES = ["none", "signed_up", "failed"];
-const LOGIN_LABEL = { pending: "needs login", login_ok: "logged in", captcha: "captcha", selfie: "selfie", error: "error" };
+const LOGIN_LABEL = {
+  pending: "needs login",
+  login_ok: "logged in",
+  wrong_password: "wrong password",
+  captcha: "captcha",
+  selfie: "selfie",
+  error: "error",
+};
 const SNAP_LABEL = { none: "—", signed_up: "signed up", failed: "failed" };
 
 function toast(msg) {
@@ -73,9 +80,24 @@ function renderMeters() {
       <p>In the login pool</p>
     </article>
     <article class="meter">
+      <p class="kicker">2fa.cn secrets</p>
+      <div class="big">${POOL.totp_ready ?? 0}</div>
+      <p>Authenticator TOTP ready</p>
+    </article>
+    <article class="meter">
+      <p class="kicker">Recovery mail</p>
+      <div class="big">${POOL.recovery_ready ?? 0}</div>
+      <p>Confirm-recovery-email 2SV</p>
+    </article>
+    <article class="meter">
       <p class="kicker">Codes left</p>
       <div class="big">${POOL.codes_left ?? 0}</div>
       <p>${POOL.codes_used ?? 0} used of ${POOL.codes_total ?? 0}</p>
+    </article>
+    <article class="meter">
+      <p class="kicker">Wrong password</p>
+      <div class="big">${POOL.wrong_password ?? 0}</div>
+      <p>Bad Gmail password</p>
     </article>
     <article class="meter">
       <p class="kicker">Snap signed up</p>
@@ -87,7 +109,7 @@ function renderMeters() {
 
 function matchesFilter(row) {
   if (FILTER === "all") return true;
-  if (FILTER === "issue") return ["captcha", "selfie", "error"].includes(row.login_status);
+  if (FILTER === "issue") return ["wrong_password", "captcha", "selfie", "error"].includes(row.login_status);
   return row.login_status === FILTER;
 }
 
@@ -116,25 +138,27 @@ function codeChips(row) {
 
 function renderTable() {
   const rows = filteredRows();
-  $("sheetSub").textContent = `${rows.length} shown · ${POOL.logged_in} logged in · ${POOL.codes_left} codes left`;
-  ["filterAll", "filterPending", "filterOk", "filterIssue"].forEach((id) => {
+  $("sheetSub").textContent = `${rows.length} shown · ${POOL.logged_in} logged in · ${POOL.totp_ready || 0} with 2FA secret · ${POOL.recovery_ready || 0} with recovery mail · ${POOL.codes_left} codes left`;
+  ["filterAll", "filterPending", "filterOk", "filterWrong", "filterIssue"].forEach((id) => {
     const btn = $(id);
     if (!btn) return;
     btn.classList.toggle("solid", btn.dataset.filter === FILTER);
     btn.classList.toggle("ghost", btn.dataset.filter !== FILTER);
   });
   if (!rows.length) {
-    $("rows").innerHTML = `<tr><td colspan="8" class="empty">${POOL.total ? "Nothing matches this filter." : "No accounts yet. Paste email + password + backup codes above."}</td></tr>`;
+    $("rows").innerHTML = `<tr><td colspan="10" class="empty">${POOL.total ? "Nothing matches this filter." : "No accounts yet. Paste email + password + recovery mail or 2fa.cn secret above."}</td></tr>`;
     return;
   }
   $("rows").innerHTML = rows.map((row) => `
     <tr data-key="${esc(row.email)}">
       <td class="mono">${esc(row.email)}</td>
       <td class="mono">${esc(row.password || "—")}</td>
-      <td>${selectHtml("login_status", row.login_status, LOGIN_STATES, LOGIN_LABEL)}</td>
+      <td title="${esc(row.last_error || "")}">${selectHtml("login_status", row.login_status, LOGIN_STATES, LOGIN_LABEL)}</td>
       <td>${selectHtml("snap_status", row.snap_status, SNAP_STATES, SNAP_LABEL)}</td>
       <td class="mono">${esc(row.profile_id || "—")}</td>
       <td>${esc(row.proxy_label || "—")}</td>
+      <td class="mono totp-key">${row.totp_secret ? esc(row.totp_secret) : "—"}</td>
+      <td class="mono">${row.recovery_email ? esc(row.recovery_email) : "—"}</td>
       <td>${codeChips(row)}</td>
       <td class="row-actions">
         <button class="warn" data-act="remove" data-email="${attr(row.email)}">Remove</button>
@@ -256,7 +280,7 @@ function renderRun(st) {
   $("optInjectProxy").disabled = running;
   const t = st.tally || {};
   $("runProgress").textContent =
-    `${st.processed || 0}/${st.total || 0} done · ok ${t.login_ok || 0} · captcha ${t.captcha || 0} · selfie ${t.selfie || 0} · error ${t.error || 0}`;
+    `${st.processed || 0}/${st.total || 0} done · ok ${t.login_ok || 0} · wrong pw ${t.wrong_password || 0} · captcha ${t.captcha || 0} · selfie ${t.selfie || 0} · error ${t.error || 0}`;
   const log = st.log || [];
   const box = $("runLog");
   box.innerHTML = log.length ? log.map((l) => `<div>${esc(l)}</div>`).join("") : `<div class="empty">No output yet.</div>`;
@@ -283,7 +307,7 @@ $("btnStart").onclick = async () => {
       }),
     });
     renderRun(r.status || { running: true });
-    toast("Login run started");
+    toast("Gmail + Snap run started");
   } catch (err) { toast(err.message); }
 };
 

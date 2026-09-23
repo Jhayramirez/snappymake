@@ -73,6 +73,15 @@ EMAIL_SELECTORS = [
     'input[placeholder*="Email" i]',
     'input[aria-label*="Email" i]',
 ]
+PHONE_SELECTORS = [
+    "#phoneNumber",
+    'input[name="phoneNumber"]',
+    'input[autocomplete="tel"]',
+    'input[autocomplete="tel-national"]',
+    'input[type="tel"]',
+    'input[placeholder*="Phone" i]',
+    'input[aria-label*="Phone" i]',
+]
 OTP_SELECTORS = [
     'input[name="otp"]',
     'input[autocomplete="one-time-code"]',
@@ -924,6 +933,66 @@ def _click_first_text(page, labels: tuple[str, ...]) -> bool:
     return False
 
 
+COOKIE_ACCEPT_LABELS = (
+    "Accept All",
+    "Accept all cookies",
+    "Accept all",
+    "Allow all",
+    "Allow All",
+)
+
+COOKIE_ACCEPT_SELECTORS = (
+    "#onetrust-accept-btn-handler",
+    "button#onetrust-accept-btn-handler",
+    '[id*="accept-btn-handler"]',
+    'button:has-text("Accept All")',
+    'button:has-text("Accept all cookies")',
+    'button:has-text("Accept all")',
+    'button:has-text("Allow all")',
+    'button:has-text("Allow All")',
+)
+
+
+def _cookie_wall_visible(page) -> bool:
+    try:
+        body = (page.inner_text("body") or "").lower()
+    except Exception:
+        return False
+    if "cookies help us" in body or "manage cookie" in body or "cookie preferences" in body:
+        return True
+    return "cookie" in body and "accept all" in body
+
+
+def _dismiss_cookie_banner(page, notes: list[str], on_step=None) -> bool:
+    """Snap's cookie modal blocks the signup form until Accept All is clicked."""
+    clicked = False
+    for sel in COOKIE_ACCEPT_SELECTORS:
+        try:
+            loc = page.locator(sel).first
+            if loc.count() and loc.is_visible():
+                try:
+                    loc.scroll_into_view_if_needed(timeout=1200)
+                except Exception:
+                    pass
+                loc.click(timeout=2500)
+                clicked = True
+                break
+        except Exception:
+            continue
+    if not clicked and _cookie_wall_visible(page):
+        clicked = _click_first_text(page, COOKIE_ACCEPT_LABELS)
+    if clicked:
+        notes.append("clicked_accept_all_cookies")
+        if on_step:
+            on_step("clicked_accept_all_cookies")
+        try:
+            page.wait_for_timeout(random.randint(500, 1000))
+        except Exception:
+            pass
+        return True
+    return False
+
+
 def _pick_english_ui(page, notes: list[str]) -> bool:
     if _page_is_english(page) and not _page_is_filipino(page):
         notes.append("page_already_english")
@@ -1288,11 +1357,43 @@ USE_EMAIL_SELECTORS = (
     'a:has-text("Use email instead")',
 )
 
+USE_PHONE_LABELS = (
+    "Use phone instead",
+    "Use Phone Instead",
+    "Sign up with phone",
+    "Sign up with phone number",
+    "Use phone number instead",
+    "Use mobile instead",
+    "Use phone number",
+    "Phone instead",
+    "Use phone",
+)
+
+USE_PHONE_SELECTORS = (
+    '[class*="usePhoneInstead"] a[role="button"]',
+    '[class*="usePhoneInstead"] a',
+    '[class*="usePhoneInstead"] button',
+    '[class*="usePhoneInstead"]',
+    'a[role="button"]:has-text("Use Phone Instead")',
+    'a[role="button"]:has-text("Use phone instead")',
+    'button:has-text("Use Phone Instead")',
+    'button:has-text("Use phone instead")',
+    'a:has-text("Use Phone Instead")',
+    'a:has-text("Use phone instead")',
+    'a:has-text("Use phone number")',
+)
+
 
 def _phone_step_visible(page) -> bool:
     """True if Snapchat is showing the phone-number verification step."""
     try:
         loc = page.locator('#phoneNumber, input[name="phoneNumber"]').first
+        if loc.count() and loc.is_visible():
+            return True
+    except Exception:
+        pass
+    try:
+        loc = page.locator('input[type="tel"], input[autocomplete="tel"], input[autocomplete="tel-national"]').first
         if loc.count() and loc.is_visible():
             return True
     except Exception:
@@ -1306,6 +1407,87 @@ def _phone_step_visible(page) -> bool:
         return page.locator('[class*="useEmailInstead"]').first.count() > 0
     except Exception:
         return False
+
+
+PHONE_REJECT_PHRASES = (
+    "invalid phone",
+    "invalid number",
+    "phone number is invalid",
+    "couldn't send",
+    "could not send",
+    "can't send",
+    "cannot send",
+    "cannot verify this phone",
+    "can't verify this phone",
+    "we cannot verify this phone number",
+    "we can't verify this phone number",
+    "request verification with another",
+    "verification with another phone",
+    "another phone number",
+    "try a different number",
+    "try another number",
+    "this number can't be used",
+    "this number cannot be used",
+    "number can't be used",
+    "unable to send",
+    "too many attempts",
+)
+
+
+def _phone_rejected(page) -> bool:
+    try:
+        blob = (page.inner_text("body") or "").lower()
+    except Exception:
+        return False
+    return any(phrase in blob for phrase in PHONE_REJECT_PHRASES)
+
+
+def _national_us_phone(phone: str) -> str:
+    digits = "".join(ch for ch in (phone or "") if ch.isdigit())
+    if digits.startswith("1") and len(digits) == 11:
+        digits = digits[1:]
+    return digits[-10:] if len(digits) >= 10 else digits
+
+
+def _ensure_us_country(page) -> None:
+    """Prefer United States / +1 on the phone step."""
+    try:
+        sel = page.locator("select").first
+        if sel.count() and sel.is_visible():
+            for kwargs in ({"label": "United States"}, {"label": "United States (+1)"}, {"value": "US"}):
+                try:
+                    sel.select_option(**kwargs, timeout=1500)
+                    return
+                except Exception:
+                    continue
+    except Exception:
+        pass
+    try:
+        box = page.get_by_role("combobox").first
+        if box.count() and box.is_visible():
+            cur = (box.inner_text() or "").lower()
+            if "united states" in cur or "+1" in cur:
+                return
+            box.click(timeout=2000)
+            page.wait_for_timeout(400)
+            opt = page.get_by_text("United States", exact=False).first
+            if opt.count():
+                opt.click(timeout=2500)
+    except Exception:
+        pass
+
+
+def _fill_phone_number(page, phone: str, filled: list[str], notes: list[str], on_step) -> bool:
+    national = _national_us_phone(phone)
+    if not national:
+        return False
+    _ensure_us_country(page)
+    if "phone" in filled:
+        filled.remove("phone")
+    if not _type_first(page, PHONE_SELECTORS, national, "phone", filled):
+        return False
+    _note(on_step, notes, f"typed_phone:+1{national}")
+    return True
 
 
 def _use_email_instead(page, notes: list[str], on_step=None) -> bool:
@@ -1339,6 +1521,35 @@ def _use_email_instead(page, notes: list[str], on_step=None) -> bool:
     return _first_visible(page, EMAIL_SELECTORS) is not None
 
 
+def _use_phone_instead(page, notes: list[str], on_step=None) -> bool:
+    """If Snap is on email signup, switch to the phone-number field."""
+    if _phone_step_visible(page):
+        return True
+    clicked = False
+    for sel in USE_PHONE_SELECTORS:
+        try:
+            loc = page.locator(sel).first
+            if loc.count() and loc.is_visible():
+                try:
+                    loc.scroll_into_view_if_needed(timeout=1500)
+                except Exception:
+                    pass
+                loc.click(timeout=2500)
+                clicked = True
+                break
+        except Exception:
+            continue
+    if not clicked:
+        clicked = _click_first_text(page, USE_PHONE_LABELS)
+    if clicked:
+        _note(on_step, notes, "clicked_use_phone_instead")
+        for _ in range(12):
+            page.wait_for_timeout(350)
+            if _phone_step_visible(page):
+                return True
+    return _phone_step_visible(page)
+
+
 def _email_or_otp_visible(page) -> str:
     if _first_visible(page, EMAIL_SELECTORS) is not None:
         return "email"
@@ -1348,10 +1559,18 @@ def _email_or_otp_visible(page) -> str:
     # click "Use Email Instead".
     if _phone_step_visible(page):
         return "phone"
+    try:
+        body = (page.inner_text("body") or "").lower()
+    except Exception:
+        body = ""
+    codeish = "verification code" in body or "confirmation code" in body or "enter the code" in body
+    if "email address" in body and not codeish:
+        return "email"
+    if any(word in body for word in ("phone number", "mobile number", "use email instead")) and not codeish:
+        return "phone"
     if _first_visible(page, OTP_SELECTORS) is not None or _otp_boxes(page) is not None:
         return "otp"
-    body = (page.inner_text("body") or "").lower()
-    if "verification code" in body or "confirmation code" in body or "enter the code" in body:
+    if codeish:
         return "otp"
     if "email" in body and any(word in body for word in ("verify", "code", "confirmation")):
         return "email"
@@ -1487,10 +1706,7 @@ def _welcome_tab(context, page, username: str = ""):
         pages = [page]
     for candidate in pages:
         if _on_welcome_page(candidate, username):
-            try:
-                candidate.bring_to_front()
-            except Exception:
-                pass
+            _bring_page(candidate)
             return candidate
     return page
 
@@ -1637,10 +1853,7 @@ def _find_snapchat_web_tab(context, opened, page):
                     candidate.wait_for_load_state("domcontentloaded", timeout=12000)
                 except Exception:
                     pass
-                try:
-                    candidate.bring_to_front()
-                except Exception:
-                    pass
+                _bring_page(candidate)
                 return candidate
         except Exception:
             continue
@@ -2040,6 +2253,14 @@ def _page_url(page) -> str:
 
 
 def _bring_page(page) -> None:
+    # Default: leave the OS focus on Cursor. CDP clicks still work.
+    try:
+        from app.ads.client import no_focus_enabled
+
+        if no_focus_enabled():
+            return
+    except Exception:
+        pass
     try:
         page.bring_to_front()
     except Exception:
@@ -2736,10 +2957,29 @@ def _snapchat_bitmoji_placeholder(
     return _snapchat_bitmoji(page, context, notes, on_step, gender=gender)
 
 
+def _viewport_width(page) -> float:
+    try:
+        size = page.viewport_size or {}
+        width = float(size.get("width") or 0)
+        if width:
+            return width
+    except Exception:
+        pass
+    try:
+        return float(page.evaluate("() => window.innerWidth") or 0)
+    except Exception:
+        return 1280.0
+
+
 def _add_friends_search_box(page):
-    """Add Friends overlay search — never the left inbox recent-chats bar."""
+    """Add Friends overlay search.
+
+    Small AdsPower fingerprints shrink Snap web, so this overlay sits on the
+    left (SMS-0017 was x=145). Do not require a wide-window x>280 cutoff.
+    Prefer the rightmost visible Search so a far-left inbox bar loses.
+    """
     best = None
-    best_x = 280
+    best_x = -1.0
     for sel in (
         'input[placeholder="Search..."]',
         'input[placeholder="Search"]',
@@ -2761,7 +3001,7 @@ def _add_friends_search_box(page):
             if not box:
                 continue
             x = float(box.get("x") or 0)
-            if x > best_x:
+            if x >= best_x:
                 best = item
                 best_x = x
     return best
@@ -2782,7 +3022,25 @@ def _open_add_friends_panel(page) -> bool:
             page.locator('button[title*="Add Friend" i]'),
         ]
     )
-    if loc is None or not _human_click(page, loc):
+    clicked = bool(loc is not None and _human_click(page, loc))
+    if not clicked:
+        # Tiny fingerprints collapse the chat header; the button exists at 0×0.
+        try:
+            clicked = bool(
+                page.evaluate(
+                    """() => {
+                      const btn = document.querySelector(
+                        'button[title="View friend requests"], button[title*="friend request" i], button[title*="Add Friend" i]'
+                      );
+                      if (!btn) return false;
+                      btn.click();
+                      return true;
+                    }"""
+                )
+            )
+        except Exception:
+            clicked = False
+    if not clicked:
         return False
     _pause(page, 600, 1100)
     for _ in range(20):
@@ -2831,13 +3089,14 @@ def _add_visible_web_friends(page, remaining: int) -> int:
             count = adds.count()
         except Exception:
             count = 0
+        min_x = min(350.0, max(90.0, _viewport_width(page) * 0.16))
         for i in range(count):
             btn = adds.nth(i)
             try:
                 box = btn.bounding_box()
             except Exception:
                 box = None
-            if box and 80 < box.get("y", 0) < 740 and box.get("x", 0) > 350:
+            if box and 50 < box.get("y", 0) < 900 and box.get("x", 0) > min_x:
                 cands.append(box)
         if not cands:
             break
@@ -3279,8 +3538,10 @@ def run_page_action(
     dwell_seconds: float = 6,
     screenshot_path: str | Path | None = None,
     email: str = "",
+    phone_number: str = "",
     otp_waiter: Callable[[], str | None] | None = None,
     email_provider: Callable[[], dict[str, Any] | None] | None = None,
+    phone_provider: Callable[[], dict[str, Any] | None] | None = None,
     friend_usernames: list[str] | None = None,
     on_step: Callable[[str], None] | None = None,
     until: str = "",
@@ -3309,6 +3570,8 @@ def run_page_action(
     if first_name:
         identity["first_name"] = first_name
     identity["last_name"] = ""
+    phone_number = (phone_number or "").strip()
+    email = (email or "").strip()
     if birth_year:
         identity["birth_year"] = int(birth_year)
     if birth_month:
@@ -3320,7 +3583,7 @@ def run_page_action(
     notes: list[str] = []
     friend_results: list[dict[str, Any]] = []
     session_url = str(web_session_url or "").strip()
-    if not session_url and action == "snapchat_qa_add":
+    if not session_url and action in {"snapchat_qa_add", "snapchat_warmup"}:
         # Allow callers to pass the remark deep-link via start_url.
         from app.services.profiles import extract_snap_web_url
 
@@ -3343,6 +3606,20 @@ def run_page_action(
                 list(friend_usernames or []),
                 web_session_url=session_url,
             )
+        elif action == "snapchat_warmup":
+            page, friend_results = _snapchat_qa_add(
+                page,
+                context,
+                notes,
+                on_step,
+                [],
+                web_session_url=session_url,
+            )
+            logged_out = any(str(n).startswith("account_logged_out") for n in notes)
+            if not logged_out:
+                _add_random_web_friends(page, notes, on_step)
+                _note(on_step, notes, "web_add_friends_settle")
+                _pause(page, 800, 1400)
         elif action == "snapchat_web_onboard":
             page = _welcome_tab(context, page, identity.get("username") or "")
             _bring_page(page)
@@ -3353,6 +3630,18 @@ def run_page_action(
             page.goto(_with_english_locale(start_url), wait_until="domcontentloaded", timeout=45000)
             page.wait_for_timeout(random.randint(1200, 2200))
             _force_english(page, start_url, notes)
+            _dismiss_cookie_banner(page, notes, on_step)
+            for _ck in range(4):
+                try:
+                    loc = page.locator("#firstname, input[name='firstName']").first
+                    if loc.count() and loc.is_visible():
+                        break
+                except Exception:
+                    pass
+                if not _dismiss_cookie_banner(page, notes, on_step):
+                    page.wait_for_timeout(400)
+                    continue
+                page.wait_for_timeout(500)
 
             if action in {"snapchat_signup", "snapchat_login"}:
                 try:
@@ -3361,6 +3650,7 @@ def run_page_action(
                     )
                 except Exception:
                     pass
+                _dismiss_cookie_banner(page, notes, on_step)
                 _type_first(page, FIRST_NAME_SELECTORS, identity["first_name"], "first_name", filled)
                 _clear_last_name(page, notes)
 
@@ -3390,10 +3680,14 @@ def run_page_action(
                 _type_first(page, PASSWORD_SELECTORS, identity["password"], "password", filled)
 
                 if action == "snapchat_signup":
-                    if email:
+                    if email and not phone_number:
                         _use_email_instead(page, notes, on_step)
-                    if email and _first_visible(page, EMAIL_SELECTORS) is not None:
+                    if email and not phone_number and _first_visible(page, EMAIL_SELECTORS) is not None:
                         _type_first(page, EMAIL_SELECTORS, email, "email", filled)
+                    if phone_number:
+                        _use_phone_instead(page, notes, on_step)
+                        if _phone_step_visible(page):
+                            _fill_phone_number(page, phone_number, filled, notes, on_step)
 
                     if not _ensure_fields(page, identity, filled, notes, on_step):
                         missing = sorted(
@@ -3463,13 +3757,92 @@ def run_page_action(
                             if "process_error_stuck" not in notes:
                                 _note(on_step, notes, "signup_not_submitted")
                         else:
-                            stage = _wait_for_stage(page, "any")
-                            # Reach the email field. Snapchat intermittently shows
-                            # the "Step 2 of 3" phone screen with a "Use Email
-                            # Instead" link — click it whenever it appears, even if
-                            # an email was already typed inline on the first form.
-                            # Retry a few times because the link can render late.
-                            if email and stage != "otp":
+                            page.wait_for_timeout(random.randint(1500, 2500))
+                            stage = _wait_for_stage(page, "any", tries=40)
+                            try:
+                                blob = " ".join((page.inner_text("body") or "").split())[:180]
+                            except Exception:
+                                blob = ""
+                            _note(
+                                on_step,
+                                notes,
+                                f"after_submit_stage:{stage or 'none'} {(page.url or '')[:90]} {blob}",
+                            )
+                            if (not stage) and _cookie_wall_visible(page):
+                                if _dismiss_cookie_banner(page, notes, on_step):
+                                    stage = _wait_for_stage(page, "any", tries=24)
+                            if phone_number and stage != "otp":
+                                if stage == "email" or _first_visible(page, EMAIL_SELECTORS) is not None:
+                                    if _use_phone_instead(page, notes, on_step):
+                                        stage = "phone"
+                                for _wait_phone in range(16):
+                                    now = _email_or_otp_visible(page)
+                                    if now == "otp":
+                                        stage = "otp"
+                                        break
+                                    if now == "phone" or _phone_step_visible(page):
+                                        stage = "phone"
+                                        break
+                                    if now == "email" or _first_visible(page, EMAIL_SELECTORS) is not None:
+                                        if _use_phone_instead(page, notes, on_step):
+                                            stage = "phone"
+                                            break
+                                    page.wait_for_timeout(1200)
+                                if stage != "otp" and stage != "phone":
+                                    _note(on_step, notes, "phone_step_not_seen")
+                                for _phone_try in range(8):
+                                    if _email_or_otp_visible(page) == "otp":
+                                        stage = "otp"
+                                        break
+                                    if not _phone_step_visible(page):
+                                        break
+                                    already_rejected = _phone_rejected(page) and "phone" in filled
+                                    if not already_rejected:
+                                        if not _fill_phone_number(page, phone_number, filled, notes, on_step):
+                                            _note(on_step, notes, "phone_field_not_typed")
+                                            break
+                                        if not _click_next(page, notes, on_step):
+                                            if "process_error_stuck" in notes:
+                                                submitted = False
+                                                break
+                                        page.wait_for_timeout(random.randint(900, 1600))
+                                        for _rej_wait in range(10):
+                                            if _email_or_otp_visible(page) == "otp":
+                                                stage = "otp"
+                                                break
+                                            if _phone_rejected(page):
+                                                break
+                                            page.wait_for_timeout(400)
+                                    if stage == "otp":
+                                        break
+                                    if not (already_rejected or _phone_rejected(page)):
+                                        stage = _wait_for_stage(page, "otp", tries=12)
+                                        if stage == "otp":
+                                            break
+                                    if already_rejected or _phone_rejected(page):
+                                        _note(on_step, notes, "phone_rejected")
+                                        if not phone_provider:
+                                            break
+                                        fresh = None
+                                        try:
+                                            fresh = phone_provider()
+                                        except Exception as exc:
+                                            _note(on_step, notes, f"phone_reorder_failed:{exc}")
+                                            break
+                                        if not (fresh and (fresh.get("phone_number") or fresh.get("phone"))):
+                                            _note(on_step, notes, "phone_reorder_none")
+                                            break
+                                        phone_number = str(fresh.get("phone_number") or fresh.get("phone") or "")
+                                        if fresh.get("otp_waiter"):
+                                            otp_waiter = fresh["otp_waiter"]
+                                        _note(on_step, notes, f"phone_reordered:{phone_number}")
+                                        if "phone" in filled:
+                                            filled.remove("phone")
+                                        continue
+                                    if _phone_step_visible(page):
+                                        continue
+                                    break
+                            elif email and stage != "otp":
                                 for _uei in range(4):
                                     if _use_email_instead(page, notes, on_step):
                                         stage = "email"
@@ -3478,7 +3851,7 @@ def run_page_action(
                                         break
                                     page.wait_for_timeout(600)
 
-                            if email and stage != "otp":
+                            if email and not phone_number and stage != "otp":
                                 for _email_try in range(4):
                                     # Confirm we're on an email field; if a phone
                                     # screen is (still) showing, click the link.
@@ -3542,7 +3915,12 @@ def run_page_action(
                             ):
                                 _note(on_step, notes, "email_rejected")
 
-                            if "process_error_stuck" not in notes and "email_rejected" not in notes and stage != "otp":
+                            if (
+                                "process_error_stuck" not in notes
+                                and "email_rejected" not in notes
+                                and stage != "otp"
+                                and not (phone_number and stage not in {"phone", "otp"})
+                            ):
                                 stage = _wait_for_stage(page, "otp", tries=20)
 
                             if "email_rejected" not in notes and stage != "otp" and email and "email" in filled and _email_rejected(page):
@@ -3618,6 +3996,7 @@ def run_page_action(
         delete_profile = (
             "process_error_stuck" in notes
             or "email_rejected" in notes
+            or ("phone_rejected" in notes and "typed_otp" not in notes)
             or signup_failed
         )
         close_profile = "close_profile" in notes or delete_profile
@@ -3649,7 +4028,8 @@ def run_page_action(
             "last_name": identity.get("last_name") or "",
             "username": identity["username"],
             "password": identity["password"],
-            "email": email,
+                            "email": email,
+                            "phone_number": phone_number,
             "birth_year": identity["birth_year"],
             "birth_month": identity["birth_month"],
             "birth_day": identity["birth_day"],

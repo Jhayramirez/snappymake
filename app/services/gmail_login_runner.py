@@ -1,16 +1,15 @@
 """In-app background runner for the Gmail Login pipeline.
 
-Lets the dashboard "Start" button drive the same proven flow as
-scripts/official_login_runner.py (create profile in SnappyMake Official →
-login Gmail with backup code → inject Netlox proxy on success), while writing
-results to the gmail_login table and exposing live status to the UI.
+Dashboard Start runs the full Official path: Gmail first → Netlox proxy →
+Snapchat Sign up with Google → Bitmoji → web Chat → confirm email.
 
-Playwright's sync API runs happily inside a plain worker thread (no asyncio
-loop there), so we run the loop on a daemon thread and poll status over HTTP.
+Playwright's sync API runs in a worker thread; status is polled over HTTP.
 """
 
 from __future__ import annotations
 
+import os
+import subprocess
 import sys
 import threading
 import time
@@ -28,6 +27,7 @@ from app.services import gmail_login as G  # noqa: E402
 _LOG_CAP = 400
 _lock = threading.Lock()
 _thread: threading.Thread | None = None
+_caffeine: subprocess.Popen | None = None
 _state: dict[str, Any] = {
     "running": False,
     "current": "",
@@ -38,7 +38,7 @@ _state: dict[str, Any] = {
     "inject_proxy": True,
     "processed": 0,
     "total": 0,
-    "tally": {"login_ok": 0, "captcha": 0, "selfie": 0, "error": 0},
+    "tally": {"login_ok": 0, "wrong_password": 0, "captcha": 0, "selfie": 0, "error": 0},
     "log": [],
     "last_error": "",
 }
@@ -50,6 +50,10 @@ def _log(msg: str) -> None:
         _state["log"].append(line)
         if len(_state["log"]) > _LOG_CAP:
             _state["log"] = _state["log"][-_LOG_CAP:]
+        if msg.startswith("=== ACCOUNT "):
+            _state["current"] = msg.replace("=== ACCOUNT ", "").strip()
+        if "ACCOUNT DONE" in msg or msg.startswith("  ") and "next mailbox" in msg:
+            _state["processed"] = int(_state.get("processed") or 0) + 1
     print("[gmail-login-run]", msg, flush=True)
 
 
@@ -64,6 +68,33 @@ def status() -> dict[str, Any]:
 def is_running() -> bool:
     with _lock:
         return bool(_state["running"])
+
+
+def _keep_awake() -> None:
+    """Stop display/system sleep so Playwright + AdsPower don't freeze on black screen."""
+    global _caffeine
+    _let_sleep()
+    try:
+        _caffeine = subprocess.Popen(
+            ["caffeinate", "-dims", "-w", str(os.getpid())],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        _log("keeping Mac awake (screen will not sleep during this run)")
+    except Exception as exc:
+        _log(f"caffeinate warn: {exc}")
+
+
+def _let_sleep() -> None:
+    global _caffeine
+    proc = _caffeine
+    _caffeine = None
+    if proc is None:
+        return
+    try:
+        proc.terminate()
+    except Exception:
+        pass
 
 
 def start(inject_proxy: bool = True, stop_at_first: bool = True) -> dict[str, Any]:
@@ -82,7 +113,7 @@ def start(inject_proxy: bool = True, stop_at_first: bool = True) -> dict[str, An
                 "inject_proxy": inject_proxy,
                 "processed": 0,
                 "total": 0,
-                "tally": {"login_ok": 0, "captcha": 0, "selfie": 0, "error": 0},
+                "tally": {"login_ok": 0, "wrong_password": 0, "captcha": 0, "selfie": 0, "error": 0},
                 "log": [],
                 "last_error": "",
             }
@@ -111,53 +142,47 @@ def _stop_requested() -> bool:
 
 def _run(inject_proxy: bool, stop_at_first: bool) -> None:
     try:
-        import official_login_runner as R  # heavy import (playwright); do it here
+        _keep_awake()
+        import importlib
+        import official_full_run as R
 
-        gid = R.official_group_id()
-        if not gid:
-            _log("ERROR: could not resolve 'SnappyMake Official' group")
-            return
-        accts = R.pending_accounts()
+        R = importlib.reload(R)
+        R._on_log = _log
+        R._should_stop = _stop_requested
+        R._stop_after_signed_up = stop_at_first
+        R._inject_proxy = inject_proxy
+        snap = G.snapshot()
         with _lock:
-            _state["total"] = len(accts)
-        _log(f"group {gid} · pending accounts: {len(accts)}")
-        if not accts:
-            _log("nothing to do — no pending accounts")
-            return
-
-        for acc in accts:
-            if _stop_requested():
-                _log("stopped by user")
-                break
-            email = acc["email"]
-            with _lock:
-                _state["current"] = email
-            _log(f"→ {email}: starting")
-            try:
-                outcome = R.run_one(acc, gid, inject_proxy)
-            except Exception as exc:  # never let one account kill the loop
-                outcome = "error"
-                _log(f"   {email}: hard error {str(exc)[:160]}")
-                try:
-                    G.set_status(email, login_status="error", last_error=str(exc)[:300])
-                except Exception:
-                    pass
-            with _lock:
-                _state["processed"] += 1
-                if outcome in _state["tally"]:
-                    _state["tally"][outcome] += 1
-            _log(f"   {email}: {outcome}")
-            if outcome == "login_ok" and stop_at_first:
-                _log(f"FIRST GOOD LOGIN → {email} · stopping (uncheck 'stop at first' to continue)")
-                break
+            _state["total"] = max(0, int(snap["total"]) - int(snap["signed_up"]))
+        _log(
+            "full run: Gmail first → proxy → Sign up with Google → "
+            "Bitmoji → Chat → confirm email"
+        )
+        _log(
+            f"pool total={snap['total']} pending={snap['pending']} "
+            f"login_ok={snap['logged_in']} signed_up={snap['signed_up']}"
+        )
+        code = R.main()
+        snap = G.snapshot()
+        with _lock:
+            _state["tally"]["login_ok"] = int(snap.get("logged_in") or 0)
+        _log(f"pipeline exit {code} · signed_up={snap['signed_up']}")
     except Exception as exc:
         with _lock:
             _state["last_error"] = str(exc)
         _log("RUN CRASHED: " + str(exc))
         traceback.print_exc()
     finally:
+        try:
+            import official_full_run as R
+
+            R._on_log = None
+            R._should_stop = None
+        except Exception:
+            pass
         with _lock:
             _state["running"] = False
             _state["current"] = ""
             _state["finished_at"] = int(time.time())
+        _let_sleep()
         _log("run finished")

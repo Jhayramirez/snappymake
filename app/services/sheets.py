@@ -1,8 +1,9 @@
 """Google Sheets live mirror for SnappyMake.
 
-Two tabs:
+Tabs:
   1. AdsPower Profiles — dashboard rows + username/password + created/last open
   2. Proxy Pool Status — Manage Proxy table
+  3. Official Profiles SMS Method — SnappyMake Official SMS group (DiddySMS)
 
 Auth: service-account JSON (default `secrets/google-sheets.json`).
 Updates are push-on-event (debounced full rewrite of both tabs).
@@ -22,10 +23,16 @@ from app.db import get_setting, set_setting
 
 PROFILES_TAB = "AdsPower Profiles"
 PROXY_TAB = "Proxy Pool Status"
+SMS_OFFICIAL_TAB = "Official Profiles SMS Method"
+SMS_OFFICIAL_GID = "10749351"
 DEFAULT_CREDS = ROOT / "secrets" / "google-sheets.json"
 DEFAULT_SHEET_ID = "1iBsEmI2ZMpQ2Vx5KnNjuz3z6upJIXdveMZ9P6KVMFrA"
 
 EMAIL_RE = re.compile(r"Email:\s*([^\s·|]+)", re.I)
+SMS_PHONE_RE = re.compile(r"Phone:\s*([+\d]+)", re.I)
+SMS_DIDDY_RE = re.compile(r"DiddySMS:\s*(\S+)", re.I)
+SMS_NAME_RE = re.compile(r"SnappyMake run \S+ ·\s*([^·]+?)\s*·")
+SMS_SERIAL_RE = re.compile(r"SMS-(\d+)", re.I)
 
 PROFILE_HEADERS = [
     "Profile No",
@@ -105,6 +112,7 @@ def sheets_status() -> dict[str, Any]:
         "creds_exists": path.is_file(),
         "profiles_tab": PROFILES_TAB,
         "proxy_tab": PROXY_TAB,
+        "sms_official_tab": SMS_OFFICIAL_TAB,
     }
 
 
@@ -127,6 +135,167 @@ def _fmt_ts(value: Any) -> str:
 def _email_from_remark(remark: str) -> str:
     match = EMAIL_RE.search(remark or "")
     return match.group(1).strip() if match else ""
+
+
+def _unix_seconds(value: Any) -> int:
+    if value in (None, "", 0, "0"):
+        return 0
+    try:
+        n = int(float(value))
+    except (TypeError, ValueError):
+        return 0
+    if n >= 100_000_000_000:
+        n = n // 1000
+    return n
+
+
+def _age_label(created: Any) -> str:
+    n = _unix_seconds(created)
+    if not n:
+        return ""
+    sec = max(0, int(time.time()) - n)
+    if sec < 3600:
+        return "less than 1 hour"
+    hours = sec // 3600
+    if hours < 24:
+        return "1 hour" if hours == 1 else f"{hours} hours"
+    days = hours // 24
+    return "1 day" if days == 1 else f"{days} days"
+
+
+def _warmup_stage_label(remark: str) -> str:
+    text = remark or ""
+    if "Warm Up Stage : Done" in text:
+        return "Done"
+    if "Warm Up Stage : Stage 1 Done" in text or "Stage 1 Done" in text:
+        return "Stage 1 Done"
+    return ""
+
+
+def _sms_is_good(remark: str) -> bool:
+    text = remark or ""
+    return "DiddySMS:" in text or "snapchat.com/web/" in text.lower()
+
+
+def _sms_serial(profile: dict[str, Any]) -> int:
+    raw = str(profile.get("profile_no") or "")
+    if raw.isdigit():
+        return int(raw)
+    name = str(profile.get("name") or "")
+    m = SMS_SERIAL_RE.search(name)
+    return int(m.group(1)) if m else 0
+
+
+def _sms_official_row(
+    profile: dict[str, Any],
+    open_ids: set[str],
+    lives: dict[str, str] | None = None,
+) -> list[Any]:
+    from app.ads.proxies import summarize_proxy
+    from app.services.profiles import extract_snap_web_url
+
+    remark = str(profile.get("remark") or "")
+    pid = str(profile.get("profile_id") or profile.get("user_id") or "")
+    name = str(profile.get("name") or "")
+    phone_m = SMS_PHONE_RE.search(remark)
+    first_m = SMS_NAME_RE.search(remark)
+    web = extract_snap_web_url(remark) or ""
+    created = profile.get("created_time")
+    proxy = profile.get("user_proxy_config") or {}
+    life = str((lives or {}).get(pid) or profile.get("life") or "").strip().lower()
+    if life == "logout":
+        life = "dead"
+    if life == "dead":
+        status = "Failed creation"
+        happened = "Signup never finished. No Snapchat account (login/signup kick)."
+    elif (time.time() - _unix_seconds(created)) >= 96 * 3600 and _unix_seconds(created):
+        status = "Ready to use"
+        happened = "4 days+. Account is ready to use."
+    elif web:
+        status = "Snapchat created"
+        happened = "SMS worked and a Snapchat account was created."
+    else:
+        status = "Snapchat created"
+        happened = "SMS signup finished (DiddySMS number used)."
+    return [
+        str(_sms_serial(profile) or profile.get("profile_no") or ""),
+        pid,
+        name,
+        _fmt_ts(created),
+        _age_label(created),
+        _warmup_stage_label(remark),
+        "dead" if life == "dead" else (life or "live"),
+        "Official SMS Method",
+        "open" if pid in open_ids else "closed",
+        status,
+        happened,
+        (first_m.group(1).strip() if first_m else ""),
+        profile.get("username") or "",
+        profile.get("password") or "",
+        phone_m.group(1) if phone_m else "",
+        summarize_proxy(proxy if isinstance(proxy, dict) else None),
+        _fmt_ts(profile.get("last_open_time")),
+    ]
+
+
+def sync_sms_official_now(client=None, *, force: bool = False) -> dict[str, Any]:
+    """Rewrite Official Profiles SMS Method from AdsPower group 10749351."""
+    if not force and not sheets_enabled():
+        return {"ok": True, "skipped": True, "reason": "disabled", **sheets_status()}
+
+    status = sheets_status()
+    if not status["creds_exists"]:
+        return {"ok": False, "detail": f"Missing credentials at {status['creds_path']}", **status}
+    sid = status["sheet_id"]
+    if not sid:
+        return {"ok": False, "detail": "Sheet ID not set", **status}
+
+    own_client = client is None
+    if own_client:
+        from app.ads.client import AdsPowerClient
+        from app.services import load_runtime_settings
+
+        conf = load_runtime_settings()
+        client = AdsPowerClient(conf["api_base"], conf.get("api_key") or "")
+    try:
+        profiles = list(client.list_profiles(group_id=SMS_OFFICIAL_GID) or [])
+        try:
+            open_ids = {str(x) for x in (client.local_active() or [])}
+        except Exception:
+            open_ids = set()
+        from app.db import get_all_profile_life
+
+        lives = get_all_profile_life()
+        good = [p for p in profiles if _sms_is_good(str(p.get("remark") or ""))]
+        good.sort(key=_sms_serial)
+        rows = [_sms_official_row(p, open_ids, lives) for p in good]
+        gc = _client()
+        spreadsheet = gc.open_by_key(sid)
+        n = _write_tab(
+            spreadsheet,
+            SMS_OFFICIAL_TAB,
+            SMS_OFFICIAL_HEADERS,
+            rows,
+            SMS_OFFICIAL_WIDTHS,
+            highlight_alive=True,
+        )
+        return {
+            "ok": True,
+            "sheet_id": sid,
+            "title": spreadsheet.title,
+            "sms_official_tab": SMS_OFFICIAL_TAB,
+            "sms_profiles": n,
+            "sms_group_total": len(profiles),
+            "url": f"https://docs.google.com/spreadsheets/d/{sid}/edit",
+            **status,
+            "enabled": sheets_enabled(),
+        }
+    finally:
+        if own_client:
+            try:
+                client.close()
+            except Exception:
+                pass
 
 
 def _client():
@@ -194,9 +363,50 @@ PROXY_WIDTHS = {
     "Raw line": 360,
 }
 
+SMS_OFFICIAL_HEADERS = [
+    "Profile #",
+    "Profile ID",
+    "Name",
+    "Created",
+    "Age",
+    "Warm up",
+    "Life",
+    "Method",
+    "Browser",
+    "Snapchat status",
+    "What happened",
+    "Snapchat name",
+    "Snapchat username",
+    "Password",
+    "Phone",
+    "Proxy",
+    "Last open",
+]
+
+SMS_OFFICIAL_WIDTHS = {
+    "Profile #": 90,
+    "Profile ID": 130,
+    "Name": 120,
+    "Created": 170,
+    "Age": 140,
+    "Warm up": 140,
+    "Life": 80,
+    "Method": 160,
+    "Browser": 80,
+    "Snapchat status": 220,
+    "What happened": 420,
+    "Snapchat name": 130,
+    "Snapchat username": 160,
+    "Password": 140,
+    "Phone": 150,
+    "Proxy": 220,
+    "Last open": 160,
+}
+
 # Short columns get centered; long text columns clip (ellipsis) so rows stay even.
 CENTER_HEADERS = {
     "Profile No",
+    "Profile #",
     "Life",
     "Status",
     "Browser",
@@ -207,11 +417,22 @@ CENTER_HEADERS = {
     "Remaining",
     "Fails",
     "Disabled",
+    "Warm up",
+    "Age",
+    "Life",
 }
-CLIP_HEADERS = {"Proxy", "Remark", "Email", "Raw line", "Key", "User agent"}
+CLIP_HEADERS = {"Proxy", "Remark", "Email", "Raw line", "Key", "User agent", "What happened"}
 
 
-def _style_tab(spreadsheet, ws, headers: list[str], widths: dict[str, int], n_data: int) -> None:
+def _style_tab(
+    spreadsheet,
+    ws,
+    headers: list[str],
+    widths: dict[str, int],
+    n_data: int,
+    *,
+    highlight_alive: bool = False,
+) -> None:
     """Apply a clean readable look: frozen bold header, widths, filters, clip."""
     cols = len(headers)
     rows = max(n_data + 1, 2)  # include header
@@ -294,8 +515,91 @@ def _style_tab(spreadsheet, ws, headers: list[str], widths: dict[str, int], n_da
         },
     ]
 
-    # Alternating body rows for scanability.
+    # Dead rows sit on top of zebra so the light red always wins.
+    if n_data > 0 and "Life" in headers:
+        life_col = _col_letter(headers.index("Life") + 1)
+        requests.append(
+            {
+                "addConditionalFormatRule": {
+                    "rule": {
+                        "ranges": [
+                            {
+                                "sheetId": sheet_id,
+                                "startRowIndex": 1,
+                                "endRowIndex": rows,
+                                "startColumnIndex": 0,
+                                "endColumnIndex": cols,
+                            }
+                        ],
+                        "booleanRule": {
+                            "condition": {
+                                "type": "CUSTOM_FORMULA",
+                                "values": [
+                                    {
+                                        "userEnteredValue": f'=${life_col}2="dead"',
+                                    }
+                                ],
+                            },
+                            "format": {
+                                "backgroundColor": {
+                                    "red": 1.0,
+                                    "green": 0.82,
+                                    "blue": 0.82,
+                                }
+                            },
+                        },
+                    },
+                    "index": 0,
+                }
+            }
+        )
+    # Official mail only: confirmed still-inside rows sit under dead red.
+    if n_data > 0 and highlight_alive and "Snapchat status" in headers:
+        status_col = _col_letter(headers.index("Snapchat status") + 1)
+        requests.append(
+            {
+                "addConditionalFormatRule": {
+                    "rule": {
+                        "ranges": [
+                            {
+                                "sheetId": sheet_id,
+                                "startRowIndex": 1,
+                                "endRowIndex": rows,
+                                "startColumnIndex": 0,
+                                "endColumnIndex": cols,
+                            }
+                        ],
+                        "booleanRule": {
+                            "condition": {
+                                "type": "CUSTOM_FORMULA",
+                                "values": [
+                                    {
+                                        "userEnteredValue": (
+                                            f'=OR(${status_col}2="Still inside",'
+                                            f'${status_col}2="Ready to use")'
+                                        ),
+                                    }
+                                ],
+                            },
+                            "format": {
+                                "backgroundColor": {
+                                    "red": 0.82,
+                                    "green": 0.93,
+                                    "blue": 0.85,
+                                }
+                            },
+                        },
+                    },
+                    "index": 1 if "Life" in headers else 0,
+                }
+            }
+        )
     if n_data > 0:
+        zebra_index = 0
+        if "Life" in headers:
+            zebra_index += 1
+        if highlight_alive and "Snapchat status" in headers:
+            zebra_index += 1
         requests.append(
             {
                 "addConditionalFormatRule": {
@@ -323,7 +627,7 @@ def _style_tab(spreadsheet, ws, headers: list[str], widths: dict[str, int], n_da
                             },
                         },
                     },
-                    "index": 0,
+                    "index": zebra_index,
                 }
             }
         )
@@ -416,6 +720,8 @@ def _write_tab(
     headers: list[str],
     rows: list[list[Any]],
     widths: dict[str, int],
+    *,
+    highlight_alive: bool = False,
 ) -> int:
     ws = _ensure_worksheet(spreadsheet, title, len(headers))
     values = [headers, *rows]
@@ -452,7 +758,9 @@ def _write_tab(
 
     ws.update(f"A1:{_col_letter(len(headers))}{len(values)}", values, value_input_option="RAW")
     try:
-        _style_tab(spreadsheet, ws, headers, widths, len(rows))
+        _style_tab(
+            spreadsheet, ws, headers, widths, len(rows), highlight_alive=highlight_alive
+        )
     except Exception:
         # Data is already written — styling failure shouldn't fail the sync.
         pass
@@ -534,12 +842,18 @@ def sync_now(client=None, *, force: bool = False) -> dict[str, Any]:
         n_proxies = _write_tab(
             spreadsheet, PROXY_TAB, PROXY_HEADERS, proxy_rows, PROXY_WIDTHS
         )
+        sms = {}
+        try:
+            sms = sync_sms_official_now(client, force=force)
+        except Exception:
+            sms = {"ok": False, "sms_profiles": 0}
         return {
             "ok": True,
             "sheet_id": sid,
             "title": spreadsheet.title,
             "profiles": n_profiles,
             "proxies": n_proxies,
+            "sms_profiles": sms.get("sms_profiles") or 0,
             "rotation": pool.get("rotation"),
             "url": f"https://docs.google.com/spreadsheets/d/{sid}/edit",
             **status,

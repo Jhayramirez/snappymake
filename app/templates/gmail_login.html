@@ -18,7 +18,7 @@
       <a class="mark" href="/" style="text-decoration:none">SM</a>
       <div>
         <h1>Gmail Login</h1>
-        <p>Accounts we log INTO Gmail (password + 2FA backup codes) → Snapchat via Google</p>
+        <p>Accounts we log INTO Gmail (password + recovery email / Google Authenticator / 2fa.cn secret + backup codes) → Snapchat via Google</p>
       </div>
     </div>
     <div class="top-actions">
@@ -35,16 +35,16 @@
     <div class="sheet-head">
       <div>
         <h2>Bulk import</h2>
-        <p class="muted">One account per line — <code>email⇥password⇥code1⇥code2…</code>. Codes like <code>9538 5125</code> or <code>95385125</code> both work.</p>
+        <p class="muted">One account per line — <code>email⇥password⇥recovery_or_2FA_SECRET⇥…</code>. A second Gmail is used as Google’s recovery-email 2SV. Spaced 8×4-char keys are 2fa.cn TOTP secrets, not backup codes.</p>
       </div>
     </div>
     <form id="importForm" class="form-grid nested" style="padding:0 22px 22px">
-      <label class="span-2">email · password · backup codes — one per line
-        <textarea name="login_list" rows="6" placeholder="you@gmail.com&#9;Passw0rd&#9;9538 5125&#9;5715 7268&#9;1964 6475&#10;other@gmail.com&#9;secret&#9;98806525&#9;22449188"></textarea>
+      <label class="span-2">email · password · recovery mail or 2fa.cn secret — one per line
+        <textarea name="login_list" rows="6" placeholder="you@gmail.com&#9;Passw0rd&#9;JBSWY3DPEHPK3PXP&#9;9538 5125&#9;5715 7268&#10;other@gmail.com&#9;secret&#9;98806525&#9;22449188"></textarea>
       </label>
       <label class="check span-2"><input type="checkbox" id="excludeUsed" checked /> Exclude emails already in the AdsPower <b>&nbsp;SnappyMail-Test&nbsp;</b> group</label>
       <div class="form-actions span-2">
-        <p class="hint">Backup codes power the used/unused chips below. Re-importing an account keeps codes already marked used.</p>
+        <p class="hint">2FA secrets generate Google Authenticator codes (same as 2fa.cn). Backup-code chips still toggle used/unused. Re-importing keeps used flags and an existing secret if you omit one.</p>
         <button class="solid" type="submit">Import accounts</button>
       </div>
     </form>
@@ -54,15 +54,15 @@
     <div class="sheet-head">
       <div>
         <h2>Run logins</h2>
-        <p class="muted">Create profile in <b>SnappyMake Official</b> → login Gmail (backup code) → inject Netlox proxy. Needs AdsPower open with Local API.</p>
+        <p class="muted">Gmail first (password + backup code) → Netlox proxy → Snapchat <b>Sign up with Google</b> (signup page only) → Bitmoji → web Chat → confirm email. One browser at a time. Needs AdsPower Local API.</p>
       </div>
       <div id="runPill" class="pill off">idle</div>
     </div>
     <div class="form-grid nested" style="padding:0 22px 22px">
       <div class="inline span-2" style="align-items:center;gap:1rem;flex-wrap:wrap;margin:0">
-        <button class="solid" id="btnStart" type="button">▶ Start logins</button>
+        <button class="solid" id="btnStart" type="button">▶ Start Gmail + Snap</button>
         <button class="warn" id="btnStop" type="button" disabled>■ Stop</button>
-        <label class="check"><input type="checkbox" id="optStopFirst" checked /> Stop at first good login</label>
+        <label class="check"><input type="checkbox" id="optStopFirst" /> Stop after first Snap signup</label>
         <label class="check"><input type="checkbox" id="optInjectProxy" checked /> Inject Netlox proxy on success</label>
         <span class="hint" id="runProgress">—</span>
       </div>
@@ -80,6 +80,7 @@
         <button class="ghost" data-filter="all" id="filterAll">All</button>
         <button class="ghost" data-filter="pending" id="filterPending">Needs login</button>
         <button class="ghost" data-filter="login_ok" id="filterOk">Logged in</button>
+        <button class="ghost" data-filter="wrong_password" id="filterWrong">Wrong password</button>
         <button class="ghost" data-filter="issue" id="filterIssue">Captcha/Selfie/Error</button>
         <input id="search" class="search" placeholder="Filter email…" />
       </div>
@@ -94,12 +95,14 @@
             <th>Snapchat</th>
             <th>Profile</th>
             <th>Proxy</th>
+            <th>2FA secret</th>
+            <th>Recovery mail</th>
             <th>Backup codes <span class="hint">click a chip to toggle used</span></th>
             <th></th>
           </tr>
         </thead>
         <tbody id="rows">
-          <tr><td colspan="8" class="empty">Loading…</td></tr>
+          <tr><td colspan="10" class="empty">Loading…</td></tr>
         </tbody>
       </table>
     </div>

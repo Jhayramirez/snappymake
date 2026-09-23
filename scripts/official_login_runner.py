@@ -54,13 +54,25 @@ def official_group_id() -> str:
 
 def pending_accounts():
     """Accounts still needing a login: pending or previous error. Skip
-    login_ok / captcha / selfie (known terminal states)."""
+    login_ok / wrong_password / captcha / selfie (known terminal states).
+    Skip SnappyMail-Test leftovers that only live in the stats DB."""
     rows = G.snapshot()["accounts"]
     out = []
     for r in rows:
         if r["login_status"] in ("pending", "error"):
+            gname = (r.get("group_name") or "").strip()
+            if gname == G.EXCLUDE_GROUP_NAME:
+                continue
             codes = [c["code"] for c in r["codes"]]
-            out.append({"email": r["email"], "password": r["password"], "codes": codes})
+            out.append(
+                {
+                    "email": r["email"],
+                    "password": r["password"],
+                    "codes": codes,
+                    "totp_secret": r.get("totp_secret") or "",
+                    "recovery_email": r.get("recovery_email") or "",
+                }
+            )
     return out
 
 
@@ -68,6 +80,8 @@ def run_one(acc, gid, inject: bool) -> str:
     email = acc["email"]
     password = acc["password"]
     codes = acc["codes"]
+    totp_secret = acc.get("totp_secret") or ""
+    recovery_email = acc.get("recovery_email") or ""
     backup = fmt_backup(codes[0]) if codes else ""
 
     log(f"\n========== {email} ==========")
@@ -83,7 +97,9 @@ def run_one(acc, gid, inject: bool) -> str:
         try:
             ws = B.start_with_retries(pid)
             log("  logging in (no focus)...")
-            result = B.login_gmail(ws, email, password, codes)
+            result = B.login_gmail(
+                ws, email, password, codes, totp_secret=totp_secret, recovery_email=recovery_email
+            )
             log("  RESULT", result)
             if is_crash_error(result):
                 raise RuntimeError(str(result))
@@ -117,11 +133,33 @@ def run_one(acc, gid, inject: bool) -> str:
         G.set_status(email, login_status="captcha", profile_id=pid)
         return "captcha"
 
+    if "WRONG_PASSWORD" in str(result):
+        B.update_user(pid, remark=B.remark(email, password, backup, "WRONG PASSWORD"))
+        B.stop_browser(pid); B.stop_all_browsers()
+        G.set_status(
+            email,
+            login_status="wrong_password",
+            profile_id=pid,
+            last_error="wrong password",
+        )
+        return "wrong_password"
+
     if "SELFIE" in result:
         B.update_user(pid, remark=B.remark(email, password, backup, "SELFIE VERIFICATION REQUIRED"))
         B.stop_browser(pid); B.stop_all_browsers()
         G.set_status(email, login_status="selfie", profile_id=pid)
         return "selfie"
+
+    if "totp_rejected" in str(result).lower() or "challenge/totp" in str(result).lower():
+        B.update_user(pid, remark=B.remark(email, password, backup, "2FA KEY REJECTED"))
+        B.stop_browser(pid); B.stop_all_browsers()
+        G.set_status(
+            email,
+            login_status="error",
+            profile_id=pid,
+            last_error="2FA key rejected",
+        )
+        return "error"
 
     if result != "LOGIN_OK":
         B.update_user(pid, remark=B.remark(email, password, backup, f"FAIL {result}"))
@@ -158,7 +196,7 @@ def main() -> int:
     accts = pending_accounts()
     log(f"Pending accounts: {len(accts)}")
 
-    tally = {"login_ok": 0, "captcha": 0, "selfie": 0, "error": 0}
+    tally = {"login_ok": 0, "wrong_password": 0, "captcha": 0, "selfie": 0, "error": 0}
     first_good = None
     for acc in accts:
         try:

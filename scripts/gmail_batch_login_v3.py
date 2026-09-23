@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import random
+import re
 import string
 import sys
 import time
@@ -18,6 +19,7 @@ BASE = "http://local.adspower.net:50325"
 GROUP_NAME = "SnappyMail-Test"
 # Cross-platform paths (Windows/macOS): anchor to the project root, not /Users or /tmp.
 ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
 BATCH_FILE = ROOT / "data" / "snappymail_batch.tsv"
 STATUS_FILE = ROOT / "data" / "snappymail_batch_status.json"
 SKIP_EMAILS = {"pashtrsafre@gmail.com", "hhdnghahh@gmail.com"}
@@ -334,14 +336,18 @@ def human_type(page, locator, text: str):
 def find_page(browser):
     pages = [pg for ctx in browser.contexts for pg in ctx.pages]
     for pg in reversed(pages):
+        if really_gmail_inbox(pg.url or ""):
+            return pg
+    for pg in reversed(pages):
         u = (pg.url or "").lower()
-        if any(x in u for x in ("accounts.google.com", "mail.google.com", "gds.google.com")):
+        if "accounts.google.com" in u or "gds.google.com" in u:
             return pg
     return pages[-1] if pages else None
 
 
 def click_named(page, *names):
-    for name in names:
+    extra = ("다음", "계속", "확인", "继续", "下一步", "确定", "確定", "繼續", "次へ", "続行")
+    for name in (*names, *extra):
         loc = page.get_by_role("button", name=name)
         try:
             if loc.count() and loc.first.is_visible():
@@ -389,6 +395,61 @@ def body_text(page) -> str:
         return ""
 
 
+def really_gmail_inbox(url: str) -> bool:
+    """True only on the real Gmail app inbox — not marketing, not Google sign-in."""
+    u = (url or "").lower()
+    if "accounts.google" in u or "workspace.google" in u:
+        return False
+    return "mail.google.com/mail" in u
+
+
+PWD_FAIL = (
+    "wrong password",
+    "incorrect password",
+    "password is incorrect",
+    "couldn't sign you in",
+    "could not sign you in",
+    "wrong password. try again",
+    "enter a valid password",
+    "too many failed attempts",
+    "your password was changed",
+    "mali ang password",
+    "hindi tama ang password",
+    "hindi tama ang iyong password",
+)
+
+
+def password_rejected(page) -> bool:
+    url = (page.url or "").lower()
+    if "challenge/pwd" not in url and "/pwd" not in url:
+        return False
+    blob = body_text(page).lower()
+    if any(s in blob for s in PWD_FAIL):
+        return True
+    try:
+        err = page.evaluate(
+            """() => {
+              const n = document.querySelector(
+                '[aria-live="assertive"], [jsname="B34EJ"], span[id*="passwordError"], div[jsname="B34EJ"]'
+              );
+              return ((n && n.innerText) || '').trim();
+            }"""
+        )
+    except Exception:
+        err = ""
+    low = (err or "").lower()
+    return bool(low) and any(
+        s in low
+        for s in (
+            "wrong",
+            "incorrect",
+            "invalid",
+            "failed attempts",
+            "password was changed",
+        )
+    )
+
+
 def strong_backup_error(page) -> bool:
     if "challenge/bc" not in (page.url or ""):
         return False
@@ -413,20 +474,260 @@ def strong_backup_error(page) -> bool:
 def pick_option(page, needles):
     return page.evaluate(
         """(needles) => {
-          const nodes=Array.from(document.querySelectorAll('[role="link"],li,div[role="button"],button,a,div,span'));
+          const nodes=Array.from(document.querySelectorAll(
+            '[role="link"],[role="option"],li,div[role="button"],button,a,span,label,div'
+          ));
+          const hits=[];
           for (const n of nodes) {
-            const t=(n.innerText||'').trim().toLowerCase();
-            if (!t || t.length>90) continue;
-            if (t.includes('susunod') || t==='next') continue;
-            if (needles.some(x=>t.includes(x))) {
-              (n.closest('[role="link"],[role="button"],button,a,li')||n).click();
-              return t.slice(0,90);
-            }
+            const raw=((n.innerText||'')+' '+(n.getAttribute('aria-label')||'')).trim();
+            const t=raw.toLowerCase().replace(/\\s+/g,' ');
+            if (!t || t.length>70) continue;
+            if (t.includes('susunod') || t==='next' || t.includes('skip to')) continue;
+            if (!needles.some(x=>t.includes(x))) continue;
+            hits.push({n, t, len:t.length});
           }
-          return null;
+          hits.sort((a,b)=>a.len-b.len);
+          if (!hits.length) return null;
+          const best=hits[0];
+          (best.n.closest('[role="link"],[role="option"],[role="button"],button,a,li')||best.n).click();
+          return best.t;
         }""",
         needles,
     )
+
+
+BACKUP_NEEDLES = [
+    "backup code",
+    "backup codes",
+    "8-digit",
+    "8 digit",
+    "8-digit backup",
+    "enter one of your",
+    "enter a backup code",
+    "use your backup",
+    "ilagay ang isa",
+]
+TRY_ANOTHER_NEEDLES = ["try another way", "sumubok ng iba"]
+TOTP_NEEDLES = [
+    "google authenticator",
+    "authenticator app",
+    "get a verification code from the google authenticator",
+    "verification code from the google authenticator",
+    "enter the code from your authenticator",
+    "authenticator",
+]
+
+
+def on_2sv_chooser(page) -> bool:
+    url = (page.url or "").lower()
+    if any(
+        x in url
+        for x in (
+            "challenge/selection",
+            "challenge/sk",
+            "challenge/dp",
+            "challenge/ipp",
+            "challenge/kpe",
+            "challenge/totp",
+        )
+    ):
+        return True
+    blob = body_text(page).lower()
+    return any(
+        x in blob
+        for x in (
+            "2-step verification",
+            "choose how you want to sign in",
+            "try another way",
+            "tap yes on your phone",
+            "confirm your recovery email",
+        )
+    )
+
+
+def pick_backup_path(page) -> str | None:
+    """From 2-step / method list, open the 8-digit backup-code form."""
+    hit = pick_option(page, BACKUP_NEEDLES)
+    if hit:
+        return hit
+    try:
+        loc = page.get_by_text(re.compile(r"8-?digit|backup code", re.I)).first
+        if loc.count() and loc.is_visible(timeout=800):
+            loc.click(timeout=4000)
+            return "text:backup"
+    except Exception:
+        pass
+    for name in ("Try another way", "More ways to verify"):
+        try:
+            loc = page.get_by_role("button", name=re.compile(rf"^{name}$", re.I)).first
+            if loc.count() and loc.is_visible(timeout=700):
+                loc.click(timeout=5000)
+                return f"role:{name}"
+        except Exception:
+            pass
+        try:
+            loc = page.get_by_text(re.compile(name, re.I)).first
+            if loc.count() and loc.is_visible(timeout=600):
+                loc.click(timeout=5000)
+                return f"text:{name}"
+        except Exception:
+            pass
+    hit = pick_option(page, TRY_ANOTHER_NEEDLES)
+    if hit:
+        return hit
+    return None
+
+
+def click_authenticator(page) -> str | None:
+    """Open Google Authenticator / 2fa.cn-style 6-digit TOTP form."""
+    for pat in (
+        r"Get a verification code from the Google Authenticator",
+        r"Google Authenticator",
+        r"authenticator app",
+        r"Enter the 6-digit code",
+    ):
+        try:
+            loc = page.get_by_text(re.compile(pat, re.I)).first
+            if loc.count() and loc.is_visible(timeout=700):
+                loc.click(timeout=5000)
+                return f"text:{pat}"
+        except Exception:
+            pass
+    hit = pick_option(page, TOTP_NEEDLES)
+    return hit or None
+
+
+def click_recovery_email(page) -> str | None:
+    """Open Google 'Confirm your recovery email' (not phone, not Send)."""
+    for pat in (
+        r"Confirm your recovery email",
+        r"Enter the email address you added as a recovery",
+        r"recovery email",
+        r"email you added",
+    ):
+        try:
+            loc = page.get_by_text(re.compile(pat, re.I)).first
+            if loc.count() and loc.is_visible(timeout=700):
+                loc.click(timeout=5000)
+                return f"text:{pat}"
+        except Exception:
+            pass
+    hit = pick_option(
+        page,
+        [
+            "confirm your recovery email",
+            "recovery email",
+            "enter the email address you added",
+        ],
+    )
+    if hit and "phone" in (hit or "").lower():
+        return None
+    return hit or None
+
+
+def on_recovery_form(page) -> bool:
+    url = (page.url or "").lower()
+    if "challenge/kpe" in url:
+        return True
+    blob = body_text(page).lower()
+    if "recovery email" in blob and ("enter" in blob or "confirm" in blob or "type" in blob):
+        return True
+    try:
+        if page.locator('input[name="knowledgePreregisteredEmailResponse"]').first.is_visible(timeout=300):
+            return True
+    except Exception:
+        pass
+    return False
+
+
+def type_recovery_email(page, recovery: str) -> bool:
+    rec = (recovery or "").strip()
+    if not rec:
+        return False
+    field = None
+    for _ in range(20):
+        field = visible_input(
+            page,
+            [
+                'input[name="knowledgePreregisteredEmailResponse"]',
+                'input[type="email"]',
+                'input[type="text"]',
+            ],
+            skip_password=True,
+        )
+        if field:
+            break
+        page.wait_for_timeout(250)
+    if not field:
+        return False
+    log("  try recovery email", rec)
+    try:
+        human_type(page, field, rec)
+    except Exception:
+        try:
+            field.fill(rec)
+        except Exception:
+            return False
+    click_named(page, "Next", "Susunod", "Continue")
+    for _ in range(24):
+        page.wait_for_timeout(400)
+        u = (page.url or "").lower()
+        if "challenge/kpe" not in u and not on_recovery_form(page):
+            log("  RECOVERY_OK", rec)
+            return True
+        if strong_backup_error(page):
+            log("  RECOVERY_BAD", rec)
+            return False
+    return "challenge/kpe" not in (page.url or "").lower()
+
+
+def on_totp_form(page) -> bool:
+    url = (page.url or "").lower()
+    if "challenge/totp" in url:
+        return True
+    try:
+        if page.locator('input[name="totpPin"]').first.is_visible(timeout=400):
+            return True
+    except Exception:
+        pass
+    blob = body_text(page).lower()
+    return "enter the 6-digit" in blob and "authenticator" in blob
+
+
+def type_totp(page, secret: str) -> bool:
+    from app.services.totp_2fa import next_code
+
+    sels = ['input[name="totpPin"]']
+    if "challenge/totp" in (page.url or "").lower():
+        sels.extend(['input[name="Pin"]', 'input[type="tel"]', 'input[type="text"]'])
+    field = None
+    for _ in range(20):
+        field = visible_input(page, sels, skip_email=True, skip_password=True)
+        if field:
+            break
+        page.wait_for_timeout(250)
+    if not field:
+        return False
+    code = next_code(secret)
+    log("  try totp", code)
+    try:
+        human_type(page, field, code)
+    except Exception:
+        try:
+            field.fill(code)
+        except Exception:
+            return False
+    click_named(page, "Next", "Susunod", "Continue")
+    for _ in range(24):
+        page.wait_for_timeout(400)
+        u = (page.url or "").lower()
+        if "challenge/totp" not in u and not on_totp_form(page):
+            log("  TOTP_OK", code)
+            return True
+        if strong_backup_error(page):
+            log("  TOTP_BAD", code)
+            return False
+    return "challenge/totp" not in (page.url or "").lower()
 
 
 def force_english(page) -> None:
@@ -557,13 +858,26 @@ def skip_to_inbox(page, browser) -> bool:
         url = page.url or ""
         host = urlparse(url).netloc.lower()
         log(f"  [{step}] {host}{urlparse(url).path}")
-        if host == "mail.google.com":
+        if really_gmail_inbox(url):
             return True
+        if password_rejected(page):
+            log("  WRONG_PASSWORD on skip")
+            return False
+        if "challenge/pwd" in url:
+            log("  still on password — not skipping to Snap/inbox")
+            return False
+        if (
+            "challenge/bc" in url
+            or "signin/rejected" in url
+            or on_2sv_chooser(page)
+        ):
+            log("  still on 2-step — not skipping to inbox")
+            return False
 
         if "selfie" in url.lower() or "verification/selfie" in url.lower():
             if dismiss_selfie(page, browser):
                 page = find_page(browser) or page
-                if "mail.google.com" in (page.url or ""):
+                if really_gmail_inbox(page.url or ""):
                     return True
                 # left selfie — keep skipping other cards
                 continue
@@ -571,10 +885,22 @@ def skip_to_inbox(page, browser) -> bool:
             raise RuntimeError("HIT_SELFIE")
 
         force_english(page)
+        if "gds.google.com" in host and step >= 3:
+            log("  gds card — jump to inbox")
+            try:
+                page.goto(
+                    with_hl_en("https://mail.google.com/mail/u/0/#inbox"),
+                    wait_until="domcontentloaded",
+                    timeout=90000,
+                )
+                page.wait_for_timeout(2500)
+                continue
+            except Exception as exc:
+                log("  gds→inbox", str(exc).splitlines()[0][:80])
         hit = click_english(
             page,
-            "Not now",
             "Skip",
+            "Not now",
             "Skip for now",
             "Cancel",
             "No thanks",
@@ -616,19 +942,40 @@ def skip_to_inbox(page, browser) -> bool:
             log("  goto", exc)
             break
     page = find_page(browser) or page
-    return "mail.google.com" in (page.url or "")
+    return really_gmail_inbox(page.url or "")
 
 
-def login_gmail(ws: str, email: str, password: str, codes: list[str]) -> str:
+def login_gmail(
+    ws: str,
+    email: str,
+    password: str,
+    codes: list[str],
+    totp_secret: str = "",
+    recovery_email: str = "",
+) -> str:
     try:
-        return _login_gmail_inner(ws, email, password, codes)
+        return _login_gmail_inner(
+            ws,
+            email,
+            password,
+            codes,
+            totp_secret=totp_secret,
+            recovery_email=recovery_email,
+        )
     except RuntimeError as exc:
         if "HIT_SELFIE" in str(exc):
             return "FAIL:HIT_SELFIE"
         raise
 
 
-def _login_gmail_inner(ws: str, email: str, password: str, codes: list[str]) -> str:
+def _login_gmail_inner(
+    ws: str,
+    email: str,
+    password: str,
+    codes: list[str],
+    totp_secret: str = "",
+    recovery_email: str = "",
+) -> str:
     with sync_playwright() as p:
         browser = p.chromium.connect_over_cdp(ws, timeout=30000)
         # Wait for AdsPower to finish spawning its startup tab(s)
@@ -669,26 +1016,48 @@ def _login_gmail_inner(ws: str, email: str, password: str, codes: list[str]) -> 
         # NO bring_to_front
         force_english(page)
 
-        if "mail.google.com" in (page.url or "") and "accounts.google" not in (page.url or ""):
+        if really_gmail_inbox(page.url or ""):
             log("  already inbox")
             return "LOGIN_OK"
 
-        # Try inbox first — session may already exist (e.g. nodmock)
-        try:
-            page.goto(
-                with_hl_en("https://mail.google.com/mail/u/0/#inbox"),
-                wait_until="domcontentloaded",
-                timeout=60000,
-            )
-            page.wait_for_timeout(2500)
-            page = find_page(browser) or page
-            force_english(page)
-            log("  inbox probe", page.url)
-            if "mail.google.com" in (page.url or "") and "accounts.google" not in (page.url or ""):
-                log("  already inbox")
-                return "LOGIN_OK"
-        except Exception as exc:
-            log("  inbox probe fail", str(exc).splitlines()[0][:100])
+        def click_verify_you() -> bool:
+            """Google 'Verify it's you' has no email box — only Next."""
+            try:
+                u = (page.url or "").lower()
+                t = (page.inner_text("body") or "").lower()
+            except Exception:
+                return False
+            if "confirmidentifier" not in u and "verify it" not in t:
+                return False
+            log("  verify-it's-you — clicking Next")
+            hit = click_named(page, "Next", "Susunod", "Continue")
+            log("  verify Next", hit, page.url)
+            try:
+                page.wait_for_timeout(2000)
+            except Exception:
+                time.sleep(2)
+            return True
+
+        click_verify_you()
+
+        already_google = "accounts.google.com" in (page.url or "").lower()
+        # Don't bounce a live 2-step page onto workspace.google.com marketing.
+        if not already_google:
+            try:
+                page.goto(
+                    with_hl_en("https://mail.google.com/mail/u/0/#inbox"),
+                    wait_until="domcontentloaded",
+                    timeout=60000,
+                )
+                page.wait_for_timeout(2500)
+                page = find_page(browser) or page
+                force_english(page)
+                log("  inbox probe", page.url)
+                if really_gmail_inbox(page.url or ""):
+                    log("  already inbox")
+                    return "LOGIN_OK"
+            except Exception as exc:
+                log("  inbox probe fail", str(exc).splitlines()[0][:100])
 
         def safe_goto(url: str) -> None:
             nonlocal page
@@ -735,6 +1104,7 @@ def _login_gmail_inner(ws: str, email: str, password: str, codes: list[str]) -> 
                 break
             if visible_input(page, ['input[type="password"]', 'input[name="Passwd"]']):
                 break
+            click_verify_you()
             page.wait_for_timeout(400)
         if field:
             human_type(page, field, email)
@@ -769,24 +1139,137 @@ def _login_gmail_inner(ws: str, email: str, password: str, codes: list[str]) -> 
                 except Exception:
                     return f"FAIL:password:{exc}"
             log("  pass→", click_named(page, "Next", "Susunod", "Continue"), page.url)
-        page.wait_for_timeout(1200)
+        page.wait_for_timeout(2200)
+        if password_rejected(page):
+            log("  WRONG_PASSWORD")
+            return "WRONG_PASSWORD"
         if "recaptcha" in (page.url or ""):
             return "HIT_RECAPTCHA"
 
-        for needles in (
-            ["try another way", "another way", "sumubok ng iba"],
-            ["backup code", "8-digit", "8 digit", "ilagay ang isa"],
-        ):
-            hit = pick_option(page, needles)
-            log("  pick", needles[0], "→", hit)
-            page.wait_for_timeout(1300)
+        saw_try_another = False
+        totp_secret = (totp_secret or "").strip()
+        recovery_email = (recovery_email or "").strip()
+        recovery_tries = 0
+        totp_fails = 0
+        for round_i in range(12):
+            page = find_page(browser) or page
+            url = (page.url or "").lower()
+            if "signin/rejected" in url or "/rejected" in urlparse(url).path:
+                log("  2sv rejected by Google")
+                return "FAIL:2sv_rejected"
+            if "challenge/bc" in url or really_gmail_inbox(url):
+                break
+            if "recaptcha" in url:
+                return "HIT_RECAPTCHA"
+            if recovery_email and recovery_tries < 5:
+                if not on_recovery_form(page):
+                    hit = click_recovery_email(page)
+                    if hit:
+                        log(f"  2sv[{round_i}] recovery option", hit)
+                        for _ in range(10):
+                            page.wait_for_timeout(300)
+                            if on_recovery_form(page):
+                                break
+                if on_recovery_form(page):
+                    if type_recovery_email(page, recovery_email):
+                        break
+                    log(f"  2sv[{round_i}] recovery rejected")
+                    return "FAIL:recovery_rejected"
+                if on_2sv_chooser(page) or "challenge/" in url:
+                    recovery_tries += 1
+                    hit = pick_option(
+                        page,
+                        [
+                            "confirm your recovery email",
+                            "recovery email",
+                            "try another way",
+                        ],
+                    )
+                    saw_try_another = True
+                    log(f"  2sv[{round_i}] try another (for recovery)", hit, urlparse(page.url or "").path)
+                    page.wait_for_timeout(1800)
+                    continue
+            if totp_secret:
+                if not on_totp_form(page):
+                    hit = click_authenticator(page)
+                    if hit:
+                        log(f"  2sv[{round_i}] authenticator", hit)
+                        for _ in range(10):
+                            page.wait_for_timeout(300)
+                            if on_totp_form(page):
+                                break
+                if on_totp_form(page):
+                    if type_totp(page, totp_secret):
+                        break
+                    totp_fails += 1
+                    log(f"  2sv[{round_i}] totp rejected ({totp_fails}/1) — skip immediately")
+                    if totp_fails >= 1:
+                        log("  OTP failed — 2FA key rejected")
+                        return "FAIL:totp_rejected"
+                if on_2sv_chooser(page) or "challenge/" in url:
+                    hit = pick_backup_path(page)
+                    saw_try_another = True
+                    log(f"  2sv[{round_i}] try another (for authenticator)", hit, urlparse(page.url or "").path)
+                    page.wait_for_timeout(1800)
+                    continue
+            if not on_2sv_chooser(page) and "challenge/" not in url:
+                break
+            clicked_backup = False
+            try:
+                loc = page.get_by_text(
+                    re.compile(r"Enter one of your 8-?digit backup codes", re.I)
+                ).first
+                if loc.count() and loc.is_visible(timeout=800):
+                    loc.click(timeout=5000)
+                    clicked_backup = True
+                    log(f"  2sv[{round_i}] clicked backup row")
+            except Exception as exc:
+                log("  backup row warn", exc)
+            if not clicked_backup:
+                try:
+                    loc = page.get_by_text(re.compile(r"8-?digit|backup code", re.I)).first
+                    if loc.count() and loc.is_visible(timeout=600):
+                        loc.click(timeout=4000)
+                        clicked_backup = True
+                        log(f"  2sv[{round_i}] clicked backup text")
+                except Exception:
+                    pass
+            if clicked_backup:
+                for _ in range(12):
+                    page.wait_for_timeout(350)
+                    if "challenge/bc" in (page.url or "").lower():
+                        break
+                if "challenge/bc" in (page.url or "").lower():
+                    log("  backup form open")
+                    break
+                log("  backup click did not open form", urlparse(page.url or "").path)
+                continue
+            # Phone / prompt screens hide backup until Try another way.
+            # Keep clicking it and re-scan; do not fail after a single click.
+            if on_2sv_chooser(page) or "challenge/" in url:
+                hit = pick_backup_path(page)
+                saw_try_another = True
+                log(f"  2sv[{round_i}] try another", hit, urlparse(page.url or "").path)
+                page.wait_for_timeout(2500)
+                # Wait until Google actually leaves the phone-collect screen.
+                for _ in range(8):
+                    u2 = (page.url or "").lower()
+                    blob = body_text(page).lower()
+                    if "challenge/selection" in u2 or "challenge/bc" in u2 or "8-digit" in blob or "backup code" in blob:
+                        break
+                    page.wait_for_timeout(400)
+                continue
+            if saw_try_another:
+                log("  2sv has no backup-code option")
+                return "FAIL:2sv_no_backup"
+            break
 
-        need_code = "challenge/bc" in (page.url or "") or visible_input(
-            page,
-            ['input[type="tel"]', 'input[name="totpPin"]', 'input[name="Pin"]'],
-            skip_email=True,
-            skip_password=True,
-        )
+        page = find_page(browser) or page
+        if totp_secret and on_totp_form(page):
+            log("  TOTP never accepted — 2FA key rejected")
+            return "FAIL:totp_rejected"
+
+        need_code = "challenge/bc" in (page.url or "")
         if need_code:
             ok = False
             for code in codes:
@@ -837,10 +1320,29 @@ def _login_gmail_inner(ws: str, email: str, password: str, codes: list[str]) -> 
             if not ok and "challenge/bc" in (page.url or ""):
                 return "FAIL:all_codes_bad"
 
+        if password_rejected(page):
+            log("  WRONG_PASSWORD")
+            return "WRONG_PASSWORD"
+        if totp_secret and on_totp_form(page):
+            log("  TOTP never accepted — 2FA key rejected")
+            return "FAIL:totp_rejected"
         if not skip_to_inbox(page, browser):
             page = find_page(browser) or page
-            if "mail.google.com" not in (page.url or ""):
+            if password_rejected(page):
+                return "WRONG_PASSWORD"
+            if totp_secret and on_totp_form(page):
+                log("  TOTP never accepted — 2FA key rejected")
+                return "FAIL:totp_rejected"
+            if not really_gmail_inbox(page.url or ""):
                 return f"FAIL:not_inbox:{page.url}"
+        page = find_page(browser) or page
+        if not really_gmail_inbox(page.url or ""):
+            if password_rejected(page):
+                return "WRONG_PASSWORD"
+            if totp_secret and ("challenge/totp" in (page.url or "").lower() or on_totp_form(page)):
+                log("  TOTP never accepted — 2FA key rejected")
+                return "FAIL:totp_rejected"
+            return f"FAIL:not_inbox:{page.url}"
         log("  INBOX", page.url)
         return "LOGIN_OK"
 

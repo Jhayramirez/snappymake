@@ -64,7 +64,7 @@ def _asset_version() -> str:
     """Cache-busting token = newest mtime of the front-end assets, so browsers
     reload app.js / app.css automatically after an update."""
     latest = 0.0
-    for rel in ("static/js/app.js", "static/css/app.css"):
+    for rel in ("static/js/app.js", "static/js/gmail_login.js", "static/css/app.css"):
         try:
             latest = max(latest, (ROOT / rel).stat().st_mtime)
         except OSError:
@@ -140,6 +140,8 @@ class SettingsIn(BaseModel):
     anymessage_token: str | None = None
     anymessage_site: str | None = None
     anymessage_domain: str | None = None
+    diddysms_key: str | None = None
+    diddysms_service: str | None = None
     proxy_cap: int | None = None
     proxy_fail_limit: int | None = None
     bucket_warm_hours: int | None = None
@@ -295,6 +297,7 @@ class RunIn(CreateIn):
     auto_username: bool = True
     auto_password: bool = True
     platform: str = "snapchat.com"
+    group_id: str = ""
 
 
 def _client() -> AdsPowerClient:
@@ -323,7 +326,7 @@ def state():
         if not conn["connected"]:
             return {
                 "connection": conn,
-                "settings": {**conf, "api_key": _mask(conf.get("api_key")), "anymessage_token": _mask(conf.get("anymessage_token"))},
+                "settings": _public_settings(conf),
                 "group": None,
                 "profiles": [],
                 "quota": {
@@ -341,7 +344,7 @@ def state():
         data = list_dashboard_profiles(client)
         return {
             "connection": conn,
-            "settings": {**conf, "api_key": _mask(conf.get("api_key")), "anymessage_token": _mask(conf.get("anymessage_token"))},
+            "settings": _public_settings(conf),
             "run": current_run(),
             "kernels": kernel_catalog(),
             "gmail": pool_snapshot(),
@@ -354,7 +357,7 @@ def state():
                 "api_base": conf["api_base"],
                 "message": str(exc),
             },
-            "settings": {**conf, "api_key": _mask(conf.get("api_key")), "anymessage_token": _mask(conf.get("anymessage_token"))},
+            "settings": _public_settings(conf),
             "group": None,
             "profiles": [],
             "quota": {
@@ -708,9 +711,29 @@ def ext_backfill_web_tabs(payload: BackfillIn):
 @app.put("/api/settings")
 def update_settings(payload: SettingsIn):
     saved = save_runtime_settings(payload.model_dump(exclude_none=True))
-    saved["api_key"] = _mask(saved.get("api_key"))
-    saved["anymessage_token"] = _mask(saved.get("anymessage_token"))
-    return saved
+    return _public_settings(saved)
+
+
+@app.get("/api/diddysms/balance")
+def diddysms_balance():
+    from app.mail.diddysms import DiddySmsError, balance as diddy_balance, get_service
+
+    conf = load_runtime_settings()
+    key = (conf.get("diddysms_key") or "").strip()
+    if not key:
+        return {"ok": False, "detail": "No DiddySMS API key set in Settings."}
+    try:
+        svc = (conf.get("diddysms_service") or "snapchat").strip() or "snapchat"
+        info = get_service(key, svc)
+        return {
+            "ok": True,
+            "balance": diddy_balance(key),
+            "service": info.get("name") or svc,
+            "price": info.get("price"),
+            "stock": info.get("stock"),
+        }
+    except DiddySmsError as exc:
+        return {"ok": False, "detail": str(exc)}
 
 
 @app.get("/api/anymessage/balance")
@@ -1053,3 +1076,11 @@ def _mask(value: str | None) -> str:
     if len(value) <= 6:
         return "••••"
     return value[:3] + "••••" + value[-2:]
+
+
+def _public_settings(conf: dict) -> dict:
+    out = dict(conf)
+    out["api_key"] = _mask(conf.get("api_key"))
+    out["anymessage_token"] = _mask(conf.get("anymessage_token"))
+    out["diddysms_key"] = _mask(conf.get("diddysms_key"))
+    return out

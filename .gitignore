@@ -6,3 +6,12 @@ __pycache__/
 .DS_Store
 .pytest_cache/
 playwright-report/
+data/*.tsv
+data/*.xlsx
+data/*.db
+data/*.log
+data/*.sqlite
+.env
+.env.*
+!.env.example
+secrets/

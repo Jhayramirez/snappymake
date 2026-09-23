@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from app.ads import AdsPowerError
-from app.ads.proxies import parse_proxy_block
+from app.ads.proxies import parse_proxy_block, random_netlox_us
 from app.config import DATA_DIR
 from app.ads.fingerprints import preferred_chrome_kernel, resolve_fingerprint
 from app.inject.identity import build_identity, normalize_gender
@@ -15,6 +15,8 @@ from app.inject.snapchat import SNAPCHAT_SIGNUP_URL, run_page_action
 from app.mail import claim_unused_mailbox, mark_gmail_used, pool_snapshot, wait_for_snapchat_otp
 from app.mail import anymessage
 from app.mail.anymessage import AnyMessageError
+from app.mail import diddysms
+from app.mail.diddysms import DiddySmsError
 from app.db import increment_proxy_fail, increment_proxy_success, set_profile_succeeded
 from app.services import load_runtime_settings, make_client
 from app.services.proxy_pool import (
@@ -37,7 +39,7 @@ from app.services.profiles import (
 )
 from app.services.quota import assert_can_create
 
-_lock = threading.Lock()
+_lock = threading.RLock()
 _runs: dict[str, dict[str, Any]] = {}
 
 
@@ -85,7 +87,7 @@ def log(run: dict[str, Any], step: str, message: str, **extra: Any) -> None:
 
 def start_run(payload: dict[str, Any]) -> dict[str, Any]:
     with _lock:
-        busy = any(r["status"] in {"queued", "running"} for r in _runs.values())
+        busy = any(r["status"] in {"queued", "running", "cancelling"} for r in _runs.values())
         if busy:
             raise AdsPowerError("A run is already in progress. Wait or cancel it.")
         run = {
@@ -130,14 +132,20 @@ def execute_run(run_id: str) -> None:
         count = max(1, int(payload.get("count") or 1))
         assert_can_create(dashboard["quota"], count)
         tree = dashboard.get("group_tree") or {}
-        # Fresh profiles land in the `| New` bucket, not the bare base group.
-        group_id = str(tree.get("new") or dashboard["group"].get("group_id"))
+        # Fresh profiles land in the `| New` bucket, not the bare base group,
+        # unless the caller passed an explicit AdsPower group (SMS Official, etc).
+        group_id = str(payload.get("group_id") or "").strip()
+        if not group_id:
+            group_id = str(tree.get("new") or dashboard["group"].get("group_id"))
         sm_ids = {str(dashboard["group"].get("group_id"))} | {str(g) for g in tree.values() if g}
         prefix = (payload.get("name_prefix") or "SM").strip()
+        name_gids = set(sm_ids)
+        if group_id:
+            name_gids.add(group_id)
         names = [
             str(p.get("name") or p.get("display_name") or "")
             for p in dashboard["profiles"]
-            if str(p.get("group_id")) in sm_ids
+            if str(p.get("group_id")) in name_gids
         ]
         serial = next_serial(prefix, names)
         proxy_mode = str(payload.get("proxy_mode") or "none")
@@ -193,7 +201,21 @@ def execute_run(run_id: str) -> None:
         conf = load_runtime_settings()
         otp_provider = (conf.get("otp_provider") or "imap").lower()
         if action == "snapchat_signup":
-            if otp_provider == "anymessage":
+            if otp_provider == "diddysms":
+                if not (conf.get("diddysms_key") or "").strip():
+                    raise AdsPowerError("DiddySMS is selected but no API key is set in Settings.")
+                try:
+                    bal = diddysms.balance(conf["diddysms_key"])
+                    svc = (conf.get("diddysms_service") or "snapchat").strip() or "snapchat"
+                    info = diddysms.get_service(conf["diddysms_key"], svc)
+                    log(
+                        run,
+                        "otp",
+                        f"DiddySMS · ${bal:.2f} · {svc} ${info.get('price')} · stock {info.get('stock')}",
+                    )
+                except DiddySmsError as exc:
+                    raise AdsPowerError(f"DiddySMS check failed: {exc}") from exc
+            elif otp_provider == "anymessage":
                 if not (conf.get("anymessage_token") or "").strip():
                     raise AdsPowerError("AnyMessage is selected but no API token is set in Settings.")
                 try:
@@ -212,10 +234,12 @@ def execute_run(run_id: str) -> None:
 
         for i in range(count):
             with _lock:
-                if run["cancel"]:
-                    log(run, "cancel", "Stopped before next profile")
+                stopping = bool(run["cancel"])
+                if stopping:
                     run["status"] = "cancelled"
-                    return
+            if stopping:
+                log(run, "cancel", "Stopped before next profile")
+                return
             profile = None
             opened_id = None
             should_close = close_after
@@ -223,6 +247,8 @@ def execute_run(run_id: str) -> None:
             assigned_proxy = None
             assigned_key = None
             pool_committed = False
+            if i:
+                time.sleep(5)
             if proxy_mode == "pool":
                 assigned_proxy, assigned_key = next_available_proxy(pool_reserved)
                 if assigned_proxy is None:
@@ -257,6 +283,16 @@ def execute_run(run_id: str) -> None:
                     f"Created {profile['name']} · {profile.get('os_name')} · {profile.get('kernel')}",
                     profile_id=profile["profile_id"],
                 )
+                if action == "snapchat_signup" and otp_provider == "diddysms":
+                    cfg, label = random_netlox_us()
+                    merged = merge_proxy_into_profile(client, profile["profile_id"], cfg)
+                    geo = merged.get("geo") or merged.get("label") or label
+                    log(
+                        run,
+                        "proxy",
+                        f"Netlox inject · {label}" + (f" · {geo}" if geo and geo != label else ""),
+                        profile_id=profile["profile_id"],
+                    )
                 time.sleep(1.2)
                 opened = open_browser(
                     client,
@@ -287,8 +323,82 @@ def execute_run(run_id: str) -> None:
                     mailbox = None
                     otp_waiter = None
                     email_provider = None
+                    phone_provider = None
                     if action == "snapchat_signup":
-                        if otp_provider == "anymessage":
+                        if otp_provider == "diddysms":
+                            diddy_key = conf["diddysms_key"]
+                            diddy_svc = (conf.get("diddysms_service") or "snapchat").strip() or "snapchat"
+                            try:
+                                order = diddysms.buy_number(diddy_key, service=diddy_svc)
+                            except DiddySmsError as exc:
+                                raise AdsPowerError(f"DiddySMS buy failed: {exc}") from exc
+                            mailbox = {
+                                "provider": "diddysms",
+                                "id": order["id"],
+                                "phone_number": order["phone_number"],
+                                "e164": order["e164"],
+                                "service": order["service"],
+                                "bought_at": time.time(),
+                            }
+                            log(
+                                run,
+                                "otp",
+                                f"DiddySMS {order['e164']} · id {order['id']} · ${order.get('price')}",
+                                profile_id=profile["profile_id"],
+                            )
+
+                            def otp_waiter(oid=order["id"], pid=profile["profile_id"]):
+                                return diddysms.wait_for_sms(
+                                    diddy_key,
+                                    oid,
+                                    timeout=180,
+                                    poll=4,
+                                    on_wait=lambda msg: log(run, "otp", msg, profile_id=pid),
+                                    should_stop=lambda: bool(run.get("cancel")),
+                                )
+
+                            def phone_provider(pid=profile["profile_id"]):
+                                old_id = (mailbox or {}).get("id")
+                                bought = (mailbox or {}).get("bought_at")
+                                if old_id:
+                                    try:
+                                        if diddysms.cancel_after_cooldown(
+                                            diddy_key, old_id, bought_at=bought
+                                        ):
+                                            log(run, "otp", f"DiddySMS canceled stale · {old_id}", profile_id=pid)
+                                    except Exception:
+                                        pass
+                                try:
+                                    neworder = diddysms.buy_number(diddy_key, service=diddy_svc)
+                                except DiddySmsError as exc:
+                                    log(run, "otp", f"DiddySMS reorder failed · {exc}", profile_id=pid)
+                                    return None
+                                mailbox["id"] = neworder["id"]
+                                mailbox["phone_number"] = neworder["phone_number"]
+                                mailbox["e164"] = neworder["e164"]
+                                mailbox["bought_at"] = time.time()
+                                log(
+                                    run,
+                                    "otp",
+                                    f"DiddySMS re-rented {neworder['e164']} · id {neworder['id']}",
+                                    profile_id=pid,
+                                )
+
+                                def _w(oid=neworder["id"], p=pid):
+                                    return diddysms.wait_for_sms(
+                                        diddy_key,
+                                        oid,
+                                        timeout=180,
+                                        poll=4,
+                                        on_wait=lambda m: log(run, "otp", m, profile_id=p),
+                                        should_stop=lambda: bool(run.get("cancel")),
+                                    )
+
+                                return {
+                                    "phone_number": neworder["phone_number"],
+                                    "otp_waiter": _w,
+                                }
+                        elif otp_provider == "anymessage":
                             try:
                                 order = anymessage.order_email(
                                     conf["anymessage_token"],
@@ -411,6 +521,12 @@ def execute_run(run_id: str) -> None:
                         if msg == "typed_otp" and mb.get("provider") == "imap" and mb.get("email"):
                             mark_gmail_used(mb["email"], pid)
                             log(run, "imap", f"Marked used after OTP · {mb['email']}", profile_id=pid)
+                        if msg == "typed_otp" and mb.get("provider") == "diddysms" and mb.get("id"):
+                            try:
+                                if diddysms.complete(conf.get("diddysms_key") or "", mb["id"]):
+                                    log(run, "otp", f"DiddySMS completed · {mb['id']}", profile_id=pid)
+                            except Exception:
+                                pass
 
                     action_result = run_page_action(
                         ws,
@@ -424,10 +540,12 @@ def execute_run(run_id: str) -> None:
                         birth_month=ident["birth_month"],
                         birth_day=ident["birth_day"],
                         dwell_seconds=0 if merge_after else dwell,
-                        screenshot_path=None if merge_after else shot,
+                        screenshot_path=None if (merge_after or otp_provider == "diddysms") else shot,
                         email=(mailbox or {}).get("email") or "",
+                        phone_number=(mailbox or {}).get("phone_number") or "",
                         otp_waiter=otp_waiter,
                         email_provider=email_provider,
+                        phone_provider=phone_provider,
                         on_step=_on_step,
                         until="bitmoji" if merge_after else "",
                         bitmoji_gender=bitmoji_gender,
@@ -513,7 +631,7 @@ def execute_run(run_id: str) -> None:
                         )
                     filled = action_result.get("filled") or []
                     notes = action_result.get("notes") or []
-                    if mailbox and mailbox.get("provider") != "anymessage":
+                    if mailbox and mailbox.get("provider") == "imap":
                         if "typed_otp" in notes:
                             mark_gmail_used(mailbox["email"], profile["profile_id"])
                         else:
@@ -545,6 +663,14 @@ def execute_run(run_id: str) -> None:
                             remark += f" · Pass: {used_pass}"
                     if (mailbox or {}).get("provider") == "anymessage":
                         remark += f" · AMID: {mailbox.get('id')} · Site: {mailbox.get('site')}"
+                    if (mailbox or {}).get("provider") == "diddysms":
+                        phone = (
+                            action_result.get("phone_number")
+                            or mailbox.get("e164")
+                            or mailbox.get("phone_number")
+                            or ""
+                        )
+                        remark += f" · Phone: {phone} · DiddySMS: {mailbox.get('id')}"
                     page_url = str(action_result.get("url") or "")
                     web_url = extract_snap_web_url(page_url) or extract_snap_web_url(
                         " ".join(str(n) for n in (action_result.get("notes") or []))
@@ -573,13 +699,16 @@ def execute_run(run_id: str) -> None:
                     if "email_rejected" in dnotes:
                         reason = "email_rejected"
                         human = "Email rejected by Snapchat"
+                    elif "phone_rejected" in dnotes:
+                        reason = "phone_rejected"
+                        human = "Phone number rejected by Snapchat"
                     elif "process_error_stuck" in dnotes:
                         reason = "process_error_stuck"
                         human = "Process error stuck"
                     else:
                         reason = "signup_incomplete"
                         human = "Signup not verified (no OTP / welcome)"
-                    # Reclaim the wasted AnyMessage order so it doesn't cost balance.
+                    # Reclaim the wasted AnyMessage / DiddySMS order so it doesn't cost balance.
                     if (mailbox or {}).get("provider") == "anymessage" and (mailbox or {}).get("id"):
                         try:
                             if anymessage.cancel(conf.get("anymessage_token") or "", mailbox["id"]):
@@ -587,6 +716,21 @@ def execute_run(run_id: str) -> None:
                                     run,
                                     "otp",
                                     f"AnyMessage order canceled · {mailbox['id']}",
+                                    profile_id=profile["profile_id"],
+                                )
+                        except Exception:
+                            pass
+                    if (mailbox or {}).get("provider") == "diddysms" and (mailbox or {}).get("id"):
+                        try:
+                            if diddysms.cancel_after_cooldown(
+                                conf.get("diddysms_key") or "",
+                                mailbox["id"],
+                                bought_at=mailbox.get("bought_at"),
+                            ):
+                                log(
+                                    run,
+                                    "otp",
+                                    f"DiddySMS order canceled · {mailbox['id']}",
                                     profile_id=profile["profile_id"],
                                 )
                         except Exception:
@@ -670,7 +814,11 @@ def execute_run(run_id: str) -> None:
                         delete_profiles(client, [opened_id])
                         log(run, "delete", f"Deleted {opened_id}", profile_id=opened_id)
                     except Exception as del_exc:
-                        log(run, "error", f"Delete failed: {del_exc}", profile_id=opened_id)
+                        try:
+                            client.delete_profiles([opened_id])
+                            log(run, "delete", f"Deleted {opened_id}", profile_id=opened_id)
+                        except Exception:
+                            log(run, "error", f"Delete failed: {del_exc}", profile_id=opened_id)
                 # Push dashboard mirror after each profile finishes (success or delete).
                 try:
                     from app.services.sheets import schedule_sync

@@ -1,11 +1,19 @@
 from __future__ import annotations
 
+import random
 import re
+import string
 import time
 from typing import Any
 from urllib.parse import quote, urlparse
 
 import httpx
+
+NETLOX_HOST = "proxy.netloxproxies.com"
+NETLOX_PORT = "8080"
+NETLOX_USER_PREFIX = "SL5PYGQLDA"
+NETLOX_PASS = "kgywfgsjnm"
+NETLOX_LIFE = "10080"
 
 PROXY_TYPES = ("http", "https", "socks5", "socks4")
 
@@ -153,6 +161,32 @@ def parse_proxy_block_report(block: str, default_type: str = "") -> dict[str, An
 
 def no_proxy() -> dict[str, str]:
     return {"proxy_soft": "no_proxy"}
+
+
+def random_netlox_us() -> tuple[dict[str, str], str]:
+    """Sticky US Netlox session — same inject Official Gmail uses before Snap."""
+    states = httpx.get(
+        "https://netloxproxies.com/api/locations/countries/US/states",
+        timeout=20,
+    ).json()["states"]
+    st = random.choice(states)
+    cities = httpx.get(
+        f"https://netloxproxies.com/api/locations/countries/US/states/{st['code']}/cities",
+        timeout=20,
+    ).json()["cities"]
+    city = random.choice(cities)
+    sess = "".join(random.choices(string.ascii_uppercase + string.digits, k=8))
+    user = f"{NETLOX_USER_PREFIX}_US-{st['code']}-{city['code']}_{NETLOX_LIFE}_{sess}"
+    label = f"{st.get('name') or st['code']}/{city.get('name') or city['code']}"
+    cfg = {
+        "proxy_soft": "other",
+        "proxy_type": "http",
+        "proxy_host": NETLOX_HOST,
+        "proxy_port": NETLOX_PORT,
+        "proxy_user": user,
+        "proxy_password": NETLOX_PASS,
+    }
+    return cfg, label
 
 
 def summarize_proxy(config: dict[str, Any] | None) -> str:

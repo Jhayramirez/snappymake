@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import json
+import os
+import subprocess
 import time
 from pathlib import Path
 from typing import Any
@@ -20,6 +22,45 @@ PING_TIMEOUT = httpx.Timeout(8.0, connect=3.0)
 DEFAULT_TIMEOUT = httpx.Timeout(30.0, connect=5.0)
 START_TIMEOUT = httpx.Timeout(180.0, connect=8.0)
 STOP_TIMEOUT = httpx.Timeout(60.0, connect=5.0)
+
+# Keep AdsPower windows from jumping in front of Cursor while CDP still runs.
+BACKGROUND_LAUNCH_ARGS = [
+    "--disable-notifications",
+    "--window-position=40,60",
+]
+
+
+def no_focus_enabled() -> bool:
+    return os.environ.get("SNAPPY_NO_FOCUS", "1") != "0"
+
+
+def background_launch_args() -> list[str]:
+    if no_focus_enabled():
+        return ["--disable-notifications", "--window-position=-2400,-200"]
+    return list(BACKGROUND_LAUNCH_ARGS)
+
+
+def release_user_focus() -> None:
+    """Hide AdsPower Chrome so it does not steal the frontmost app."""
+    if not no_focus_enabled():
+        return
+    script = (
+        'tell application "System Events"\n'
+        '  repeat with procName in {"SunBrowse", "SunBrowser"}\n'
+        "    try\n"
+        "      set visible of process procName to false\n"
+        "    end try\n"
+        "  end repeat\n"
+        "end tell"
+    )
+    try:
+        subprocess.Popen(
+            ["osascript", "-e", script],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+    except Exception:
+        pass
 
 LOCAL_API_CANDIDATES = (
     Path.home() / "Library/Application Support/adspower_global/cwd_global/source/local_api",
@@ -275,11 +316,14 @@ class AdsPowerClient:
                     "last_opened_tabs": last_opened_tabs,
                     "proxy_detection": proxy_detection,
                     "cdp_mask": "1",
+                    "launch_args": background_launch_args(),
                 },
                 retries=1,
                 timeout=start_timeout,
             )
-            return payload.get("data") or {}
+            data = payload.get("data") or {}
+            release_user_focus()
+            return data
         except AdsPowerError as exc:
             if exc.is_kernel_download or exc.is_already_open:
                 raise
@@ -294,11 +338,14 @@ class AdsPowerClient:
                     "open_tabs": "0",
                     "ip_tab": "0",
                     "headless": "1" if headless else "0",
+                    "launch_args": json.dumps(background_launch_args()),
                 },
                 retries=1,
                 timeout=start_timeout,
             )
-            return payload.get("data") or {}
+            data = payload.get("data") or {}
+            release_user_focus()
+            return data
 
     def stop_browser(self, profile_id: str) -> dict[str, Any]:
         payload = self.request(

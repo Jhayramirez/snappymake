@@ -18,6 +18,8 @@ SETTING_KEYS = {
     "anymessage_token": "anymessage_token",
     "anymessage_site": "anymessage_site",
     "anymessage_domain": "anymessage_domain",
+    "diddysms_key": "diddysms_key",
+    "diddysms_service": "diddysms_service",
     "proxy_cap": "proxy_cap",
     "proxy_fail_limit": "proxy_fail_limit",
     "proxy_rotation": "proxy_rotation",
@@ -34,7 +36,7 @@ SETTING_KEYS = {
 
 def load_runtime_settings() -> dict[str, Any]:
     provider = (get_setting("otp_provider") or "imap").strip().lower()
-    if provider not in {"imap", "anymessage"}:
+    if provider not in {"imap", "anymessage", "diddysms"}:
         provider = "imap"
     stored = {
         "api_base": get_setting("api_base") or settings.adspower_api_base,
@@ -48,6 +50,8 @@ def load_runtime_settings() -> dict[str, Any]:
         "anymessage_token": get_setting("anymessage_token") or "",
         "anymessage_site": get_setting("anymessage_site") or "snapchat.com",
         "anymessage_domain": get_setting("anymessage_domain") or "gmail,gmail.com",
+        "diddysms_key": get_setting("diddysms_key") or "",
+        "diddysms_service": get_setting("diddysms_service") or "snapchat",
         "proxy_cap": int(get_setting("proxy_cap") or 3),
         "proxy_fail_limit": int(get_setting("proxy_fail_limit") or 5),
         "proxy_rotation": (get_setting("proxy_rotation") or "spread").strip().lower()
@@ -82,12 +86,14 @@ def save_runtime_settings(payload: dict[str, Any]) -> dict[str, Any]:
         "anymessage_token",
         "anymessage_site",
         "anymessage_domain",
+        "diddysms_key",
+        "diddysms_service",
     ):
         if key in payload and payload[key] is not None:
             value = str(payload[key]).strip()
             if key == "otp_provider":
                 value = value.lower() or "imap"
-                if value not in {"imap", "anymessage"}:
+                if value not in {"imap", "anymessage", "diddysms"}:
                     value = "imap"
             set_setting(key, value)
             current[key] = value

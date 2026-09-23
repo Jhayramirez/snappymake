@@ -205,6 +205,8 @@ function renderSettings() {
   if (form.anymessage_token) form.anymessage_token.placeholder = s.anymessage_token ? `set (${s.anymessage_token})` : "leave blank to keep current";
   if (form.anymessage_site) form.anymessage_site.value = s.anymessage_site || "snapchat.com";
   if (form.anymessage_domain) form.anymessage_domain.value = s.anymessage_domain || "mailcom,gmx,hotmail,outlook";
+  if (form.diddysms_key) form.diddysms_key.placeholder = s.diddysms_key ? `set (${s.diddysms_key})` : "leave blank to keep current";
+  if (form.diddysms_service) form.diddysms_service.value = s.diddysms_service || "snapchat";
   if (form.bucket_warm_hours) form.bucket_warm_hours.value = s.bucket_warm_hours ?? 24;
   if (form.bucket_ready_hours) form.bucket_ready_hours.value = s.bucket_ready_hours ?? 96;
   if (form.auto_move_enabled) form.auto_move_enabled.checked = !!s.auto_move_enabled;
@@ -654,8 +656,26 @@ async function loadAmBalance() {
     el.textContent = "error: " + err.message;
   }
 }
-$("btnSettings").onclick = () => { $("settings").hidden = false; loadAmBalance(); };
+async function loadDiddyBalance() {
+  const el = $("diddyBalance");
+  if (!el) return;
+  el.textContent = "checking…";
+  try {
+    const data = await api("/api/diddysms/balance");
+    if (!data.ok) {
+      el.textContent = data.detail || "unavailable";
+      return;
+    }
+    const price = data.price != null ? ` · ${data.service} $${Number(data.price).toFixed(2)}` : "";
+    const stock = data.stock != null ? ` · stock ${data.stock}` : "";
+    el.textContent = `$${Number(data.balance).toFixed(2)}${price}${stock}`;
+  } catch (err) {
+    el.textContent = "error: " + err.message;
+  }
+}
+$("btnSettings").onclick = () => { $("settings").hidden = false; loadAmBalance(); loadDiddyBalance(); };
 $("btnAmBalance").onclick = loadAmBalance;
+if ($("btnDiddyBalance")) $("btnDiddyBalance").onclick = loadDiddyBalance;
 $("btnCloseDrawer").onclick = () => { $("drawer").hidden = true; };
 $("btnCloseCreate").onclick = () => { $("create").hidden = true; };
 $("btnCloseSettings").onclick = () => { $("settings").hidden = true; };
@@ -927,6 +947,8 @@ $("settingsForm").onsubmit = async (e) => {
         ...(form.anymessage_token && form.anymessage_token.value.trim() ? { anymessage_token: form.anymessage_token.value.trim() } : {}),
         ...(form.anymessage_site ? { anymessage_site: form.anymessage_site.value } : {}),
         ...(form.anymessage_domain ? { anymessage_domain: form.anymessage_domain.value } : {}),
+        ...(form.diddysms_key && form.diddysms_key.value.trim() ? { diddysms_key: form.diddysms_key.value.trim() } : {}),
+        ...(form.diddysms_service ? { diddysms_service: form.diddysms_service.value.trim() || "snapchat" } : {}),
         ...(form.bucket_warm_hours ? { bucket_warm_hours: Number(form.bucket_warm_hours.value || 24) } : {}),
         ...(form.bucket_ready_hours ? { bucket_ready_hours: Number(form.bucket_ready_hours.value || 96) } : {}),
         ...(form.auto_move_enabled ? { auto_move_enabled: form.auto_move_enabled.checked } : {}),

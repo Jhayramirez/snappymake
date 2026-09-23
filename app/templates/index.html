@@ -356,7 +356,8 @@
         <label>OTP provider <span class="hint">where signup codes come from</span>
           <select name="otp_provider">
             <option value="imap">IMAP (Gmail pool)</option>
-            <option value="anymessage">AnyMessage</option>
+            <option value="anymessage">AnyMessage (email)</option>
+            <option value="diddysms">DiddySMS (phone / SMS)</option>
           </select>
         </label>
         <label>AnyMessage token <span class="hint">only used when provider = AnyMessage</span>
@@ -369,8 +370,18 @@
           <input name="anymessage_domain" placeholder="gmail,gmail.com" />
         </label>
         <div class="row" style="align-items:center;gap:.6rem">
-          <button type="button" id="btnAmBalance" class="ghost">Check balance</button>
+          <button type="button" id="btnAmBalance" class="ghost">Check AnyMessage balance</button>
           <span id="amBalance" class="hint">—</span>
+        </div>
+        <label>DiddySMS API key <span class="hint">used when provider = DiddySMS. Product is <code>snapchat</code></span>
+          <input name="diddysms_key" placeholder="leave blank to keep current" autocomplete="off" />
+        </label>
+        <label>DiddySMS service
+          <input name="diddysms_service" placeholder="snapchat" />
+        </label>
+        <div class="row" style="align-items:center;gap:.6rem">
+          <button type="button" id="btnDiddyBalance" class="ghost">Check DiddySMS balance</button>
+          <span id="diddyBalance" class="hint">—</span>
         </div>
         <div class="form-actions">
           <button class="solid" type="submit">Save</button>

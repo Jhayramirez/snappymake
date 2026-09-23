@@ -75,6 +75,7 @@ def init_db() -> None:
                 proxy_label TEXT DEFAULT '',
                 snap_status TEXT NOT NULL DEFAULT 'none',
                 group_name TEXT DEFAULT '',
+                batch_name TEXT DEFAULT '',
                 last_error TEXT DEFAULT '',
                 created_at INTEGER,
                 updated_at INTEGER
@@ -107,6 +108,9 @@ def init_db() -> None:
         for stmt in (
             "ALTER TABLE proxy_pool ADD COLUMN fail_streak INTEGER NOT NULL DEFAULT 0",
             "ALTER TABLE profile_life ADD COLUMN succeeded_at INTEGER",
+            "ALTER TABLE gmail_login ADD COLUMN batch_name TEXT DEFAULT ''",
+            "ALTER TABLE gmail_login ADD COLUMN totp_secret TEXT DEFAULT ''",
+            "ALTER TABLE gmail_login ADD COLUMN recovery_email TEXT DEFAULT ''",
         ):
             try:
                 conn.execute(stmt)
@@ -395,7 +399,14 @@ def set_gmail_error(email: str, message: str) -> None:
 # Gmail Login pool (password + backup codes) — distinct from the IMAP gmail_pool
 # --------------------------------------------------------------------------- #
 
-GMAIL_LOGIN_STATES = {"pending", "login_ok", "captcha", "selfie", "error"}
+GMAIL_LOGIN_STATES = {
+    "pending",
+    "login_ok",
+    "wrong_password",
+    "captcha",
+    "selfie",
+    "error",
+}
 GMAIL_SNAP_STATES = {"none", "signed_up", "failed"}
 
 
@@ -409,8 +420,8 @@ def gmail_login_rows() -> list[dict[str, Any]]:
     with db() as conn:
         accts = conn.execute(
             """
-            SELECT email, password, login_status, profile_id, proxy_label,
-                   snap_status, group_name, last_error, created_at, updated_at
+            SELECT email, password, totp_secret, recovery_email, login_status, profile_id, proxy_label,
+                   snap_status, group_name, batch_name, last_error, created_at, updated_at
             FROM gmail_login
             ORDER BY created_at ASC, email ASC
             """
@@ -434,11 +445,14 @@ def gmail_login_rows() -> list[dict[str, Any]]:
             {
                 "email": row["email"],
                 "password": row["password"] or "",
+                "totp_secret": (row["totp_secret"] if "totp_secret" in row.keys() else "") or "",
+                "recovery_email": (row["recovery_email"] if "recovery_email" in row.keys() else "") or "",
                 "login_status": row["login_status"] or "pending",
                 "profile_id": row["profile_id"] or "",
                 "proxy_label": row["proxy_label"] or "",
                 "snap_status": row["snap_status"] or "none",
                 "group_name": row["group_name"] or "",
+                "batch_name": row["batch_name"] or "",
                 "last_error": row["last_error"] or "",
                 "created_at": int(row["created_at"] or 0),
                 "updated_at": int(row["updated_at"] or 0),
@@ -448,11 +462,18 @@ def gmail_login_rows() -> list[dict[str, Any]]:
     return out
 
 
-def upsert_gmail_login(email: str, password: str, codes: list[str]) -> str:
+def upsert_gmail_login(
+    email: str,
+    password: str,
+    codes: list[str],
+    totp_secret: str | None = None,
+    recovery_email: str | None = None,
+) -> str:
     """Insert or update a login account + its backup codes.
 
     Returns "added" or "updated". Existing per-code `used` flags are preserved
     when the same code string is re-imported at the same position.
+    totp_secret=None leaves a stored 2fa.cn/Authenticator secret unchanged.
     """
     e = (email or "").strip().lower()
     if not e:
@@ -470,6 +491,24 @@ def upsert_gmail_login(email: str, password: str, codes: list[str]) -> str:
             """,
             (e, password or ""),
         )
+        if totp_secret is not None and str(totp_secret).strip():
+            conn.execute(
+                """
+                UPDATE gmail_login
+                SET totp_secret = ?, updated_at = strftime('%s','now')
+                WHERE email = ?
+                """,
+                (str(totp_secret).strip(), e),
+            )
+        if recovery_email is not None and str(recovery_email).strip():
+            conn.execute(
+                """
+                UPDATE gmail_login
+                SET recovery_email = ?, updated_at = strftime('%s','now')
+                WHERE email = ?
+                """,
+                (str(recovery_email).strip().lower(), e),
+            )
         # Preserve used-state for codes that already exist at the same ordinal.
         prev = {
             (int(r["ordinal"])): (r["code"], int(r["used"]), r["used_at"])
@@ -501,9 +540,22 @@ def set_gmail_login_fields(email: str, **fields: Any) -> None:
         "proxy_label",
         "snap_status",
         "group_name",
+        "batch_name",
         "last_error",
+        "totp_secret",
+        "recovery_email",
     }
     sets = {k: v for k, v in fields.items() if k in allowed and v is not None}
+    if "last_error" in sets:
+        err = str(sets["last_error"] or "")
+        low = err.lower()
+        if (
+            "2fa key rejected" in low
+            or "totp_rejected" in low
+            or "challenge/totp" in low
+            or "totp never accepted" in low
+        ):
+            sets["last_error"] = "2FA key rejected"
     if not sets:
         return
     cols = ", ".join(f"{k} = ?" for k in sets)
