@@ -15,3 +15,4 @@ data/*.sqlite
 .env.*
 !.env.example
 secrets/
+data/cursor-export/
