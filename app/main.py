@@ -298,6 +298,7 @@ class RunIn(CreateIn):
     auto_password: bool = True
     platform: str = "snapchat.com"
     group_id: str = ""
+    inject_netlox: bool = True
 
 
 def _client() -> AdsPowerClient:
