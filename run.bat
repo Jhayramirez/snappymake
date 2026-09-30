@@ -86,7 +86,7 @@ echo   ------------------------------------------------------------
 echo.
 
 REM Start dashboard minimized in another CMD; wait until API answers.
-start "SnappyMake Dashboard" /min cmd /c "cd /d "%~dp0" && "%VENVPY%" -m app"
+start "SnappyMake Dashboard" /min cmd /c "cd /d %~dp0 && .venv\Scripts\python.exe -m app"
 
 echo   Waiting for dashboard on http://127.0.0.1:8787 ...
 set "READY=0"

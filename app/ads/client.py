@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import subprocess
+import sys
 import time
 from pathlib import Path
 from typing import Any
@@ -29,12 +30,23 @@ BACKGROUND_LAUNCH_ARGS = [
     "--window-position=40,60",
 ]
 
+# Windows VPS / RDP: stay on-screen so operators can watch the signup.
+WINDOWS_WATCH_ARGS = [
+    "--disable-notifications",
+    "--window-position=40,40",
+    "--window-size=1280,800",
+]
+
 
 def no_focus_enabled() -> bool:
     return os.environ.get("SNAPPY_NO_FOCUS", "1") != "0"
 
 
 def background_launch_args() -> list[str]:
+    # Off-screen coords get clamped back to center on Windows RDP — use a
+    # visible top-left window so creation/warmup is watchable on VPS.
+    if sys.platform.startswith("win"):
+        return list(WINDOWS_WATCH_ARGS)
     if no_focus_enabled():
         return ["--disable-notifications", "--window-position=-2400,-200"]
     return list(BACKGROUND_LAUNCH_ARGS)
