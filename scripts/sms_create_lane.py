@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
 """Auto-create DiddySMS Snap signups into a Warming AdsPower group.
 
-Lane map (4 creation VPS → 2 warming groups):
+One creation VPS → one warming group:
 
-    VPS 1 + VPS 2  →  SnappyOfficial - Warming SMS 1
-    VPS 3 + VPS 4  →  SnappyOfficial - Warming SMS 2
+    VPS 1  →  SnappyOfficial - Warming SMS 1
+    VPS 2  →  SnappyOfficial - Warming SMS 2
+    VPS 3  →  SnappyOfficial - Warming SMS 3
+    VPS 4  →  SnappyOfficial - Warming SMS 4
+
+Later you can regroup two Warming SMS groups onto one warming VPS for Stage 1.
+Creation stays 1:1 so balancing is automatic.
 
 Resume: progress is the AdsPower group count. Restart / crash / reboot is fine —
 re-run the same --vps and it continues until --target good profiles exist.
@@ -19,7 +24,7 @@ Requires:
 Examples:
 
     python scripts/sms_create_lane.py --vps 1
-    python scripts/sms_create_lane.py --vps 3 --target 600 --batch 5
+    python scripts/sms_create_lane.py --vps 3 --target 300 --batch 5
 
 Logs: data/logs/sms_create_vps{N}.log
 """
@@ -46,13 +51,16 @@ from app.services.gmail_login import group_id_by_name
 DEFAULT_GROUPS = {
     1: "SnappyOfficial - Warming SMS 1",
     2: "SnappyOfficial - Warming SMS 2",
+    3: "SnappyOfficial - Warming SMS 3",
+    4: "SnappyOfficial - Warming SMS 4",
 }
 
-VPS_TO_LANE = {
+# 1 creation VPS → 1 warming group (same number).
+VPS_TO_GROUP = {
     1: 1,
-    2: 1,
-    3: 2,
-    4: 2,
+    2: 2,
+    3: 3,
+    4: 4,
 }
 
 LOG_DIR = ROOT / "data" / "logs"
@@ -223,15 +231,15 @@ def parse_args() -> argparse.Namespace:
     p.add_argument(
         "--vps",
         type=int,
-        choices=sorted(VPS_TO_LANE),
+        choices=sorted(VPS_TO_GROUP),
         default=_env_int("SNAPPY_VPS", 0) or None,
         help="Creation VPS number 1–4 (or set SNAPPY_VPS)",
     )
     p.add_argument(
         "--target",
         type=int,
-        default=_env_int("SNAPPY_TARGET", 600),
-        help="Stop when this many good profiles are in the warming group (default 600)",
+        default=_env_int("SNAPPY_TARGET", 300),
+        help="Stop when this many good profiles are in the warming group (default 300)",
     )
     p.add_argument(
         "--batch",
@@ -270,20 +278,20 @@ def parse_args() -> argparse.Namespace:
 def warming_group_name(vps: int, override: str = "") -> str:
     if override.strip():
         return override.strip()
-    lane = VPS_TO_LANE[vps]
-    env_key = f"SNAPPY_WARMING_GROUP_{lane}"
-    return (os.environ.get(env_key) or "").strip() or DEFAULT_GROUPS[lane]
+    group_n = VPS_TO_GROUP[vps]
+    env_key = f"SNAPPY_WARMING_GROUP_{group_n}"
+    return (os.environ.get(env_key) or "").strip() or DEFAULT_GROUPS[group_n]
 
 
 def main() -> int:
     args = parse_args()
     vps = int(args.vps)
-    lane = VPS_TO_LANE[vps]
+    group_n = VPS_TO_GROUP[vps]
     group_name = warming_group_name(vps, args.group_name)
     prefix = f"V{vps}-SMS"
     log = TeeLog(LOG_DIR / f"sms_create_vps{vps}.log")
 
-    log(f"=== sms-create-lane start VPS={vps} lane={lane} ===")
+    log(f"=== sms-create-lane start VPS={vps} → group {group_n} ===")
     log(f"group   {group_name}")
     log(f"prefix  {prefix}")
     log(f"target  {args.target} good in group (resume = recount AdsPower)")

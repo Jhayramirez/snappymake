@@ -18,12 +18,14 @@ if "%~1"=="" (
   echo      sms_create_lane.bat 3
   echo      sms_create_lane.bat 4
   echo.
-  echo   Map:
-  echo      VPS 1 + 2  -^>  SnappyOfficial - Warming SMS 1
-  echo      VPS 3 + 4  -^>  SnappyOfficial - Warming SMS 2
+  echo   Map (1 VPS = 1 group):
+  echo      VPS 1  -^>  SnappyOfficial - Warming SMS 1
+  echo      VPS 2  -^>  SnappyOfficial - Warming SMS 2
+  echo      VPS 3  -^>  SnappyOfficial - Warming SMS 3
+  echo      VPS 4  -^>  SnappyOfficial - Warming SMS 4
   echo.
-  echo   Resume-safe: counts good profiles in AdsPower, then continues.
-  echo   Logs: data\logs\sms_create_vpsN.log
+  echo   Default target: 300 good profiles per group.
+  echo   Resume-safe. Logs: data\logs\sms_create_vpsN.log
   echo.
   echo   Start run.bat first (dashboard on :8787). AdsPower must be open.
   echo.
@@ -50,13 +52,9 @@ if errorlevel 1 (
 
 set "VENVPY=%~dp0.venv\Scripts\python.exe"
 
-if "%~1"=="1" set "LANE=Warming SMS 1"
-if "%~1"=="2" set "LANE=Warming SMS 1"
-if "%~1"=="3" set "LANE=Warming SMS 2"
-if "%~1"=="4" set "LANE=Warming SMS 2"
-
-echo   Target group : SnappyOfficial - %LANE%
+echo   Target group : SnappyOfficial - Warming SMS %~1
 echo   Prefix       : V%~1-SMS
+echo   Target       : 300 good (default)
 echo   Resume       : yes (AdsPower count)
 echo   Cache clear  : yes after each batch (cookies kept)
 echo   Log file     : data\logs\sms_create_vps%~1.log
