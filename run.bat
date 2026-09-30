@@ -1,32 +1,51 @@
 @echo off
-setlocal
+setlocal EnableExtensions EnableDelayedExpansion
 cd /d "%~dp0"
-title SnappyMake
+title SnappyMake · Dashboard
+chcp 65001 >nul 2>&1
+color 0B
 
-if not exist ".venv\Scripts\python.exe" (
-  echo [ERROR] Not set up yet. Run install.bat first.
+cls
+echo.
+echo   ============================================================
+echo.
+echo      ____                       __  ____       __
+echo     / __/__  ___ ____  ___ __  /  ^|/  /__ ____/ /_____
+echo    _\ \/ _ \/ _ `/ _ \/ _ `/  / /^|_/ / _ `/ _  / -_)
+echo   /___/_//_/\_,_/ .__/\_, /  /_/  /_/\_,_/\_,_/\__/
+echo                /_/   /___/
+echo.
+echo      D A S H B O A R D   ·   a u t o - s e t u p
+echo.
+echo   ============================================================
+echo.
+
+call "%~dp0scripts\ensure_setup.bat"
+if errorlevel 1 (
+  echo.
+  echo   [x] Setup failed. Fix Python / internet, then re-run.
   echo.
   pause
   exit /b 1
 )
 
-echo ================================================
-echo    SnappyMake dashboard
-echo ================================================
+set "VENVPY=%~dp0.venv\Scripts\python.exe"
+
+echo   AdsPower  : open + Local API :50325
+echo   Dashboard : http://127.0.0.1:8787
+echo   Gmail     : http://127.0.0.1:8787/gmail-login
 echo.
-echo Reminder: AdsPower must be OPEN with Local API enabled (port 50325).
-echo Dashboard:   http://127.0.0.1:8787
-echo Gmail Login: http://127.0.0.1:8787/gmail-login
-echo.
-echo Press Ctrl+C in this window to stop the server.
+echo   Ctrl+C stops the server.
+echo   ------------------------------------------------------------
 echo.
 
-REM Open the Gmail Login page in the default browser after a short delay.
 start "" /min cmd /c "timeout /t 3 >nul & start "" http://127.0.0.1:8787/gmail-login"
 
-".venv\Scripts\python.exe" -m app
+"%VENVPY%" -m app
 
 echo.
-echo Server stopped.
+echo   ------------------------------------------------------------
+echo   Server stopped.
+echo.
 pause
 endlocal

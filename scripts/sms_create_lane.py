@@ -6,25 +6,22 @@ Lane map (4 creation VPS → 2 warming groups):
     VPS 1 + VPS 2  →  SnappyOfficial - Warming SMS 1
     VPS 3 + VPS 4  →  SnappyOfficial - Warming SMS 2
 
-Each VPS keeps a unique name prefix (V1-SMS, V2-SMS, …) so two creators
-writing into the same group do not race on serial numbers.
+Resume: progress is the AdsPower group count. Restart / crash / reboot is fine —
+re-run the same --vps and it continues until --target good profiles exist.
+
+After each batch, local AdsPower cache is cleared for this VPS's prefixes
+(history / images / extension / storage). Cookies are kept so Snap stays logged in.
 
 Requires:
   - AdsPower open with Local API on :50325
-  - SnappyMake dashboard running (`run.bat` / `python -m app`) on :8787
+  - SnappyMake dashboard running (`run.bat`) on :8787
 
 Examples:
 
     python scripts/sms_create_lane.py --vps 1
     python scripts/sms_create_lane.py --vps 3 --target 600 --batch 5
 
-Env overrides:
-    SNAPPY_VPS=1
-    SNAPPY_API=http://127.0.0.1:8787
-    SNAPPY_TARGET=600
-    SNAPPY_BATCH=5
-    SNAPPY_WARMING_GROUP_1=SnappyOfficial - Warming SMS 1
-    SNAPPY_WARMING_GROUP_2=SnappyOfficial - Warming SMS 2
+Logs: data/logs/sms_create_vps{N}.log
 """
 from __future__ import annotations
 
@@ -35,11 +32,13 @@ import sys
 import time
 import urllib.error
 import urllib.request
+from datetime import datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
+from app.ads import AdsPowerError
 from app.ads.client import AdsPowerClient
 from app.services import load_runtime_settings
 from app.services.gmail_login import group_id_by_name
@@ -49,13 +48,31 @@ DEFAULT_GROUPS = {
     2: "SnappyOfficial - Warming SMS 2",
 }
 
-# VPS number → warming lane (1 or 2)
 VPS_TO_LANE = {
     1: 1,
     2: 1,
     3: 2,
     4: 2,
 }
+
+LOG_DIR = ROOT / "data" / "logs"
+
+
+class TeeLog:
+    """Print + append to a rotating-ish per-VPS log file."""
+
+    def __init__(self, path: Path) -> None:
+        self.path = path
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+
+    def __call__(self, msg: str) -> None:
+        line = f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} {msg}"
+        print(line, flush=True)
+        try:
+            with self.path.open("a", encoding="utf-8") as fh:
+                fh.write(line + "\n")
+        except OSError:
+            pass
 
 
 def _env_int(name: str, default: int) -> int:
@@ -65,25 +82,29 @@ def _env_int(name: str, default: int) -> int:
     return int(raw)
 
 
-def get(base: str, path: str) -> dict:
-    with urllib.request.urlopen(base + path, timeout=20) as r:
+def get(base: str, path: str, timeout: float = 20) -> dict:
+    with urllib.request.urlopen(base + path, timeout=timeout) as r:
         return json.loads(r.read())
 
 
-def post(base: str, path: str, body: dict) -> dict:
+def post(base: str, path: str, body: dict, timeout: float = 30) -> dict:
     req = urllib.request.Request(
         base + path,
         data=json.dumps(body).encode(),
         headers={"Content-Type": "application/json"},
         method="POST",
     )
-    with urllib.request.urlopen(req, timeout=30) as r:
+    with urllib.request.urlopen(req, timeout=timeout) as r:
         return json.loads(r.read())
 
 
-def ensure_warming_group(name: str) -> str:
+def make_client() -> AdsPowerClient:
     conf = load_runtime_settings()
-    client = AdsPowerClient(conf["api_base"], conf.get("api_key") or "", min_interval=1.05)
+    return AdsPowerClient(conf["api_base"], conf.get("api_key") or "", min_interval=1.05)
+
+
+def ensure_warming_group(name: str) -> str:
+    client = make_client()
     try:
         gid = group_id_by_name(client, name)
         if gid:
@@ -98,8 +119,7 @@ def ensure_warming_group(name: str) -> str:
 
 
 def count_good(group_id: str) -> int:
-    conf = load_runtime_settings()
-    client = AdsPowerClient(conf["api_base"], conf.get("api_key") or "", min_interval=1.05)
+    client = make_client()
     try:
         n = 0
         for p in client.list_profiles(group_id=group_id) or []:
@@ -111,13 +131,87 @@ def count_good(group_id: str) -> int:
         client.close()
 
 
-def wait_idle(base: str) -> dict:
+def close_open_browsers(log: TeeLog) -> None:
+    client = make_client()
+    try:
+        active = list(client.local_active() or [])
+        for item in active:
+            pid = item if isinstance(item, str) else str(
+                (item or {}).get("user_id") or (item or {}).get("profile_id") or ""
+            )
+            if not pid:
+                continue
+            try:
+                client.stop_browser(pid)
+                log(f"closed leftover browser {pid}")
+            except Exception as exc:
+                log(f"close leftover warn {pid}: {exc}")
+    except Exception as exc:
+        log(f"active list warn: {exc}")
+    finally:
+        client.close()
+
+
+def clear_lane_cache(group_id: str, prefix: str, log: TeeLog) -> int:
+    """Clear disk-heavy local cache for this VPS's profiles. Keep cookies."""
+    client = make_client()
+    cleared = 0
+    try:
+        open_ids = set(client.local_active() or [])
+        needle = f"{prefix}-"
+        ids: list[str] = []
+        for p in client.list_profiles(group_id=group_id) or []:
+            name = str(p.get("name") or "")
+            pid = str(p.get("profile_id") or p.get("user_id") or "")
+            if not pid or not name.startswith(needle):
+                continue
+            if pid in open_ids:
+                try:
+                    client.stop_browser(pid)
+                    time.sleep(0.8)
+                except Exception:
+                    continue
+            ids.append(pid)
+        # AdsPower accepts batches; keep chunks small.
+        for i in range(0, len(ids), 20):
+            chunk = ids[i : i + 20]
+            try:
+                client.delete_profile_cache(chunk)
+                cleared += len(chunk)
+            except AdsPowerError as exc:
+                log(f"cache clear warn ({len(chunk)}): {exc}")
+            except Exception as exc:
+                log(f"cache clear err: {exc}")
+    finally:
+        client.close()
+    return cleared
+
+
+def wait_for_api(base: str, log: TeeLog, *, forever: bool = True) -> bool:
+    """Block until dashboard answers. Survives VPS reboot / run.bat restart."""
+    attempt = 0
+    while True:
+        attempt += 1
+        try:
+            get(base, "/api/runs/current", timeout=8)
+            if attempt > 1:
+                log(f"dashboard back online at {base}")
+            return True
+        except Exception as exc:
+            if attempt == 1 or attempt % 10 == 0:
+                log(f"waiting for dashboard {base} ({exc})")
+            if not forever and attempt >= 30:
+                return False
+            time.sleep(5)
+
+
+def wait_idle(base: str, log: TeeLog) -> dict:
     while True:
         try:
             d = get(base, "/api/runs/current")
         except Exception as exc:
-            print(f"wait_idle {exc}", flush=True)
-            time.sleep(4)
+            log(f"wait_idle lost dashboard: {exc}")
+            wait_for_api(base, log)
             continue
         if d.get("status") not in {"running", "queued", "cancelling"}:
             return d
@@ -156,6 +250,11 @@ def parse_args() -> argparse.Namespace:
         help="Override AdsPower warming group name for this VPS",
     )
     p.add_argument(
+        "--no-cache-clear",
+        action="store_true",
+        help="Skip AdsPower local cache clear after each batch",
+    )
+    p.add_argument(
         "--once",
         action="store_true",
         help="Run a single batch then exit (smoke test)",
@@ -182,26 +281,29 @@ def main() -> int:
     lane = VPS_TO_LANE[vps]
     group_name = warming_group_name(vps, args.group_name)
     prefix = f"V{vps}-SMS"
+    log = TeeLog(LOG_DIR / f"sms_create_vps{vps}.log")
 
-    print(f"sms-create-lane VPS={vps} lane={lane}", flush=True)
-    print(f"  group  {group_name}", flush=True)
-    print(f"  prefix {prefix}", flush=True)
-    print(f"  target {args.target} good in group", flush=True)
-    print(f"  batch  {args.batch}", flush=True)
-    print(f"  api    {args.api}", flush=True)
+    log(f"=== sms-create-lane start VPS={vps} lane={lane} ===")
+    log(f"group   {group_name}")
+    log(f"prefix  {prefix}")
+    log(f"target  {args.target} good in group (resume = recount AdsPower)")
+    log(f"batch   {args.batch}")
+    log(f"api     {args.api}")
+    log(f"log     {log.path}")
+    log(f"cache   {'off' if args.no_cache_clear else 'clear after batch (keep cookies)'}")
 
-    try:
-        get(args.api, "/api/runs/current")
-    except Exception as exc:
-        print(
-            f"Cannot reach SnappyMake at {args.api}: {exc}\n"
-            "Start the dashboard first (run.bat / python -m app).",
-            flush=True,
-        )
+    if not wait_for_api(args.api, log, forever=True):
         return 1
 
+    close_open_browsers(log)
     gid = ensure_warming_group(group_name)
-    print(f"  group_id {gid}", flush=True)
+    log(f"group_id {gid}")
+
+    n0 = count_good(gid)
+    log(f"resume count good={n0}/{args.target}")
+    if n0 >= args.target:
+        log(f"target already reached ({n0}>={args.target}). nothing to do.")
+        return 0
 
     payload = {
         "name_prefix": prefix,
@@ -220,36 +322,37 @@ def main() -> int:
 
     while True:
         try:
-            wait_idle(args.api)
+            wait_idle(args.api, log)
             n = count_good(gid)
-            print(f"good={n}/{args.target} · next batch {args.batch}", flush=True)
+            log(f"good={n}/{args.target} · next batch {args.batch}")
             if n >= args.target:
-                print(f"target reached ({n}>={args.target}). stop.", flush=True)
+                log(f"target reached ({n}>={args.target}). stop.")
                 return 0
             left = args.target - n
             body = dict(payload)
             body["count"] = min(args.batch, left)
-            print(f"start batch count={body['count']}", flush=True)
+            log(f"start batch count={body['count']}")
             started = post(args.api, "/api/runs", body)
         except urllib.error.HTTPError as exc:
             err = exc.read().decode()[:400]
-            print(f"POST fail {exc.code} {err}", flush=True)
+            log(f"POST fail {exc.code} {err}")
             time.sleep(20)
             continue
         except Exception as exc:
-            print(f"loop err {exc}", flush=True)
-            time.sleep(15)
+            log(f"loop err {exc}")
+            wait_for_api(args.api, log)
+            time.sleep(8)
             continue
 
-        print(f"run {started.get('id')} {started.get('status')}", flush=True)
+        log(f"run {started.get('id')} {started.get('status')}")
         last_len = 0
         while True:
             time.sleep(6)
             try:
                 d = get(args.api, "/api/runs/current")
             except Exception as exc:
-                print(f"poll err {exc}", flush=True)
-                time.sleep(5)
+                log(f"poll lost dashboard: {exc}")
+                wait_for_api(args.api, log)
                 continue
             logs = d.get("logs") or []
             for lg in logs[last_len:]:
@@ -276,15 +379,22 @@ def main() -> int:
                     )
                 )
                 if interesting:
-                    print(f"  {msg[:220]}", flush=True)
+                    log(f"  {msg[:220]}")
             last_len = len(logs)
             if d.get("status") not in {"running", "queued", "cancelling"}:
-                print(
+                log(
                     f"batch {d.get('status')} ok={d.get('ok')}/{d.get('requested')} "
-                    f"err={d.get('error')}",
-                    flush=True,
+                    f"err={d.get('error')}"
                 )
                 break
+
+        if not args.no_cache_clear:
+            try:
+                close_open_browsers(log)
+                n_clear = clear_lane_cache(gid, prefix, log)
+                log(f"cache cleared for {n_clear} {prefix}-* profiles")
+            except Exception as exc:
+                log(f"cache clear skip: {exc}")
 
         if args.once:
             return 0

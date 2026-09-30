@@ -295,6 +295,37 @@ class AdsPowerClient:
         )
         return payload.get("data") or {}
 
+    def delete_profile_cache(
+        self,
+        profile_ids: list[str],
+        *,
+        types: list[str] | None = None,
+    ) -> dict[str, Any]:
+        """Clear local AdsPower cache for closed profiles (Delete Cache V2).
+
+        Default types free disk without killing Snapchat login cookies.
+        Browsers must be closed or AdsPower returns an error.
+        """
+        ids = [str(pid).strip() for pid in profile_ids if str(pid).strip()]
+        if not ids:
+            raise AdsPowerError("No profile IDs for cache delete")
+        cache_types = list(
+            types
+            or [
+                "local_storage",
+                "indexeddb",
+                "extension_cache",
+                "history",
+                "image_file",
+            ]
+        )
+        payload = self.request(
+            "POST",
+            "/api/v2/browser-profile/delete-cache",
+            json_body={"profile_id": ids, "type": cache_types},
+        )
+        return payload.get("data") or {}
+
     def start_browser(
         self,
         profile_id: str,
