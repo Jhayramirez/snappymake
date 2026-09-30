@@ -1039,7 +1039,7 @@ def _force_english(page, start_url: str, notes: list[str]) -> None:
     if _page_is_filipino(page):
         notes.append("page_was_filipino_reloading")
         try:
-            page.goto(_with_english_locale(start_url), wait_until="domcontentloaded", timeout=45000)
+            page.goto(_with_english_locale(start_url), wait_until="domcontentloaded", timeout=90000)
             page.wait_for_timeout(random.randint(700, 1200))
         except Exception:
             pass
@@ -2532,7 +2532,7 @@ def _bitmoji_oauth_continues(context, notes: list[str], on_step) -> None:
 
 def _open_bitmoji_and_login(context, notes: list[str], on_step):
     page = context.new_page()
-    page.goto(BITMOJI_HOME_URL, wait_until="domcontentloaded", timeout=45000)
+    page.goto(BITMOJI_HOME_URL, wait_until="domcontentloaded", timeout=90000)
     _bring_page(page)
     _note(on_step, notes, "bitmoji_home")
     _pause(page, 600, 1100)
@@ -3337,7 +3337,7 @@ def _snapchat_qa_add(
         _bring_page(page)
         try:
             _note(on_step, notes, f"qa_goto_web_session:{web_session_url[:120]}")
-            page.goto(web_session_url, wait_until="domcontentloaded", timeout=60000)
+            page.goto(web_session_url, wait_until="domcontentloaded", timeout=90000)
             page.wait_for_timeout(random.randint(2000, 3500))
         except Exception as exc:
             _note(on_step, notes, f"qa_goto_web_session_failed:{exc}")
@@ -3491,7 +3491,7 @@ def _snapchat_web_onboard(page, context, notes: list[str], on_step, *, add_frien
     if not _on_welcome_page(page) and not _is_snapchat_web(page):
         try:
             _note(on_step, notes, "web_onboard_goto_welcome")
-            page.goto(_with_english_locale(SNAPCHAT_WELCOME_URL), wait_until="domcontentloaded", timeout=45000)
+            page.goto(_with_english_locale(SNAPCHAT_WELCOME_URL), wait_until="domcontentloaded", timeout=90000)
             page.wait_for_timeout(random.randint(1500, 2500))
         except Exception as exc:
             _note(on_step, notes, f"web_onboard_goto_welcome_failed:{exc}")
@@ -3627,7 +3627,7 @@ def run_page_action(
             if web_page is not None:
                 page = web_page
         else:
-            page.goto(_with_english_locale(start_url), wait_until="domcontentloaded", timeout=45000)
+            page.goto(_with_english_locale(start_url), wait_until="domcontentloaded", timeout=90000)
             page.wait_for_timeout(random.randint(1200, 2200))
             _force_english(page, start_url, notes)
             _dismiss_cookie_banner(page, notes, on_step)

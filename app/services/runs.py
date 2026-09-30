@@ -299,11 +299,13 @@ def execute_run(run_id: str) -> None:
                         f"Netlox inject · {label}" + (f" · {geo}" if geo and geo != label else ""),
                         profile_id=profile["profile_id"],
                     )
-                time.sleep(1.2)
+                time.sleep(3.0)
                 opened = open_browser(
                     client,
                     profile["profile_id"],
                     headless=False,
+                    timeout=900,
+                    attempt_timeout=140,
                     on_wait=lambda msg, left: log(
                         run,
                         "wait",
@@ -357,8 +359,8 @@ def execute_run(run_id: str) -> None:
                                 return diddysms.wait_for_sms(
                                     diddy_key,
                                     oid,
-                                    timeout=180,
-                                    poll=4,
+                                    timeout=300,
+                                    poll=5,
                                     on_wait=lambda msg: log(run, "otp", msg, profile_id=pid),
                                     should_stop=lambda: bool(run.get("cancel")),
                                 )
@@ -394,8 +396,8 @@ def execute_run(run_id: str) -> None:
                                     return diddysms.wait_for_sms(
                                         diddy_key,
                                         oid,
-                                        timeout=180,
-                                        poll=4,
+                                        timeout=300,
+                                        poll=5,
                                         on_wait=lambda m: log(run, "otp", m, profile_id=p),
                                         should_stop=lambda: bool(run.get("cancel")),
                                     )
