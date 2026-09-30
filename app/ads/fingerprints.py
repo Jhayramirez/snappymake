@@ -89,7 +89,12 @@ def preferred_chrome_kernel() -> str:
     # Prefer a real on-disk kernel. If none found (common on fresh Windows VPS
     # before path scan / download), "latest" lets AdsPower pick — ua_auto alone
     # can fail on update/start on some AdsPower builds.
-    return installed[0] if installed else "latest"
+    if not installed:
+        return "latest"
+    # Snapchat SMS signup has been strongest on 152 — pin while it's installed.
+    if "152" in installed:
+        return "152"
+    return installed[0]
 
 
 def sanitize_fingerprint(fp: dict[str, Any] | None) -> dict[str, Any]:
