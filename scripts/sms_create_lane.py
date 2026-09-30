@@ -45,6 +45,7 @@ sys.path.insert(0, str(ROOT))
 
 from app.ads import AdsPowerError
 from app.ads.client import AdsPowerClient
+from app.db import delete_profile_cache, init_db
 from app.services import load_runtime_settings
 from app.services.gmail_login import group_id_by_name
 
@@ -160,6 +161,53 @@ def close_open_browsers(log: TeeLog) -> None:
         client.close()
 
 
+def wipe_warming_group(group_id: str, log: TeeLog) -> int:
+    """Delete every profile in this warming group (fresh run)."""
+    client = make_client()
+    deleted = 0
+    try:
+        profiles = list(client.list_profiles(group_id=group_id) or [])
+        ids = [
+            str(p.get("profile_id") or p.get("user_id") or "").strip()
+            for p in profiles
+        ]
+        ids = [pid for pid in ids if pid]
+        log(f"fresh wipe · {len(ids)} profile(s) in group {group_id}")
+        if not ids:
+            return 0
+        open_ids = set()
+        try:
+            open_ids = set(client.local_active() or [])
+        except Exception:
+            pass
+        for pid in ids:
+            if pid in open_ids:
+                try:
+                    client.stop_browser(pid)
+                    time.sleep(0.4)
+                except Exception as exc:
+                    log(f"  close before wipe warn {pid}: {exc}")
+        for i in range(0, len(ids), 100):
+            chunk = ids[i : i + 100]
+            try:
+                client.delete_profiles(chunk)
+                deleted += len(chunk)
+                log(f"  deleted {deleted}/{len(ids)}")
+            except AdsPowerError as exc:
+                log(f"  delete chunk fail: {exc}")
+                raise
+        try:
+            delete_profile_cache(ids)
+        except Exception as exc:
+            log(f"  local cache wipe warn: {exc}")
+        # Confirm empty
+        left = len(client.list_profiles(group_id=group_id) or [])
+        log(f"fresh wipe done · remaining in group={left}")
+        return deleted
+    finally:
+        client.close()
+
+
 def clear_lane_cache(group_id: str, prefix: str, log: TeeLog) -> int:
     """Clear disk-heavy local cache for this VPS's profiles. Keep cookies."""
     client = make_client()
@@ -263,6 +311,11 @@ def parse_args() -> argparse.Namespace:
         help="Skip AdsPower local cache clear after each batch",
     )
     p.add_argument(
+        "--fresh",
+        action="store_true",
+        help="Delete all profiles in this warming group, then create from 0",
+    )
+    p.add_argument(
         "--once",
         action="store_true",
         help="Run a single batch then exit (smoke test)",
@@ -294,12 +347,14 @@ def main() -> int:
     log(f"=== sms-create-lane start VPS={vps} → group {group_n} ===")
     log(f"group   {group_name}")
     log(f"prefix  {prefix}")
-    log(f"target  {args.target} good in group (resume = recount AdsPower)")
+    log(f"mode    {'FRESH (wipe group first)' if args.fresh else 'CONTINUE (resume count)'}")
+    log(f"target  {args.target} good in group")
     log(f"batch   {args.batch}")
     log(f"api     {args.api}")
     log(f"log     {log.path}")
     log(f"cache   {'off' if args.no_cache_clear else 'clear after batch (keep cookies)'}")
 
+    init_db()
     if not wait_for_api(args.api, log, forever=True):
         return 1
 
@@ -307,8 +362,16 @@ def main() -> int:
     gid = ensure_warming_group(group_name)
     log(f"group_id {gid}")
 
+    if args.fresh:
+        try:
+            wiped = wipe_warming_group(gid, log)
+            log(f"fresh · wiped {wiped} profile(s) · count resets to 0")
+        except Exception as exc:
+            log(f"fresh wipe FAILED: {exc}")
+            return 1
+
     n0 = count_good(gid)
-    log(f"resume count good={n0}/{args.target}")
+    log(f"{'fresh' if args.fresh else 'resume'} count good={n0}/{args.target}")
     if n0 >= args.target:
         log(f"target already reached ({n0}>={args.target}). nothing to do.")
         return 0
