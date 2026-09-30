@@ -213,8 +213,12 @@ def _env_int(name: str, default: int) -> int:
     return int(raw)
 
 
+# Bypass Windows/system HTTP_PROXY for localhost dashboard calls.
+_OPENER = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+
+
 def get(base: str, path: str, timeout: float = 20) -> dict:
-    with urllib.request.urlopen(base + path, timeout=timeout) as r:
+    with _OPENER.open(base + path, timeout=timeout) as r:
         return json.loads(r.read())
 
 
@@ -225,7 +229,7 @@ def post(base: str, path: str, body: dict, timeout: float = 30) -> dict:
         headers={"Content-Type": "application/json"},
         method="POST",
     )
-    with urllib.request.urlopen(req, timeout=timeout) as r:
+    with _OPENER.open(req, timeout=timeout) as r:
         return json.loads(r.read())
 
 

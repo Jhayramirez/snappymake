@@ -107,7 +107,8 @@ class AdsPowerClient:
         self.api_key = api_key.strip()
         self.min_interval = min_interval
         self._last_call = 0.0
-        self._client = httpx.Client(timeout=DEFAULT_TIMEOUT)
+        # Never route Local API via system HTTP_PROXY (hangs on 127.0.0.1).
+        self._client = httpx.Client(timeout=DEFAULT_TIMEOUT, trust_env=False)
 
     def close(self) -> None:
         self._client.close()
@@ -117,7 +118,7 @@ class AdsPowerClient:
             self._client.close()
         except Exception:
             pass
-        self._client = httpx.Client(timeout=DEFAULT_TIMEOUT)
+        self._client = httpx.Client(timeout=DEFAULT_TIMEOUT, trust_env=False)
 
     def _headers(self) -> dict[str, str]:
         headers = {"Content-Type": "application/json"}

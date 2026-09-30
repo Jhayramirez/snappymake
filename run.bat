@@ -149,24 +149,50 @@ echo   ^|  Stop at 300 good             ^|  dashboard :8787 background  ^|
 echo   +-------------------------------+------------------------------+
 echo.
 
-start "SnappyMake Dashboard" /min cmd /c "cd /d %~dp0 && .venv\Scripts\python.exe -m app"
+REM System proxy must not swallow localhost (common Netlox/VPS hang).
+set "NO_PROXY=127.0.0.1,localhost,local.adspower.net,local.adspower.com"
+set "no_proxy=%NO_PROXY%"
+
+if not exist "%~dp0data\logs" mkdir "%~dp0data\logs"
+echo.>> "%~dp0data\logs\dashboard.log"
+echo ===== dashboard start %DATE% %TIME% =====>> "%~dp0data\logs\dashboard.log"
+
+REM Already up? skip spawn.
+"%VENVPY%" -c "import urllib.request; o=urllib.request.build_opener(urllib.request.ProxyHandler({})); o.open('http://127.0.0.1:8787/api/runs/current', timeout=2).read()" >nul 2>&1
+if not errorlevel 1 (
+  echo   [ok] Dashboard already up.
+  goto :lane_ready
+)
+
+start "SnappyMake Dashboard" /min cmd /c "cd /d %~dp0 && .venv\Scripts\python.exe -m app >> data\logs\dashboard.log 2>&1"
 
 echo   Waiting for dashboard ...
 set "READY=0"
-for /l %%i in (1,1,60) do (
+for /l %%i in (1,1,45) do (
   if "!READY!"=="0" (
-    powershell -NoProfile -Command "try { (Invoke-WebRequest -UseBasicParsing http://127.0.0.1:8787/api/runs/current -TimeoutSec 2).StatusCode } catch { exit 1 }" >nul 2>&1
+    "%VENVPY%" -c "import urllib.request; o=urllib.request.build_opener(urllib.request.ProxyHandler({})); o.open('http://127.0.0.1:8787/api/runs/current', timeout=2).read()" >nul 2>&1
     if not errorlevel 1 set "READY=1"
   )
-  if "!READY!"=="0" timeout /t 2 /nobreak >nul
+  if "!READY!"=="0" (
+    if %%i==1 echo   attempt 1/45 ...
+    if %%i==5 echo   still waiting 5/45 ...
+    if %%i==15 echo   still waiting 15/45 ...
+    if %%i==30 echo   still waiting 30/45 ...
+    timeout /t 2 /nobreak >nul
+  )
 )
 if not "!READY!"=="1" (
-  echo   [x] Dashboard did not start. Open AdsPower, then re-run.
+  echo   [x] Dashboard did not start on :8787
+  echo   [!] Last dashboard log lines:
+  powershell -NoProfile -Command "Get-Content -Path '%~dp0data\logs\dashboard.log' -Tail 25 -ErrorAction SilentlyContinue"
+  echo.
+  echo   Tip: close other python on 8787, open AdsPower, re-run.
   pause
   exit /b 1
 )
 
 echo   [ok] Dashboard up.
+:lane_ready
 echo.
 "%VENVPY%" scripts\sms_create_lane.py --vps %CHOICE% --target 300 --ui %FRESH_FLAG%
 set "RC=%ERRORLEVEL%"
