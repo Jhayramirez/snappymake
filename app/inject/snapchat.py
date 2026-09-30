@@ -1094,6 +1094,14 @@ PROCESS_ERROR_PHRASES = (
     "sorry, we cannot",
 )
 
+# Snap hard-blocks web signup for this IP/fingerprint — mobile app only.
+MOBILE_APP_BLOCK_PHRASES = (
+    "try again on our mobile app",
+    "please try again on our mobile app",
+    "account creation could not be completed",
+    "could not be completed at this time",
+)
+
 
 def _process_error_visible(page) -> bool:
     try:
@@ -1101,6 +1109,14 @@ def _process_error_visible(page) -> bool:
     except Exception:
         return False
     return any(phrase in blob for phrase in PROCESS_ERROR_PHRASES)
+
+
+def _mobile_app_block_visible(page) -> bool:
+    try:
+        blob = (page.inner_text("body") or "").lower()
+    except Exception:
+        return False
+    return any(phrase in blob for phrase in MOBILE_APP_BLOCK_PHRASES)
 
 
 # Snapchat rejects certain email providers/addresses at the email step. These
@@ -1288,11 +1304,17 @@ def _click_next(page, notes: list[str], on_step=None, *, expected_username: str 
         return False
     _note(on_step, notes, "clicked_next")
     _pause(page, 900, 1600)
+    if _mobile_app_block_visible(page):
+        _note(on_step, notes, "mobile_app_block")
+        return False
     if expected_username and (_username_too_short(page) or _username_short_message(page)):
         notes.append("username_short_after_next")
         return False
     retries = random.randint(10, 15)
     for retry in range(1, retries + 1):
+        if _mobile_app_block_visible(page):
+            _note(on_step, notes, "mobile_app_block")
+            return False
         if not _wait_process_error(page):
             break
         _note(on_step, notes, f"process_error_retry:{retry}")
@@ -1301,6 +1323,9 @@ def _click_next(page, notes: list[str], on_step=None, *, expected_username: str 
         if not _human_click(page, retry_loc):
             continue
         _pause(page, 900, 1600)
+    if _mobile_app_block_visible(page):
+        _note(on_step, notes, "mobile_app_block")
+        return False
     if _process_error_visible(page):
         _note(on_step, notes, "process_error_stuck")
         return False
@@ -3708,7 +3733,7 @@ def run_page_action(
                                 page, notes, on_step, expected_username=identity["username"]
                             ):
                                 recent = notes[before:]
-                                if "process_error_stuck" in recent:
+                                if "process_error_stuck" in recent or "mobile_app_block" in recent:
                                     break
                                 if any(
                                     item in recent
@@ -3724,7 +3749,7 @@ def run_page_action(
                                 _note(on_step, notes, "next_button_not_found")
                                 break
                             page.wait_for_timeout(random.randint(900, 1600))
-                            if "process_error_stuck" in notes:
+                            if "process_error_stuck" in notes or "mobile_app_block" in notes:
                                 break
                             if _username_too_short(page) or _username_short_message(page):
                                 _note(on_step, notes, "username_short_after_next")
@@ -3754,7 +3779,7 @@ def run_page_action(
                             submitted = True
                             break
                         if not submitted:
-                            if "process_error_stuck" not in notes:
+                            if "process_error_stuck" not in notes and "mobile_app_block" not in notes:
                                 _note(on_step, notes, "signup_not_submitted")
                         else:
                             page.wait_for_timeout(random.randint(1500, 2500))
@@ -3802,7 +3827,7 @@ def run_page_action(
                                             _note(on_step, notes, "phone_field_not_typed")
                                             break
                                         if not _click_next(page, notes, on_step):
-                                            if "process_error_stuck" in notes:
+                                            if "process_error_stuck" in notes or "mobile_app_block" in notes:
                                                 submitted = False
                                                 break
                                         page.wait_for_timeout(random.randint(900, 1600))
@@ -3864,7 +3889,7 @@ def run_page_action(
                                     if not _type_first(page, EMAIL_SELECTORS, email, "email", filled):
                                         break
                                     if not _click_next(page, notes, on_step):
-                                        if "process_error_stuck" in notes:
+                                        if "process_error_stuck" in notes or "mobile_app_block" in notes:
                                             submitted = False
                                             break
                                     page.wait_for_timeout(random.randint(900, 1600))
@@ -3910,6 +3935,7 @@ def run_page_action(
                                 email
                                 and "email" in filled
                                 and "process_error_stuck" not in notes
+                                and "mobile_app_block" not in notes
                                 and stage != "otp"
                                 and _email_rejected(page)
                             ):
@@ -3917,6 +3943,7 @@ def run_page_action(
 
                             if (
                                 "process_error_stuck" not in notes
+                                and "mobile_app_block" not in notes
                                 and "email_rejected" not in notes
                                 and stage != "otp"
                                 and not (phone_number and stage not in {"phone", "otp"})
@@ -3926,7 +3953,7 @@ def run_page_action(
                             if "email_rejected" not in notes and stage != "otp" and email and "email" in filled and _email_rejected(page):
                                 _note(on_step, notes, "email_rejected")
 
-                            if "process_error_stuck" in notes or "email_rejected" in notes:
+                            if "process_error_stuck" in notes or "mobile_app_block" in notes or "email_rejected" in notes:
                                 pass
                             elif stage == "otp":
                                 _note(on_step, notes, "otp_field_visible")
@@ -3951,7 +3978,7 @@ def run_page_action(
                                 _note(on_step, notes, "otp_step_not_seen")
 
                             otp_done = "typed_otp" in notes
-                            if "process_error_stuck" in notes:
+                            if "process_error_stuck" in notes or "mobile_app_block" in notes:
                                 pass
                             elif _wait_for_welcome(
                                 page,
@@ -3995,6 +4022,7 @@ def run_page_action(
         )
         delete_profile = (
             "process_error_stuck" in notes
+            or "mobile_app_block" in notes
             or "email_rejected" in notes
             or ("phone_rejected" in notes and "typed_otp" not in notes)
             or signup_failed
