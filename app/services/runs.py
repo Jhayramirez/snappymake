@@ -17,7 +17,12 @@ from app.mail import anymessage
 from app.mail.anymessage import AnyMessageError
 from app.mail import diddysms
 from app.mail.diddysms import DiddySmsError
-from app.db import increment_proxy_fail, increment_proxy_success, set_profile_succeeded
+from app.db import (
+    delete_profile_cache,
+    increment_proxy_fail,
+    increment_proxy_success,
+    set_profile_succeeded,
+)
 from app.services import load_runtime_settings, make_client
 from app.services.proxy_pool import (
     get_fail_limit,
@@ -242,6 +247,7 @@ def execute_run(run_id: str) -> None:
                 return
             profile = None
             opened_id = None
+            mailbox = None
             should_close = close_after
             should_delete = False
             assigned_proxy = None
@@ -778,6 +784,45 @@ def execute_run(run_id: str) -> None:
                         )
             except Exception as exc:
                 log(run, "error", str(exc), profile_id=(profile or {}).get("profile_id"))
+                # Timeout / crash / open fail: do not leave a dead shell in the
+                # warming group eating AdsPower disk. Close + wipe + delete.
+                if profile and profile.get("profile_id") and action == "snapchat_signup":
+                    should_close = True
+                    should_delete = True
+                    if not opened_id:
+                        opened_id = str(profile["profile_id"])
+                    log(
+                        run,
+                        "delete",
+                        f"Fail cleanup · {type(exc).__name__}: {str(exc)[:120]}",
+                        profile_id=opened_id,
+                    )
+                    if (mailbox or {}).get("provider") == "diddysms" and (mailbox or {}).get("id"):
+                        try:
+                            if diddysms.cancel_after_cooldown(
+                                conf.get("diddysms_key") or "",
+                                mailbox["id"],
+                                bought_at=mailbox.get("bought_at"),
+                            ):
+                                log(
+                                    run,
+                                    "otp",
+                                    f"DiddySMS order canceled · {mailbox['id']}",
+                                    profile_id=opened_id,
+                                )
+                        except Exception:
+                            pass
+                    if (mailbox or {}).get("provider") == "anymessage" and (mailbox or {}).get("id"):
+                        try:
+                            if anymessage.cancel(conf.get("anymessage_token") or "", mailbox["id"]):
+                                log(
+                                    run,
+                                    "otp",
+                                    f"AnyMessage order canceled · {mailbox['id']}",
+                                    profile_id=opened_id,
+                                )
+                        except Exception:
+                            pass
                 with _lock:
                     run["results"].append({"error": str(exc), "index": i})
                     if isinstance(exc, AdsPowerError) and exc.is_quota:
@@ -810,6 +855,27 @@ def execute_run(run_id: str) -> None:
                     except Exception as close_exc:
                         log(run, "error", f"Close failed: {close_exc}", profile_id=opened_id)
                 if should_delete and opened_id:
+                    # Free local AdsPower disk before / after profile delete.
+                    try:
+                        client.delete_profile_cache(
+                            [opened_id],
+                            types=[
+                                "local_storage",
+                                "indexeddb",
+                                "extension_cache",
+                                "history",
+                                "image_file",
+                                "cookie",
+                            ],
+                        )
+                        log(run, "cache", f"Cleared cache {opened_id}", profile_id=opened_id)
+                    except Exception as cache_exc:
+                        log(
+                            run,
+                            "cache",
+                            f"Cache clear warn: {cache_exc}",
+                            profile_id=opened_id,
+                        )
                     try:
                         delete_profiles(client, [opened_id])
                         log(run, "delete", f"Deleted {opened_id}", profile_id=opened_id)
@@ -819,6 +885,10 @@ def execute_run(run_id: str) -> None:
                             log(run, "delete", f"Deleted {opened_id}", profile_id=opened_id)
                         except Exception:
                             log(run, "error", f"Delete failed: {del_exc}", profile_id=opened_id)
+                    try:
+                        delete_profile_cache([opened_id])
+                    except Exception:
+                        pass
                 # Push dashboard mirror after each profile finishes (success or delete).
                 try:
                     from app.services.sheets import schedule_sync
