@@ -449,13 +449,18 @@ def parse_args() -> argparse.Namespace:
         help="Live 2-column STATUS | LOG grid (rich)",
     )
     p.add_argument(
+        "--no-proxy",
+        action="store_true",
+        help="Skip Netlox inject — create/signup on direct IP (test)",
+    )
+    p.add_argument(
         "--once",
         action="store_true",
         help="Run a single batch then exit (smoke test)",
     )
     args = p.parse_args()
     if not args.vps:
-        p.error("Pass --vps 1|2|3|4 or set SNAPPY_VPS")
+        p.error("Pass --vps 1|2|3|4|5 or set SNAPPY_VPS")
     args.batch = max(1, min(50, int(args.batch)))
     args.target = max(1, int(args.target))
     return args
@@ -507,6 +512,7 @@ def _run_lane(args, vps: int, group_n: int, group_name: str, prefix: str, log: T
     log(f"api     {args.api}")
     log(f"log     {log.path}")
     log(f"cache   {'off' if args.no_cache_clear else 'clear after batch (keep cookies)'}")
+    log(f"proxy   {'OFF (no Netlox)' if args.no_proxy else 'Netlox inject'}")
     log(f"ui      {'grid' if args.ui and log.ui else 'plain'}")
 
     init_db()
@@ -537,6 +543,7 @@ def _run_lane(args, vps: int, group_n: int, group_name: str, prefix: str, log: T
         "action": "snapchat_signup",
         "close_after": True,
         "proxy_mode": "none",
+        "inject_netlox": not bool(args.no_proxy),
         "fingerprint_mode": "random",
         "auto_username": True,
         "auto_password": True,

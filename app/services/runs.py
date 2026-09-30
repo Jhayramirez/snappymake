@@ -289,7 +289,11 @@ def execute_run(run_id: str) -> None:
                     f"Created {profile['name']} · {profile.get('os_name')} · {profile.get('kernel')}",
                     profile_id=profile["profile_id"],
                 )
-                if action == "snapchat_signup" and otp_provider == "diddysms":
+                if (
+                    action == "snapchat_signup"
+                    and otp_provider == "diddysms"
+                    and payload.get("inject_netlox", True)
+                ):
                     cfg, label = random_netlox_us()
                     merged = merge_proxy_into_profile(client, profile["profile_id"], cfg)
                     geo = merged.get("geo") or merged.get("label") or label
@@ -297,6 +301,13 @@ def execute_run(run_id: str) -> None:
                         run,
                         "proxy",
                         f"Netlox inject · {label}" + (f" · {geo}" if geo and geo != label else ""),
+                        profile_id=profile["profile_id"],
+                    )
+                elif action == "snapchat_signup" and otp_provider == "diddysms":
+                    log(
+                        run,
+                        "proxy",
+                        "No proxy · direct (inject_netlox=false)",
                         profile_id=profile["profile_id"],
                     )
                 time.sleep(3.0)
