@@ -204,8 +204,9 @@ def _sms_official_row(
     proxy = profile.get("user_proxy_config") or {}
     life = str((lives or {}).get(pid) or profile.get("life") or "").strip().lower()
     if life == "logout":
-        life = "dead"
-    if life == "dead":
+        status = "Logged out"
+        happened = "Login page. Account logged out."
+    elif life == "dead":
         status = "Failed creation"
         happened = "Signup never finished. No Snapchat account (login/signup kick)."
     elif (time.time() - _unix_seconds(created)) >= 96 * 3600 and _unix_seconds(created):
@@ -224,7 +225,7 @@ def _sms_official_row(
         _fmt_ts(created),
         _age_label(created),
         _warmup_stage_label(remark),
-        "dead" if life == "dead" else (life or "live"),
+        life if life in {"dead", "logout"} else (life or "live"),
         "Official SMS Method",
         "open" if pid in open_ids else "closed",
         status,
@@ -265,7 +266,7 @@ def sync_sms_official_now(client=None, *, force: bool = False) -> dict[str, Any]
             open_ids = set()
         from app.db import get_all_profile_life
 
-        lives = get_all_profile_life()
+        lives = get_all_profile_life(collapse_logout=False)
         good = [p for p in profiles if _sms_is_good(str(p.get("remark") or ""))]
         good.sort(key=_sms_serial)
         rows = [_sms_official_row(p, open_ids, lives) for p in good]
@@ -536,7 +537,10 @@ def _style_tab(
                                 "type": "CUSTOM_FORMULA",
                                 "values": [
                                     {
-                                        "userEnteredValue": f'=${life_col}2="dead"',
+                                        "userEnteredValue": (
+                                            f'=OR(LOWER(${life_col}2)="dead",'
+                                            f'LOWER(${life_col}2)="logout")'
+                                        ),
                                     }
                                 ],
                             },
@@ -696,16 +700,17 @@ def _style_tab(
             if sheet.get("properties", {}).get("sheetId") != sheet_id:
                 continue
             rules = sheet.get("conditionalFormats") or []
+            deletes = []
             for idx in range(len(rules) - 1, -1, -1):
-                requests.insert(
-                    0,
+                deletes.append(
                     {
                         "deleteConditionalFormatRule": {
                             "sheetId": sheet_id,
                             "index": idx,
                         }
-                    },
+                    }
                 )
+            requests = deletes + requests
     except Exception:
         pass
 

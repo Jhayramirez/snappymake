@@ -467,7 +467,7 @@ def main() -> int:
         open_ids = set()
 
     official.sort(key=lambda p: int(p.get("profile_no") or 0) if str(p.get("profile_no") or "").isdigit() else 0)
-    lives = get_all_profile_life()
+    lives = get_all_profile_life(collapse_logout=False)
 
     profile_rows = []
     for p in official:
@@ -483,11 +483,15 @@ def main() -> int:
             "user": "",
         }
         life = str(lives.get(pid) or "").strip().lower()
-        if life == "logout":
-            life = "dead"
         remark = str(p.get("remark") or "")
         created = p.get("created_time")
-        if life == "dead":
+        if life == "logout":
+            info_row = {
+                **info_row,
+                "snap": "Logged out",
+                "happened": "Login page. Account logged out.",
+            }
+        elif life == "dead":
             recovered = (
                 "gmail recovered by the owner" in remark.lower()
                 or "gmail recovered by the owner" in str(row.get("last_error") or "").lower()
@@ -524,7 +528,7 @@ def main() -> int:
                 _fmt_ts(created),
                 _age_label(created),
                 _warmup_stage_label(remark),
-                "dead" if life == "dead" else (life or "live"),
+                life if life in {"dead", "logout"} else (life or "live"),
                 _batch(row),
                 "open" if pid in open_ids else "closed",
                 info_row["gmail"],

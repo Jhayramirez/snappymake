@@ -211,15 +211,17 @@ def delete_profile_cache(profile_ids: list[str]) -> None:
         )
 
 
-def get_all_profile_life() -> dict[str, str]:
+def get_all_profile_life(*, collapse_logout: bool = True) -> dict[str, str]:
     with db() as conn:
         rows = conn.execute("SELECT profile_id, status FROM profile_life").fetchall()
     out: dict[str, str] = {}
     for row in rows:
         status = str(row["status"] or "").strip().lower()
         if status in {"live", "dead", "logout"}:
-            # legacy "logout" → same chip as dead (Logout/Dead)
-            out[str(row["profile_id"])] = "dead" if status == "logout" else status
+            # Dashboard chip treats logout as dead. Sheets keep the raw mark.
+            if collapse_logout and status == "logout":
+                status = "dead"
+            out[str(row["profile_id"])] = status
     return out
 
 
