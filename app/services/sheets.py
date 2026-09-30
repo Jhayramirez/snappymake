@@ -4,9 +4,10 @@ Tabs:
   1. AdsPower Profiles — dashboard rows + username/password + created/last open
   2. Proxy Pool Status — Manage Proxy table
   3. Official Profiles SMS Method — SnappyMake Official SMS group (DiddySMS)
+  4–7. Warming SMS 1…4 — one tab per creation-lane AdsPower group
 
 Auth: service-account JSON (default `secrets/google-sheets.json`).
-Updates are push-on-event (debounced full rewrite of both tabs).
+Updates are push-on-event (debounced full rewrite of tabs).
 """
 
 from __future__ import annotations
@@ -25,6 +26,29 @@ PROFILES_TAB = "AdsPower Profiles"
 PROXY_TAB = "Proxy Pool Status"
 SMS_OFFICIAL_TAB = "Official Profiles SMS Method"
 SMS_OFFICIAL_GID = "10749351"
+# One spreadsheet, separate tabs — lane N → Warming SMS N.
+WARMING_SMS_TABS: dict[int, dict[str, str]] = {
+    1: {
+        "tab": "Warming SMS 1",
+        "group": "SnappyOfficial - Warming SMS 1",
+        "method": "Warming SMS 1",
+    },
+    2: {
+        "tab": "Warming SMS 2",
+        "group": "SnappyOfficial - Warming SMS 2",
+        "method": "Warming SMS 2",
+    },
+    3: {
+        "tab": "Warming SMS 3",
+        "group": "SnappyOfficial - Warming SMS 3",
+        "method": "Warming SMS 3",
+    },
+    4: {
+        "tab": "Warming SMS 4",
+        "group": "SnappyOfficial - Warming SMS 4",
+        "method": "Warming SMS 4",
+    },
+}
 DEFAULT_CREDS = ROOT / "secrets" / "google-sheets.json"
 DEFAULT_SHEET_ID = "1iBsEmI2ZMpQ2Vx5KnNjuz3z6upJIXdveMZ9P6KVMFrA"
 
@@ -113,6 +137,7 @@ def sheets_status() -> dict[str, Any]:
         "profiles_tab": PROFILES_TAB,
         "proxy_tab": PROXY_TAB,
         "sms_official_tab": SMS_OFFICIAL_TAB,
+        "warming_sms_tabs": [meta["tab"] for meta in WARMING_SMS_TABS.values()],
     }
 
 
@@ -186,10 +211,12 @@ def _sms_serial(profile: dict[str, Any]) -> int:
     return int(m.group(1)) if m else 0
 
 
-def _sms_official_row(
+def _sms_row(
     profile: dict[str, Any],
     open_ids: set[str],
     lives: dict[str, str] | None = None,
+    *,
+    method: str = "Official SMS Method",
 ) -> list[Any]:
     from app.ads.proxies import summarize_proxy
     from app.services.profiles import extract_snap_web_url
@@ -226,7 +253,7 @@ def _sms_official_row(
         _age_label(created),
         _warmup_stage_label(remark),
         life if life in {"dead", "logout"} else (life or "live"),
-        "Official SMS Method",
+        method,
         "open" if pid in open_ids else "closed",
         status,
         happened,
@@ -237,6 +264,14 @@ def _sms_official_row(
         summarize_proxy(proxy if isinstance(proxy, dict) else None),
         _fmt_ts(profile.get("last_open_time")),
     ]
+
+
+def _sms_official_row(
+    profile: dict[str, Any],
+    open_ids: set[str],
+    lives: dict[str, str] | None = None,
+) -> list[Any]:
+    return _sms_row(profile, open_ids, lives, method="Official SMS Method")
 
 
 def sync_sms_official_now(client=None, *, force: bool = False) -> dict[str, Any]:
@@ -287,6 +322,93 @@ def sync_sms_official_now(client=None, *, force: bool = False) -> dict[str, Any]
             "sms_official_tab": SMS_OFFICIAL_TAB,
             "sms_profiles": n,
             "sms_group_total": len(profiles),
+            "url": f"https://docs.google.com/spreadsheets/d/{sid}/edit",
+            **status,
+            "enabled": sheets_enabled(),
+        }
+    finally:
+        if own_client:
+            try:
+                client.close()
+            except Exception:
+                pass
+
+
+def sync_warming_sms_now(
+    client=None,
+    *,
+    force: bool = False,
+    lanes: list[int] | None = None,
+) -> dict[str, Any]:
+    """Rewrite Warming SMS 1–4 tabs (create tabs if missing). Same sheet as Official."""
+    if not force and not sheets_enabled():
+        return {"ok": True, "skipped": True, "reason": "disabled", **sheets_status()}
+
+    status = sheets_status()
+    if not status["creds_exists"]:
+        return {"ok": False, "detail": f"Missing credentials at {status['creds_path']}", **status}
+    sid = status["sheet_id"]
+    if not sid:
+        return {"ok": False, "detail": "Sheet ID not set", **status}
+
+    wanted = sorted(lanes) if lanes else sorted(WARMING_SMS_TABS)
+    for n in wanted:
+        if n not in WARMING_SMS_TABS:
+            return {"ok": False, "detail": f"Unknown warming lane {n}", **status}
+
+    own_client = client is None
+    if own_client:
+        from app.ads.client import AdsPowerClient
+        from app.services import load_runtime_settings
+
+        conf = load_runtime_settings()
+        client = AdsPowerClient(conf["api_base"], conf.get("api_key") or "")
+    try:
+        from app.db import get_all_profile_life
+        from app.services.gmail_login import group_id_by_name
+
+        try:
+            open_ids = {str(x) for x in (client.local_active() or [])}
+        except Exception:
+            open_ids = set()
+        lives = get_all_profile_life(collapse_logout=False)
+        gc = _client()
+        spreadsheet = gc.open_by_key(sid)
+
+        tabs_out: dict[str, Any] = {}
+        for n in wanted:
+            meta = WARMING_SMS_TABS[n]
+            tab = meta["tab"]
+            group_name = meta["group"]
+            method = meta["method"]
+            gid = group_id_by_name(client, group_name)
+            profiles: list[dict[str, Any]] = []
+            if gid:
+                profiles = list(client.list_profiles(group_id=gid) or [])
+            good = [p for p in profiles if _sms_is_good(str(p.get("remark") or ""))]
+            good.sort(key=_sms_serial)
+            rows = [_sms_row(p, open_ids, lives, method=method) for p in good]
+            written = _write_tab(
+                spreadsheet,
+                tab,
+                SMS_OFFICIAL_HEADERS,
+                rows,
+                SMS_OFFICIAL_WIDTHS,
+                highlight_alive=True,
+            )
+            tabs_out[tab] = {
+                "group": group_name,
+                "group_id": gid or "",
+                "rows": written,
+                "group_total": len(profiles),
+            }
+
+        return {
+            "ok": True,
+            "sheet_id": sid,
+            "title": spreadsheet.title,
+            "warming_tabs": tabs_out,
+            "warming_profiles": sum(int(v.get("rows") or 0) for v in tabs_out.values()),
             "url": f"https://docs.google.com/spreadsheets/d/{sid}/edit",
             **status,
             "enabled": sheets_enabled(),
@@ -848,10 +970,15 @@ def sync_now(client=None, *, force: bool = False) -> dict[str, Any]:
             spreadsheet, PROXY_TAB, PROXY_HEADERS, proxy_rows, PROXY_WIDTHS
         )
         sms = {}
+        warming = {}
         try:
             sms = sync_sms_official_now(client, force=force)
         except Exception:
             sms = {"ok": False, "sms_profiles": 0}
+        try:
+            warming = sync_warming_sms_now(client, force=force)
+        except Exception:
+            warming = {"ok": False, "warming_profiles": 0}
         return {
             "ok": True,
             "sheet_id": sid,
@@ -859,6 +986,8 @@ def sync_now(client=None, *, force: bool = False) -> dict[str, Any]:
             "profiles": n_profiles,
             "proxies": n_proxies,
             "sms_profiles": sms.get("sms_profiles") or 0,
+            "warming_profiles": warming.get("warming_profiles") or 0,
+            "warming_tabs": warming.get("warming_tabs") or {},
             "rotation": pool.get("rotation"),
             "url": f"https://docs.google.com/spreadsheets/d/{sid}/edit",
             **status,

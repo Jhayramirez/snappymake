@@ -30,7 +30,16 @@ PROFILES_TAB = "Official Profiles"
 MAIL_TAB = "Mail Status"
 TOTALS_TAB = "Totals"
 
-KEEP_TABS = {PROFILES_TAB, MAIL_TAB, TOTALS_TAB, "Official Profiles SMS Method"}
+KEEP_TABS = {
+    PROFILES_TAB,
+    MAIL_TAB,
+    TOTALS_TAB,
+    "Official Profiles SMS Method",
+    "Warming SMS 1",
+    "Warming SMS 2",
+    "Warming SMS 3",
+    "Warming SMS 4",
+}
 
 PROFILE_HEADERS = [
     "Profile #",
