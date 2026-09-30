@@ -23,7 +23,8 @@ echo.
 call "%~dp0scripts\ensure_setup.bat"
 if errorlevel 1 (
   echo.
-  echo   [x] Setup failed. Fix Python / internet, then re-run.
+  echo   [x] Setup failed. Check internet, then re-run run.bat
+  echo       (it auto-installs Python + deps when missing).
   echo.
   pause
   exit /b 1
