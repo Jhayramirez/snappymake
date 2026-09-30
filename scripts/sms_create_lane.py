@@ -68,20 +68,142 @@ LOG_DIR = ROOT / "data" / "logs"
 
 
 class TeeLog:
-    """Print + append to a rotating-ish per-VPS log file."""
+    """Print + append to a per-VPS log file. Optional rich 2-column live UI."""
 
-    def __init__(self, path: Path) -> None:
+    def __init__(self, path: Path, *, ui: bool = False, title: str = "SMS create") -> None:
         self.path = path
         self.path.parent.mkdir(parents=True, exist_ok=True)
+        self.ui = ui
+        self.title = title
+        self.meta: dict[str, str] = {
+            "lane": "—",
+            "mode": "—",
+            "group": "—",
+            "good": "—",
+            "target": "—",
+            "batch": "—",
+            "run": "—",
+            "last": "starting…",
+        }
+        self.lines: list[str] = []
+        self._live = None
+        self._Plain = None
+        self._Panel = None
+        self._Layout = None
+        self._Table = None
+        self._Text = None
+        if ui:
+            try:
+                from rich.live import Live
+                from rich.layout import Layout
+                from rich.panel import Panel
+                from rich.table import Table
+                from rich.text import Text
+                from rich.console import Group
+
+                self._Live = Live
+                self._Layout = Layout
+                self._Panel = Panel
+                self._Table = Table
+                self._Text = Text
+                self._Group = Group
+            except ImportError:
+                self.ui = False
+
+    def set_meta(self, **kwargs: object) -> None:
+        for key, value in kwargs.items():
+            self.meta[key] = str(value)
+        self._refresh()
+
+    def start(self) -> None:
+        if not self.ui:
+            return
+        self._live = self._Live(
+            self._render(),
+            refresh_per_second=4,
+            screen=True,
+            transient=False,
+        )
+        self._live.start()
+
+    def stop(self) -> None:
+        if self._live is not None:
+            try:
+                self._live.stop()
+            except Exception:
+                pass
+            self._live = None
+
+    def _render(self):
+        assert self._Table and self._Panel and self._Layout and self._Text and self._Group
+        status = self._Table(show_header=False, box=None, padding=(0, 1))
+        status.add_column("k", style="bold cyan", width=10)
+        status.add_column("v", style="white")
+        for key in ("lane", "mode", "group", "good", "target", "batch", "run", "last"):
+            status.add_row(key, self.meta.get(key, "—"))
+        left = self._Panel(
+            status,
+            title="[bold]STATUS[/]",
+            border_style="cyan",
+            padding=(1, 1),
+        )
+        tail = self.lines[-28:] or ["(waiting for logs…)"]
+        log_text = self._Text("\n".join(tail))
+        right = self._Panel(
+            log_text,
+            title=f"[bold]LOG[/]  {self.path.name}",
+            border_style="green",
+            padding=(1, 1),
+        )
+        layout = self._Layout()
+        layout.split_row(
+            self._Layout(left, name="status", ratio=1, minimum_size=28),
+            self._Layout(right, name="logs", ratio=2),
+        )
+        return self._Group(
+            self._Text(f"  {self.title}", style="bold magenta"),
+            layout,
+        )
+
+    def _refresh(self) -> None:
+        if self._live is not None:
+            try:
+                self._live.update(self._render())
+            except Exception:
+                pass
 
     def __call__(self, msg: str) -> None:
-        line = f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} {msg}"
-        print(line, flush=True)
+        line = f"{datetime.now().strftime('%H:%M:%S')} {msg}"
+        self.lines.append(line)
+        if len(self.lines) > 400:
+            self.lines = self.lines[-300:]
+        # Parse progress into status column
+        if "good=" in msg and "/" in msg:
+            try:
+                chunk = msg.split("good=", 1)[1]
+                pair = chunk.split("·", 1)[0].strip()
+                cur, tgt = pair.split("/", 1)
+                self.meta["good"] = cur.strip()
+                self.meta["target"] = tgt.strip()
+            except Exception:
+                pass
+        if msg.startswith("run "):
+            self.meta["run"] = msg[4:].strip()
+        if "start batch" in msg:
+            self.meta["last"] = msg
+        elif msg.startswith("batch "):
+            self.meta["last"] = msg
+        elif "target reached" in msg or "Finished" in msg or "Created " in msg:
+            self.meta["last"] = msg[:80]
         try:
             with self.path.open("a", encoding="utf-8") as fh:
-                fh.write(line + "\n")
+                fh.write(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} {msg}\n")
         except OSError:
             pass
+        if self._live is not None:
+            self._refresh()
+        else:
+            print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} {msg}", flush=True)
 
 
 def _env_int(name: str, default: int) -> int:
@@ -316,6 +438,11 @@ def parse_args() -> argparse.Namespace:
         help="Delete all profiles in this warming group, then create from 0",
     )
     p.add_argument(
+        "--ui",
+        action="store_true",
+        help="Live 2-column STATUS | LOG grid (rich)",
+    )
+    p.add_argument(
         "--once",
         action="store_true",
         help="Run a single batch then exit (smoke test)",
@@ -342,8 +469,29 @@ def main() -> int:
     group_n = VPS_TO_GROUP[vps]
     group_name = warming_group_name(vps, args.group_name)
     prefix = f"V{vps}-SMS"
-    log = TeeLog(LOG_DIR / f"sms_create_vps{vps}.log")
+    log = TeeLog(
+        LOG_DIR / f"sms_create_vps{vps}.log",
+        ui=bool(args.ui),
+        title=f"SMS create · VPS {vps} · Warming SMS {group_n}",
+    )
+    log.set_meta(
+        lane=str(vps),
+        mode="FRESH" if args.fresh else "CONTINUE",
+        group=group_name,
+        target=str(args.target),
+        batch=str(args.batch),
+        good="—",
+        run="—",
+        last="booting",
+    )
+    log.start()
+    try:
+        return _run_lane(args, vps, group_n, group_name, prefix, log)
+    finally:
+        log.stop()
 
+
+def _run_lane(args, vps: int, group_n: int, group_name: str, prefix: str, log: TeeLog) -> int:
     log(f"=== sms-create-lane start VPS={vps} → group {group_n} ===")
     log(f"group   {group_name}")
     log(f"prefix  {prefix}")
@@ -353,6 +501,7 @@ def main() -> int:
     log(f"api     {args.api}")
     log(f"log     {log.path}")
     log(f"cache   {'off' if args.no_cache_clear else 'clear after batch (keep cookies)'}")
+    log(f"ui      {'grid' if args.ui and log.ui else 'plain'}")
 
     init_db()
     if not wait_for_api(args.api, log, forever=True):
@@ -371,6 +520,7 @@ def main() -> int:
             return 1
 
     n0 = count_good(gid)
+    log.set_meta(good=str(n0))
     log(f"{'fresh' if args.fresh else 'resume'} count good={n0}/{args.target}")
     if n0 >= args.target:
         log(f"target already reached ({n0}>={args.target}). nothing to do.")
@@ -395,6 +545,7 @@ def main() -> int:
         try:
             wait_idle(args.api, log)
             n = count_good(gid)
+            log.set_meta(good=str(n))
             log(f"good={n}/{args.target} · next batch {args.batch}")
             if n >= args.target:
                 log(f"target reached ({n}>={args.target}). stop.")

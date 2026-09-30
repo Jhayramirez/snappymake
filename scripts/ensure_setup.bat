@@ -18,7 +18,7 @@ if not exist "%VENVPY%" set "NEED_SETUP=1"
 if not exist "%CD%\.venv\Lib\site-packages\playwright" set "NEED_SETUP=1"
 
 if "%NEED_SETUP%"=="0" (
-  "%VENVPY%" -c "import fastapi, uvicorn, httpx, playwright" >nul 2>&1
+  "%VENVPY%" -c "import fastapi, uvicorn, httpx, playwright, rich" >nul 2>&1
   if errorlevel 1 set "NEED_SETUP=1"
 )
 

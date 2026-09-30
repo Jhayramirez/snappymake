@@ -13,24 +13,27 @@ set "MODE=%~2"
 
 cls
 echo.
-echo   ============================================================
-echo.
-echo      ____                       __  ____       __
-echo     / __/__  ___ ____  ___ __  /  ^|/  /__ ____/ /_____
-echo    _\ \/ _ \/ _ `/ _ \/ _ `/  / /^|_/ / _ `/ _  / -_)
-echo   /___/_//_/\_,_/ .__/\_, /  /_/  /_/\_,_/\_,_/\__/
-echo                /_/   /___/
-echo.
-echo      a u t o - s e t u p   ·   l a n e   p i c k e r
-echo.
-echo   ============================================================
+echo   +--------------------------------------------------------------+
+echo   ^|                                                              ^|
+echo   ^|   S N A P P Y M A K E                                        ^|
+echo   ^|   creation lanes  ·  auto-setup  ·  watchable VPS            ^|
+echo   ^|                                                              ^|
+echo   +-------------------------------+------------------------------+
+echo   ^|  LEFT · pick a lane           ^|  RIGHT · what it does        ^|
+echo   +-------------------------------+------------------------------+
+echo   ^|  [0]  Dashboard only          ^|  Server on :8787             ^|
+echo   ^|  [1]  SMS create lane 1       ^|  Warming SMS 1  ·  stop 300  ^|
+echo   ^|  [2]  SMS create lane 2       ^|  Warming SMS 2  ·  stop 300  ^|
+echo   ^|  [3]  SMS create lane 3       ^|  Warming SMS 3  ·  stop 300  ^|
+echo   ^|  [4]  SMS create lane 4       ^|  Warming SMS 4  ·  stop 300  ^|
+echo   ^|  [Q]  Quit                    ^|  Exit                        ^|
+echo   +-------------------------------+------------------------------+
 echo.
 
 call "%~dp0scripts\ensure_setup.bat"
 if errorlevel 1 (
   echo.
   echo   [x] Setup failed. Check internet, then re-run run.bat
-  echo       [it auto-installs Python + deps when missing].
   echo.
   pause
   exit /b 1
@@ -40,15 +43,6 @@ set "VENVPY=%~dp0.venv\Scripts\python.exe"
 
 if not "%CHOICE%"=="" goto :dispatch
 
-echo   What do you want to run?
-echo.
-echo      [0]  Dashboard only
-echo      [1]  Dashboard + SMS create lane 1   [Warming SMS 1 · stop at 300]
-echo      [2]  Dashboard + SMS create lane 2   [Warming SMS 2 · stop at 300]
-echo      [3]  Dashboard + SMS create lane 3   [Warming SMS 3 · stop at 300]
-echo      [4]  Dashboard + SMS create lane 4   [Warming SMS 4 · stop at 300]
-echo      [Q]  Quit
-echo.
 set /p "CHOICE=   Pick 0-4 or Q: "
 
 :dispatch
@@ -66,11 +60,13 @@ exit /b 1
 
 :dash_only
 echo.
-echo   AdsPower  : open + Local API :50325
-echo   Dashboard : http://127.0.0.1:8787
-echo.
-echo   Ctrl+C stops the server.
-echo   ------------------------------------------------------------
+echo   +-------------------------------+------------------------------+
+echo   ^|  STATUS                       ^|  LINKS                       ^|
+echo   +-------------------------------+------------------------------+
+echo   ^|  Dashboard starting           ^|  http://127.0.0.1:8787       ^|
+echo   ^|  AdsPower Local API           ^|  :50325                      ^|
+echo   ^|  Ctrl+C stops server          ^|  Gmail page opens shortly    ^|
+echo   +-------------------------------+------------------------------+
 echo.
 start "" /min cmd /c "timeout /t 3 >nul & start "" http://127.0.0.1:8787/"
 "%VENVPY%" -m app
@@ -82,11 +78,13 @@ exit /b 0
 :lane_mode
 if not "%MODE%"=="" goto :mode_dispatch
 echo.
-echo   Lane %CHOICE%  ·  SnappyOfficial - Warming SMS %CHOICE%
-echo.
-echo      [C]  Continue   - keep existing profiles, resume count
-echo      [F]  Fresh      - DELETE all profiles in Warming SMS %CHOICE%, start at 0
-echo      [B]  Back
+echo   +-------------------------------+------------------------------+
+echo   ^|  LANE %CHOICE%  MODE                     ^|  DETAIL                       ^|
+echo   +-------------------------------+------------------------------+
+echo   ^|  [C]  Continue                ^|  Keep profiles, resume count ^|
+echo   ^|  [F]  Fresh                   ^|  WIPE Warming SMS %CHOICE%, start 0^|
+echo   ^|  [B]  Back                    ^|  Return to lane grid         ^|
+echo   +-------------------------------+------------------------------+
 echo.
 set /p "MODE=   Pick C / F / B: "
 
@@ -94,12 +92,16 @@ set /p "MODE=   Pick C / F / B: "
 if /i "%MODE%"=="B" (
   set "CHOICE="
   set "MODE="
-  goto :dispatch
+  cls
+  goto :eof
 )
 if /i "%MODE%"=="b" (
   set "CHOICE="
   set "MODE="
-  goto :dispatch
+  cls
+  echo Re-run run.bat to pick again.
+  pause
+  exit /b 0
 )
 if /i "%MODE%"=="C" set "FRESH_FLAG="
 if /i "%MODE%"=="c" set "FRESH_FLAG="
@@ -116,8 +118,11 @@ exit /b 1
 
 :confirm_fresh
 echo.
-echo   !!! FRESH will DELETE every profile in Warming SMS %CHOICE%
-echo       then create until 300 good. Type YES to confirm.
+echo   +-------------------------------+------------------------------+
+echo   ^|  FRESH CONFIRM                ^|  TYPE YES                    ^|
+echo   +-------------------------------+------------------------------+
+echo   ^|  Deletes ALL in Warming SMS %CHOICE%^|  then create to 300 good    ^|
+echo   +-------------------------------+------------------------------+
 echo.
 set /p "CONFIRM=   Confirm: "
 if /i not "%CONFIRM%"=="YES" (
@@ -131,18 +136,22 @@ goto :lane
 :lane
 echo.
 if defined FRESH_FLAG (
-  echo   Mode: FRESH wipe + create lane %CHOICE%
+  set "MODE_LABEL=FRESH wipe + create"
 ) else (
-  echo   Mode: CONTINUE lane %CHOICE%
+  set "MODE_LABEL=CONTINUE resume"
 )
-echo   Target: Warming SMS %CHOICE% · stop at 300 good
-echo   Starting dashboard in a second window...
-echo   ------------------------------------------------------------
+echo   +-------------------------------+------------------------------+
+echo   ^|  STATUS                       ^|  LOG                         ^|
+echo   +-------------------------------+------------------------------+
+echo   ^|  Lane %CHOICE%  !MODE_LABEL!            ^|  data\logs\sms_create_vps%CHOICE%.log ^|
+echo   ^|  Group Warming SMS %CHOICE%           ^|  live grid in this window  ^|
+echo   ^|  Stop at 300 good             ^|  dashboard :8787 background  ^|
+echo   +-------------------------------+------------------------------+
 echo.
 
 start "SnappyMake Dashboard" /min cmd /c "cd /d %~dp0 && .venv\Scripts\python.exe -m app"
 
-echo   Waiting for dashboard on http://127.0.0.1:8787 ...
+echo   Waiting for dashboard ...
 set "READY=0"
 for /l %%i in (1,1,60) do (
   if "!READY!"=="0" (
@@ -157,20 +166,20 @@ if not "!READY!"=="1" (
   exit /b 1
 )
 
-echo   [ok] Dashboard up. Starting lane %CHOICE% ...
+echo   [ok] Dashboard up.
 echo.
-"%VENVPY%" scripts\sms_create_lane.py --vps %CHOICE% --target 300 %FRESH_FLAG%
+"%VENVPY%" scripts\sms_create_lane.py --vps %CHOICE% --target 300 --ui %FRESH_FLAG%
 set "RC=%ERRORLEVEL%"
 
 echo.
-echo   ------------------------------------------------------------
+echo   +-------------------------------+------------------------------+
 if "%RC%"=="0" (
-  echo   Lane %CHOICE% finished OK.
+  echo   ^|  DONE OK                       ^|  Lane %CHOICE%                        ^|
 ) else (
-  echo   Lane %CHOICE% stopped with code %RC%.
+  echo   ^|  STOPPED code %RC%                ^|  Lane %CHOICE%                        ^|
 )
-echo   Log: data\logs\sms_create_vps%CHOICE%.log
-echo   Dashboard window may still be running in the background.
+echo   ^|  Log file                     ^|  data\logs\sms_create_vps%CHOICE%.log ^|
+echo   +-------------------------------+------------------------------+
 echo.
 pause
 exit /b %RC%
