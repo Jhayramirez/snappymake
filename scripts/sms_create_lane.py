@@ -54,14 +54,16 @@ DEFAULT_GROUPS = {
     2: "SnappyOfficial - Warming SMS 2",
     3: "SnappyOfficial - Warming SMS 3",
     4: "SnappyOfficial - Warming SMS 4",
+    5: "SnappyOfficial - Warming SMS 5",
 }
 
-# 1 creation VPS → 1 warming group (same number).
+# 1 creation VPS → 1 warming group (same number). Lane 5 = Mac / scratch.
 VPS_TO_GROUP = {
     1: 1,
     2: 2,
     3: 3,
     4: 4,
+    5: 5,
 }
 
 LOG_DIR = ROOT / "data" / "logs"
@@ -407,7 +409,7 @@ def parse_args() -> argparse.Namespace:
         type=int,
         choices=sorted(VPS_TO_GROUP),
         default=_env_int("SNAPPY_VPS", 0) or None,
-        help="Creation VPS number 1–4 (or set SNAPPY_VPS)",
+        help="Creation VPS / lane number 1–5 (or set SNAPPY_VPS). 5 = Mac scratch.",
     )
     p.add_argument(
         "--target",

@@ -48,6 +48,11 @@ WARMING_SMS_TABS: dict[int, dict[str, str]] = {
         "group": "SnappyOfficial - Warming SMS 4",
         "method": "Warming SMS 4",
     },
+    5: {
+        "tab": "Warming SMS 5",
+        "group": "SnappyOfficial - Warming SMS 5",
+        "method": "Warming SMS 5",
+    },
 }
 DEFAULT_CREDS = ROOT / "secrets" / "google-sheets.json"
 DEFAULT_SHEET_ID = "1iBsEmI2ZMpQ2Vx5KnNjuz3z6upJIXdveMZ9P6KVMFrA"

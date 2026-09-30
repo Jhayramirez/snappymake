@@ -39,6 +39,7 @@ KEEP_TABS = {
     "Warming SMS 2",
     "Warming SMS 3",
     "Warming SMS 4",
+    "Warming SMS 5",
 }
 
 PROFILE_HEADERS = [
