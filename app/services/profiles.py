@@ -12,6 +12,7 @@ from app.ads.fingerprints import (
     fingerprint_from_row,
     flatten_fingerprint,
     resolve_fingerprint,
+    sanitize_fingerprint,
 )
 from app.ads.proxies import (
     generate_password,
@@ -616,10 +617,12 @@ def create_one_profile(
         proxy_cfg = no_proxy()
     # Pool proxies are real exit IPs bound at creation, so align like a live proxy.
     align_mode = "none" if merge_after else ("list" if proxy_mode == "pool" else proxy_mode)
-    fingerprint = align_fingerprint_to_proxy(
-        dict(shared_fingerprint or resolve_fingerprint(payload)),
-        proxy_mode=align_mode,
-        proxy=proxy_cfg,
+    fingerprint = sanitize_fingerprint(
+        align_fingerprint_to_proxy(
+            dict(shared_fingerprint or resolve_fingerprint(payload)),
+            proxy_mode=align_mode,
+            proxy=proxy_cfg,
+        )
     )
     described = describe_fingerprint(fingerprint)
     geo = proxy_geo_label(pending_proxy if merge_after else proxy_cfg)
@@ -845,28 +848,40 @@ def backfill_credential_remarks(client: AdsPowerClient, dry_run: bool = False) -
 def merge_proxy_into_profile(
     client: AdsPowerClient, profile_id: str, proxy_cfg: dict[str, Any]
 ) -> dict[str, Any]:
-    """Attach a proxy to an existing profile. Browser must be closed first."""
+    """Attach a proxy to an existing profile. Browser must be closed first.
+
+    Only updates the proxy by default. Re-sending fingerprint_config on update
+    has made AdsPower reject kernel versions on some Windows builds.
+    """
     cache = get_profile_cache(profile_id) or {}
     fingerprint = dict(cache.get("fingerprint") or {})
-    if not fingerprint:
-        fingerprint = resolve_fingerprint({})
-    fingerprint = align_fingerprint_to_proxy(
-        fingerprint, proxy_mode="list", proxy=proxy_cfg
-    )
+    if fingerprint:
+        fingerprint = sanitize_fingerprint(
+            align_fingerprint_to_proxy(
+                fingerprint, proxy_mode="list", proxy=proxy_cfg
+            )
+        )
+        upsert_profile_cache(
+            profile_id,
+            {
+                "fingerprint": fingerprint,
+                "proxy": proxy_cfg,
+                "pending_proxy": None,
+            },
+        )
+    else:
+        upsert_profile_cache(
+            profile_id,
+            {
+                "proxy": proxy_cfg,
+                "pending_proxy": None,
+            },
+        )
     client.update_profile(
         {
             "profile_id": profile_id,
             "user_proxy_config": proxy_cfg,
-            "fingerprint_config": fingerprint,
         }
-    )
-    upsert_profile_cache(
-        profile_id,
-        {
-            "fingerprint": fingerprint,
-            "proxy": proxy_cfg,
-            "pending_proxy": None,
-        },
     )
     return {
         "ok": True,

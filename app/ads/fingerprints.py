@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import random
 import re
 import time
@@ -26,6 +27,11 @@ FIREFOX_VERSIONS = tuple(str(v) for v in range(128, 142))
 KERNEL_ROOTS = (
     Path.home() / "Library/Application Support/adspower_global/cwd_global",
     Path.home() / ".config/adspower_global/cwd_global",
+    # Windows AdsPower Global
+    Path.home() / "AppData/Roaming/adspower_global/cwd_global",
+    Path.home() / "AppData/Local/adspower_global/cwd_global",
+    Path(os.environ.get("APPDATA", "")) / "adspower_global/cwd_global",
+    Path(os.environ.get("LOCALAPPDATA", "")) / "adspower_global/cwd_global",
 )
 
 
@@ -61,9 +67,47 @@ def installed_chrome_kernels() -> list[str]:
     return ready or all_versions
 
 
+def sanitize_kernel_version(value: Any) -> str:
+    """AdsPower only accepts ua_auto | latest | major Chrome ints (e.g. 152).
+
+    Full strings like 152.0.0.0 or unknown tokens get coerced.
+    """
+    raw = str(value or "").strip().lower()
+    if raw in {"ua_auto", "latest"}:
+        return raw
+    if raw in {"", "auto", "installed", "unavailable", "none"}:
+        return preferred_chrome_kernel()
+    # 152.0.0.0 → 152
+    major = raw.split(".", 1)[0]
+    if major.isdigit() and 50 <= int(major) <= 999:
+        return major
+    return preferred_chrome_kernel()
+
+
 def preferred_chrome_kernel() -> str:
     installed = installed_chrome_kernels()
-    return installed[0] if installed else "ua_auto"
+    # Prefer a real on-disk kernel. If none found (common on fresh Windows VPS
+    # before path scan / download), "latest" lets AdsPower pick — ua_auto alone
+    # can fail on update/start on some AdsPower builds.
+    return installed[0] if installed else "latest"
+
+
+def sanitize_fingerprint(fp: dict[str, Any] | None) -> dict[str, Any]:
+    """Ensure browser_kernel_config.version is AdsPower-legal before API calls."""
+    out = dict(fp or {})
+    cfg = dict(out.get("browser_kernel_config") or {})
+    version = sanitize_kernel_version(cfg.get("version"))
+    cfg["version"] = version
+    cfg["type"] = "chrome"
+    out["browser_kernel_config"] = cfg
+    random_ua = dict(out.get("random_ua") or {})
+    random_ua["ua_browser"] = ["chrome"]
+    if version in {"ua_auto", "latest"}:
+        random_ua.pop("ua_version", None)
+    else:
+        random_ua["ua_version"] = [version]
+    out["random_ua"] = random_ua
+    return out
 
 
 def kernel_catalog() -> dict[str, Any]:
@@ -71,7 +115,7 @@ def kernel_catalog() -> dict[str, Any]:
     firefox = installed_kernels("firefox")
     preferred = preferred_chrome_kernel()
     options: list[dict[str, Any]] = []
-    if preferred != "ua_auto":
+    if preferred not in {"ua_auto", "latest"}:
         options.append(
             {
                 "value": f"chrome:{preferred}",
@@ -86,7 +130,7 @@ def kernel_catalog() -> dict[str, Any]:
                 "value": "auto",
                 "kernel": "chrome",
                 "version": preferred,
-                "label": "SunBrowser · AdsPower Auto (no Chrome kernel on disk)",
+                "label": "SunBrowser · AdsPower latest (no Chrome kernel scanned on disk)",
             }
         )
     for item in chrome:
@@ -193,13 +237,12 @@ def default_fingerprint(
 ) -> dict[str, Any]:
     os_name = OS_CHOICES.get(os_key, OS_CHOICES["win11"])
     kernel = "chrome"
-    if kernel_version in {None, "", "auto", "installed", "unavailable"}:
-        kernel_version = preferred_chrome_kernel()
+    kernel_version = sanitize_kernel_version(kernel_version)
     random_ua: dict[str, Any] = {
         "ua_browser": [kernel],
         "ua_system_version": [os_name],
     }
-    if kernel_version and kernel_version != "ua_auto":
+    if kernel_version not in {"ua_auto", "latest"}:
         random_ua["ua_version"] = [kernel_version]
     return {
         "automatic_timezone": "1",
