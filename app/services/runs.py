@@ -293,6 +293,7 @@ def execute_run(run_id: str) -> None:
                     action == "snapchat_signup"
                     and otp_provider == "diddysms"
                     and payload.get("inject_netlox", True)
+                    and proxy_mode != "pool"
                 ):
                     cfg, label = random_netlox_us()
                     merged = merge_proxy_into_profile(client, profile["profile_id"], cfg)
@@ -301,6 +302,17 @@ def execute_run(run_id: str) -> None:
                         run,
                         "proxy",
                         f"Netlox inject · {label}" + (f" · {geo}" if geo and geo != label else ""),
+                        profile_id=profile["profile_id"],
+                    )
+                elif (
+                    action == "snapchat_signup"
+                    and otp_provider == "diddysms"
+                    and proxy_mode == "pool"
+                ):
+                    log(
+                        run,
+                        "proxy",
+                        f"ISP pool · no Netlox · {profile.get('proxy_key') or assigned_key or 'bound'}",
                         profile_id=profile["profile_id"],
                     )
                 elif action == "snapchat_signup" and otp_provider == "diddysms":
@@ -698,6 +710,16 @@ def execute_run(run_id: str) -> None:
                         remark += f" · {web_url}"
                     elif page_url:
                         remark += f" · {page_url}"
+                    # Tag successful ISP-pool creates so we can tell them from Netlox residential.
+                    if proxy_mode == "pool" and not should_delete:
+                        remark += " · Proxy: ISP (not residential)"
+                    elif (
+                        action == "snapchat_signup"
+                        and otp_provider == "diddysms"
+                        and payload.get("inject_netlox", True)
+                        and not should_delete
+                    ):
+                        remark += " · Proxy: residential (Netlox)"
                     if not should_delete:
                         cred_payload: dict[str, Any] = {
                             "platform": "snapchat.com",

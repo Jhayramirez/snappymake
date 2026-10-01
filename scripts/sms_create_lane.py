@@ -454,6 +454,11 @@ def parse_args() -> argparse.Namespace:
         help="Skip Netlox inject — create/signup on direct IP (test)",
     )
     p.add_argument(
+        "--isp",
+        action="store_true",
+        help="Use Manage Proxy ISP pool (no Netlox). Success remark tags Proxy: ISP.",
+    )
+    p.add_argument(
         "--once",
         action="store_true",
         help="Run a single batch then exit (smoke test)",
@@ -461,6 +466,8 @@ def parse_args() -> argparse.Namespace:
     args = p.parse_args()
     if not args.vps:
         p.error("Pass --vps 1|2|3|4|5 or set SNAPPY_VPS")
+    if args.isp and args.no_proxy:
+        p.error("Use either --isp or --no-proxy, not both")
     args.batch = max(1, min(50, int(args.batch)))
     args.target = max(1, int(args.target))
     return args
@@ -512,7 +519,13 @@ def _run_lane(args, vps: int, group_n: int, group_name: str, prefix: str, log: T
     log(f"api     {args.api}")
     log(f"log     {log.path}")
     log(f"cache   {'off' if args.no_cache_clear else 'clear after batch (keep cookies)'}")
-    log(f"proxy   {'OFF (no Netlox)' if args.no_proxy else 'Netlox inject'}")
+    if args.isp:
+        proxy_label = "ISP pool (Manage Proxy · no Netlox)"
+    elif args.no_proxy:
+        proxy_label = "OFF (no Netlox)"
+    else:
+        proxy_label = "Netlox inject"
+    log(f"proxy   {proxy_label}")
     log(f"ui      {'grid' if args.ui and log.ui else 'plain'}")
 
     init_db()
@@ -542,8 +555,8 @@ def _run_lane(args, vps: int, group_n: int, group_name: str, prefix: str, log: T
         "name_prefix": prefix,
         "action": "snapchat_signup",
         "close_after": True,
-        "proxy_mode": "none",
-        "inject_netlox": not bool(args.no_proxy),
+        "proxy_mode": "pool" if args.isp else "none",
+        "inject_netlox": False if (args.isp or args.no_proxy) else True,
         "fingerprint_mode": "random",
         "auto_username": True,
         "auto_password": True,
