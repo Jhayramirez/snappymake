@@ -16,6 +16,5 @@ data/*.sqlite
 .env.*
 !.env.example
 secrets/
-SnappyMonitor/config.json
 SnappyMonitor/shots/*
 !SnappyMonitor/shots/.gitkeep

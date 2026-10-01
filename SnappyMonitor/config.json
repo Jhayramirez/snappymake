@@ -1,0 +1,13 @@
+{
+  "adspower_base": "http://127.0.0.1:50325",
+  "adspower_api_key": "50b13d3aa184e7c414dc4761166cfe1100975ace85101f82",
+  "post_url": "https://21snaps.laravel.cloud/api/browser-shots",
+  "post_token": "",
+  "latest_url": "https://21snaps.laravel.cloud/api/browser-shots/latest",
+  "interval_seconds": 300,
+  "jpeg_quality": 55,
+  "max_width": 1280,
+  "concurrency": 6,
+  "save_local": true,
+  "local_dir": "shots"
+}
