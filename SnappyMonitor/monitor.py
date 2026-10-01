@@ -56,6 +56,37 @@ DEFAULTS: dict[str, Any] = {
     "local_dir": "shots",
 }
 
+# Terminal colors (mint / cyan ops look)
+_C = {
+    "0": "\033[0m",
+    "dim": "\033[2m",
+    "mint": "\033[38;2;61;255;181m",
+    "cyan": "\033[38;2;80;220;255m",
+    "hot": "\033[38;2;255;80;120m",
+    "gold": "\033[38;2;255;176;32m",
+    "soft": "\033[38;2;160;170;185m",
+}
+
+
+def log(kind: str, msg: str) -> None:
+    c = _C
+    tags = {
+        "open": (c["cyan"], "OPEN"),
+        "shot": (c["mint"], "SHOT"),
+        "local": (c["soft"], "DISK"),
+        "post": (c["mint"], "POST"),
+        "skip": (c["gold"], "SKIP"),
+        "idle": (c["dim"], "IDLE"),
+        "cycle": (c["cyan"], "CYCLE"),
+        "sleep": (c["dim"], "WAIT"),
+        "ok": (c["mint"], "OK"),
+        "fail": (c["hot"], "FAIL"),
+        "boot": (c["mint"], "BOOT"),
+        "err": (c["hot"], "ERR"),
+    }
+    color, label = tags.get(kind, (c["soft"], kind.upper()))
+    print(f"  {c['dim']}│{c['0']} {color}{label:<5}{c['0']} {c['dim']}│{c['0']} {msg}")
+
 
 def load_config(path: Path | None = None) -> dict[str, Any]:
     cfg = dict(DEFAULTS)
@@ -204,7 +235,7 @@ def capture_one(
         except AdsPowerError:
             ws = ""
     if not ws:
-        print(f"  skip {pid}: no CDP websocket")
+        log("skip", f"{pid} · no CDP websocket")
         return None
 
     if pid not in meta_cache:
@@ -217,7 +248,7 @@ def capture_one(
     try:
         jpeg = screenshot_session(ws, quality=quality, max_width=max_width)
     except Exception as exc:
-        print(f"  fail {label}: {exc}")
+        log("fail", f"{label} · {exc}")
         return None
 
     return {
@@ -230,7 +261,7 @@ def capture_one(
 
 def collect_all(client: AdsPowerClient, cfg: dict[str, Any]) -> list[dict[str, str]]:
     sessions = client.local_sessions()
-    print(f"[open] {len(sessions)} AdsPower browser(s)")
+    log("open", f"{len(sessions)} AdsPower browser(s) online")
     if not sessions:
         return []
 
@@ -265,10 +296,11 @@ def collect_all(client: AdsPowerClient, cfg: dict[str, Any]) -> list[dict[str, s
             row = fut.result()
             if row:
                 items.append(row)
+                log("shot", f"captured · {row['profile']}")
 
     # Stable order by profile label
     items.sort(key=lambda r: r.get("profile") or "")
-    print(f"[shot] {len(items)}/{len(sessions)} ok")
+    log("ok", f"{len(items)}/{len(sessions)} frames locked")
     return items
 
 
@@ -282,7 +314,7 @@ def save_local(items: list[dict[str, Any]], cfg: dict[str, Any], ts: str) -> Pat
         raw = row.get("_bytes") or base64.b64decode(row["screenshot"])
         safe = "".join(c if c.isalnum() or c in "-_." else "_" for c in row["profile"])[:80]
         (out_dir / f"{i:02d}_{safe or 'profile'}.jpg").write_bytes(raw)
-    print(f"[local] {out_dir}")
+    log("local", str(out_dir))
     return out_dir
 
 
@@ -293,7 +325,7 @@ def post_batch(items: list[dict[str, Any]], cfg: dict[str, Any], ts: str, *, dry
     }
     url = (cfg.get("post_url") or "").strip()
     if dry_run or not url:
-        print(f"[post] skipped (dry-run or empty post_url) · {len(payload['items'])} items")
+        log("skip", f"dry-run / empty url · {len(payload['items'])} items held")
         return
 
     headers = {"Content-Type": "application/json", "Accept": "application/json"}
@@ -304,19 +336,20 @@ def post_batch(items: list[dict[str, Any]], cfg: dict[str, Any], ts: str, *, dry
     # ~50 JPEGs can be several MB — generous timeout.
     with httpx.Client(timeout=httpx.Timeout(120.0, connect=15.0), trust_env=False) as http:
         resp = http.post(url, json=payload, headers=headers)
-        print(f"[post] {resp.status_code} · {len(payload['items'])} items · {resp.text[:200]}")
+        log("post", f"HTTP {resp.status_code} · {len(payload['items'])} up · {resp.text[:120]}")
         resp.raise_for_status()
 
 
 def run_cycle(client: AdsPowerClient, cfg: dict[str, Any], *, dry_run: bool) -> None:
     ts = datetime.now(timezone.utc).isoformat()
-    print(f"\n=== cycle {ts} ===")
+    print()
+    log("cycle", f"{ts}")
     items = collect_all(client, cfg)
     if items:
         save_local(items, cfg, ts)
         post_batch(items, cfg, ts, dry_run=dry_run)
     else:
-        print("[idle] nothing to post")
+        log("idle", "nothing to post — open some profiles")
 
 
 def main() -> int:
@@ -328,19 +361,21 @@ def main() -> int:
 
     cfg = load_config(args.config)
     interval = max(30, int(cfg.get("interval_seconds") or 300))
-    print(
-        f"SnappyMonitor · every {interval}s · quality={cfg.get('jpeg_quality')} "
-        f"· concurrency={cfg.get('concurrency')} · post={cfg.get('post_url') or '(none)'}"
+    log(
+        "boot",
+        f"interval={interval}s · q={cfg.get('jpeg_quality')} · "
+        f"x{cfg.get('concurrency')} · {cfg.get('post_url') or '(no post)'}",
     )
 
     client = make_client(cfg)
     try:
         if not client.ping():
-            print("AdsPower Local API not reachable on :50325 — open AdsPower first.")
+            log("fail", "AdsPower Local API dark on :50325 — open AdsPower")
             return 1
     except Exception as exc:
-        print(f"AdsPower ping failed: {exc}")
+        log("fail", f"AdsPower ping · {exc}")
         return 1
+    log("ok", "AdsPower ping green")
 
     try:
         while True:
@@ -349,13 +384,14 @@ def main() -> int:
             except KeyboardInterrupt:
                 raise
             except Exception as exc:
-                print(f"[error] cycle failed: {exc}")
+                log("err", f"cycle failed · {exc}")
             if args.once:
                 break
-            print(f"[sleep] {interval}s …")
+            log("sleep", f"{interval}s until next sweep …")
             time.sleep(interval)
     except KeyboardInterrupt:
-        print("\nstopped")
+        print()
+        log("ok", "operator kill — standing down")
     finally:
         client.close()
     return 0
