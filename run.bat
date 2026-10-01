@@ -5,11 +5,17 @@ title SnappyMake
 chcp 65001 >nul 2>&1
 color 0B
 
-REM Optional: run.bat 1        → menu for continue/fresh on lane 1
-REM           run.bat 1 c      → continue lane 1
-REM           run.bat 1 f      → fresh wipe + lane 1
+REM Optional: run.bat 1            → menus for continue/fresh + proxy
+REM           run.bat 1 c          → continue lane 1, then proxy menu
+REM           run.bat 1 f          → fresh wipe + lane 1, then proxy menu
+REM           run.bat 1 c n        → continue + Netlox (default)
+REM           run.bat 1 c d        → continue + direct (no proxy)
+REM           run.bat 1 c i        → continue + ISP Manage Proxy pool
 set "CHOICE=%~1"
 set "MODE=%~2"
+set "PROXY=%~3"
+set "PROXY_FLAG="
+set "PROXY_LABEL=Netlox"
 
 cls
 echo.
@@ -107,8 +113,8 @@ if /i "%MODE%"=="C" set "FRESH_FLAG="
 if /i "%MODE%"=="c" set "FRESH_FLAG="
 if /i "%MODE%"=="F" set "FRESH_FLAG=--fresh"
 if /i "%MODE%"=="f" set "FRESH_FLAG=--fresh"
-if /i "%MODE%"=="C" goto :lane
-if /i "%MODE%"=="c" goto :lane
+if /i "%MODE%"=="C" goto :proxy_mode
+if /i "%MODE%"=="c" goto :proxy_mode
 if /i "%MODE%"=="F" goto :confirm_fresh
 if /i "%MODE%"=="f" goto :confirm_fresh
 
@@ -131,7 +137,76 @@ if /i not "%CONFIRM%"=="YES" (
   exit /b 1
 )
 set "FRESH_FLAG=--fresh"
-goto :lane
+goto :proxy_mode
+
+:proxy_mode
+if not "%PROXY%"=="" goto :proxy_dispatch
+echo.
+echo   +-------------------------------+------------------------------+
+echo   ^|  LANE %CHOICE%  PROXY                    ^|  DETAIL                       ^|
+echo   +-------------------------------+------------------------------+
+echo   ^|  [N]  Netlox                  ^|  Sticky US inject ^(default^)  ^|
+echo   ^|  [D]  Direct / no proxy       ^|  Skip Netlox, use machine IP ^|
+echo   ^|  [I]  ISP                     ^|  Manage Proxy ISP pool       ^|
+echo   ^|  [B]  Back                    ^|  Return to mode menu         ^|
+echo   +-------------------------------+------------------------------+
+echo.
+set /p "PROXY=   Pick N / D / I / B: "
+
+:proxy_dispatch
+if /i "%PROXY%"=="B" (
+  set "MODE="
+  set "PROXY="
+  set "PROXY_FLAG="
+  set "PROXY_LABEL=Netlox"
+  goto :lane_mode
+)
+if /i "%PROXY%"=="b" (
+  set "MODE="
+  set "PROXY="
+  set "PROXY_FLAG="
+  set "PROXY_LABEL=Netlox"
+  goto :lane_mode
+)
+if /i "%PROXY%"=="N" (
+  set "PROXY_FLAG="
+  set "PROXY_LABEL=Netlox"
+  goto :lane
+)
+if /i "%PROXY%"=="n" (
+  set "PROXY_FLAG="
+  set "PROXY_LABEL=Netlox"
+  goto :lane
+)
+if /i "%PROXY%"=="" (
+  set "PROXY_FLAG="
+  set "PROXY_LABEL=Netlox"
+  goto :lane
+)
+if /i "%PROXY%"=="D" (
+  set "PROXY_FLAG=--no-proxy"
+  set "PROXY_LABEL=Direct no-proxy"
+  goto :lane
+)
+if /i "%PROXY%"=="d" (
+  set "PROXY_FLAG=--no-proxy"
+  set "PROXY_LABEL=Direct no-proxy"
+  goto :lane
+)
+if /i "%PROXY%"=="I" (
+  set "PROXY_FLAG=--isp"
+  set "PROXY_LABEL=ISP pool"
+  goto :lane
+)
+if /i "%PROXY%"=="i" (
+  set "PROXY_FLAG=--isp"
+  set "PROXY_LABEL=ISP pool"
+  goto :lane
+)
+
+echo   [x] Invalid proxy: %PROXY%
+pause
+exit /b 1
 
 :lane
 echo.
@@ -145,7 +220,8 @@ echo   ^|  STATUS                       ^|  LOG                         ^|
 echo   +-------------------------------+------------------------------+
 echo   ^|  Lane %CHOICE%  !MODE_LABEL!            ^|  data\logs\sms_create_vps%CHOICE%.log ^|
 echo   ^|  Group Warming SMS %CHOICE%           ^|  live grid in this window  ^|
-echo   ^|  Stop at 300 good             ^|  dashboard :8787 background  ^|
+echo   ^|  Proxy !PROXY_LABEL!                  ^|  stop at 300 good          ^|
+echo   ^|  Dashboard :8787 background   ^|                              ^|
 echo   +-------------------------------+------------------------------+
 echo.
 
@@ -194,7 +270,7 @@ if not "!READY!"=="1" (
 echo   [ok] Dashboard up.
 :lane_ready
 echo.
-"%VENVPY%" scripts\sms_create_lane.py --vps %CHOICE% --target 300 --ui %FRESH_FLAG%
+"%VENVPY%" scripts\sms_create_lane.py --vps %CHOICE% --target 300 --ui %FRESH_FLAG% %PROXY_FLAG%
 set "RC=%ERRORLEVEL%"
 
 echo.
