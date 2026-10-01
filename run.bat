@@ -233,11 +233,14 @@ if not exist "%~dp0data\logs" mkdir "%~dp0data\logs"
 echo.>> "%~dp0data\logs\dashboard.log"
 echo ===== dashboard start %DATE% %TIME% =====>> "%~dp0data\logs\dashboard.log"
 
-REM Already up? skip spawn.
+REM Already up? Kill and restart so lane flags (inject_netlox) match this checkout.
 "%VENVPY%" -c "import urllib.request; o=urllib.request.build_opener(urllib.request.ProxyHandler({})); o.open('http://127.0.0.1:8787/api/runs/current', timeout=2).read()" >nul 2>&1
 if not errorlevel 1 (
-  echo   [ok] Dashboard already up.
-  goto :lane_ready
+  echo   [..] Restarting dashboard so proxy mode is applied...
+  for /f "tokens=5" %%P in ('netstat -ano ^| findstr ":8787" ^| findstr "LISTENING"') do (
+    taskkill /PID %%P /F >nul 2>&1
+  )
+  timeout /t 2 /nobreak >nul
 )
 
 start "SnappyMake Dashboard" /min cmd /c "cd /d %~dp0 && .venv\Scripts\python.exe -m app >> data\logs\dashboard.log 2>&1"
@@ -270,7 +273,8 @@ if not "!READY!"=="1" (
 echo   [ok] Dashboard up.
 :lane_ready
 echo.
-"%VENVPY%" scripts\sms_create_lane.py --vps %CHOICE% --target 300 --ui %FRESH_FLAG% %PROXY_FLAG%
+echo   Launch: sms_create_lane.py --vps %CHOICE% --target 300 --ui !FRESH_FLAG! !PROXY_FLAG!
+"%VENVPY%" scripts\sms_create_lane.py --vps %CHOICE% --target 300 --ui !FRESH_FLAG! !PROXY_FLAG!
 set "RC=%ERRORLEVEL%"
 
 echo.

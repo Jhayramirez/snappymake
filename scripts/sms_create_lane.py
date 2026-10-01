@@ -525,7 +525,9 @@ def _run_lane(args, vps: int, group_n: int, group_name: str, prefix: str, log: T
         proxy_label = "OFF (no Netlox)"
     else:
         proxy_label = "Netlox inject"
+    payload_inject = False if (args.isp or args.no_proxy) else True
     log(f"proxy   {proxy_label}")
+    log(f"inject  inject_netlox={payload_inject}")
     log(f"ui      {'grid' if args.ui and log.ui else 'plain'}")
 
     init_db()
@@ -556,7 +558,7 @@ def _run_lane(args, vps: int, group_n: int, group_name: str, prefix: str, log: T
         "action": "snapchat_signup",
         "close_after": True,
         "proxy_mode": "pool" if args.isp else "none",
-        "inject_netlox": False if (args.isp or args.no_proxy) else True,
+        "inject_netlox": payload_inject,
         "fingerprint_mode": "random",
         "auto_username": True,
         "auto_password": True,

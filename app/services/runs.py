@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from app.ads import AdsPowerError
-from app.ads.proxies import parse_proxy_block, random_netlox_us
+from app.ads.proxies import no_proxy, parse_proxy_block, random_netlox_us
 from app.config import DATA_DIR
 from app.ads.fingerprints import preferred_chrome_kernel, resolve_fingerprint
 from app.inject.identity import build_identity, normalize_gender
@@ -154,6 +154,13 @@ def execute_run(run_id: str) -> None:
         ]
         serial = next_serial(prefix, names)
         proxy_mode = str(payload.get("proxy_mode") or "none")
+        # Default True for older callers; lane --no-proxy sends False explicitly.
+        inject_netlox = bool(payload.get("inject_netlox", True))
+        log(
+            run,
+            "proxy",
+            f"mode={proxy_mode} · inject_netlox={inject_netlox}",
+        )
         proxies = []
         if proxy_mode == "list":
             proxies = parse_proxy_block(
@@ -292,7 +299,7 @@ def execute_run(run_id: str) -> None:
                 if (
                     action == "snapchat_signup"
                     and otp_provider == "diddysms"
-                    and payload.get("inject_netlox", True)
+                    and inject_netlox
                     and proxy_mode != "pool"
                 ):
                     cfg, label = random_netlox_us()
@@ -316,6 +323,16 @@ def execute_run(run_id: str) -> None:
                         profile_id=profile["profile_id"],
                     )
                 elif action == "snapchat_signup" and otp_provider == "diddysms":
+                    # Force AdsPower off any leftover proxy (do not leave prior Netlox).
+                    try:
+                        merge_proxy_into_profile(client, profile["profile_id"], no_proxy())
+                    except Exception as clear_exc:
+                        log(
+                            run,
+                            "proxy",
+                            f"No proxy clear failed: {clear_exc}",
+                            profile_id=profile["profile_id"],
+                        )
                     log(
                         run,
                         "proxy",
@@ -716,10 +733,18 @@ def execute_run(run_id: str) -> None:
                     elif (
                         action == "snapchat_signup"
                         and otp_provider == "diddysms"
-                        and payload.get("inject_netlox", True)
+                        and inject_netlox
                         and not should_delete
                     ):
                         remark += " · Proxy: residential (Netlox)"
+                    elif (
+                        action == "snapchat_signup"
+                        and otp_provider == "diddysms"
+                        and not inject_netlox
+                        and proxy_mode != "pool"
+                        and not should_delete
+                    ):
+                        remark += " · Proxy: none (direct)"
                     if not should_delete:
                         cred_payload: dict[str, Any] = {
                             "platform": "snapchat.com",
