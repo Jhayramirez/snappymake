@@ -1,0 +1,62 @@
+Build a minimal Laravel Cloud app: SnappyMonitor wall.
+
+GOAL
+One public ingest API + one public live UI. No auth for v1 (token optional via env). No database — latest batch only (overwrite). Built for ~50 AdsPower browser screenshots posted every 5 minutes from a local collector.
+
+STACK
+- Laravel 11+ on Laravel Cloud
+- Blade + minimal vanilla JS (no heavy SPA)
+- Storage: local disk or R2/S3 for JPEG files; cache/file for the latest batch index JSON
+- Optional: SNAPPY_MONITOR_TOKEN env — if set, require Authorization: Bearer <token> on POST
+
+API (ONE public endpoint)
+POST /api/browser-shots
+Content-Type: application/json
+
+Body:
+{
+  "ts": "2026-10-01T15:00:00Z",
+  "items": [
+    {
+      "profile": "#12 · name · remarks…",
+      "screenshot": "<base64 jpeg, no data-uri prefix>"
+    }
+  ]
+}
+
+Behavior:
+- Validate ts + items array (1–200 items)
+- Each item: non-empty profile string + screenshot base64
+- Decode JPEGs, store as files (e.g. storage/app/monitor/{slug}.jpg)
+- Write/overwrite a single latest.json: { ts, items: [{ profile, image_url }] }
+- Delete orphaned old images from previous batch
+- Return 204 or { "ok": true, "count": N }
+- Reject oversized payloads gracefully (413 / 422)
+
+PUBLIC UI
+GET /  — live monitor wall
+
+Visual direction (aesthetic, not generic AI purple/cream):
+- Dark operations room feel: deep charcoal #0E1116, soft graphite panels, one electric accent (mint #3DFFB5 or amber #FFB020 — pick ONE)
+- Typography: expressive — display = "Syne" or "Bebas Neue"; body = "IBM Plex Sans" or "JetBrains Mono" for labels. Load from Google Fonts. No Inter/Roboto/Arial.
+- First viewport = one composition: brand wordmark "SNAPPY" large, subtitle "live profiles", last-updated timestamp, and a full-bleed mosaic of the latest screenshots behind/around — not a dashboard of cards in the hero.
+- Below or as the main plane: responsive screenshot grid (auto-fill, ~220–280px min). Each cell is image-first; profile label as a thin caption under or as a subtle bottom gradient text — no card chrome, no shadows stacks, no pill badges.
+- Empty state: quiet centered message “waiting for first batch” with the cog/atmosphere, not a form.
+- Auto-refresh every 30–60s (fetch latest JSON or soft reload). Show relative “updated Xm ago”.
+- Click image → lightbox full size with profile text.
+- Motion: 2–3 intentional only — faint grid fade-in on load, timestamp tick, lightbox open. No noise.
+- Mobile: grid collapses cleanly; brand still readable.
+- Brand test: removing nav, page still clearly “SNAPPY monitor”, not a generic admin template.
+
+OPTIONAL (nice, not required)
+GET /api/browser-shots/latest → { ts, items: [{ profile, image_url }] } for the UI poller
+Health: GET /up already exists
+
+OUT OF SCOPE
+Login, multi-tenant, history timeline, websockets, admin CRUD, database migrations for shots.
+
+ACCEPTANCE
+1. curl POST with 2 fake base64 JPEGs → UI shows both with profile labels
+2. Second POST replaces the wall (no pile-up of old shots)
+3. Works on Laravel Cloud with public URL; collector points post_url there
+4. Looks intentional and branded on first paint — not a bootstrap table dump
