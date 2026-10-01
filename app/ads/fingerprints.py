@@ -276,7 +276,8 @@ def default_fingerprint(
 def random_fingerprint() -> dict[str, Any]:
     # Blend into the common crowd: Windows-heavy, some macOS, no Linux desktop
     # (rare for Snapchat web → smaller crowd = easier to flag).
-    os_key = random.choices(["win11", "win10", "macos"], weights=[50, 35, 15])[0]
+    # SMS signup crowd is Windows-heavy; keep a thin macOS tail, never Linux.
+    os_key = random.choices(["win11", "win10", "macos"], weights=[60, 35, 5])[0]
     fp = default_fingerprint(os_key, "chrome", "disabled", kernel_version=preferred_chrome_kernel())
     # Bias toward modern desktop specs; avoid the uncommon 4-core tier.
     fp["hardware_concurrency"] = random.choices(["6", "8", "16"], weights=[15, 55, 30])[0]
