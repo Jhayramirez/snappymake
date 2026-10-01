@@ -1302,7 +1302,13 @@ def _click_next(page, notes: list[str], on_step=None, *, expected_username: str 
     clicked = _human_click(page, loc)
     if not clicked:
         return False
-    _note(on_step, notes, "clicked_next")
+    # Double-tap Continue/Next — Snap sometimes eats the first press.
+    _pause(page, 80, 160)
+    loc2 = _find_visible_next(page) or loc
+    if _human_click(page, loc2):
+        _note(on_step, notes, "clicked_next_double")
+    else:
+        _note(on_step, notes, "clicked_next")
     _pause(page, 900, 1600)
     if _mobile_app_block_visible(page):
         _note(on_step, notes, "mobile_app_block")
