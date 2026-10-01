@@ -68,6 +68,23 @@ _C = {
 }
 
 
+def _enable_windows_ansi() -> None:
+    if sys.platform != "win32":
+        return
+    try:
+        import ctypes
+
+        handle = ctypes.windll.kernel32.GetStdHandle(-11)  # STD_OUTPUT_HANDLE
+        mode = ctypes.c_uint32()
+        if ctypes.windll.kernel32.GetConsoleMode(handle, ctypes.byref(mode)):
+            ctypes.windll.kernel32.SetConsoleMode(handle, mode.value | 0x0004)
+    except Exception:
+        pass
+
+
+_enable_windows_ansi()
+
+
 def log(kind: str, msg: str) -> None:
     c = _C
     tags = {
@@ -118,7 +135,8 @@ def make_client(cfg: dict[str, Any]) -> AdsPowerClient:
     key = (cfg.get("adspower_api_key") or "").strip()
     base = (cfg.get("adspower_base") or "").strip()
     try:
-        return detect_base_url(key)
+        detected = detect_base_url(preferred=base, api_key=key)
+        return AdsPowerClient(detected, key)
     except AdsPowerError:
         return AdsPowerClient(base or "http://127.0.0.1:50325", key)
 
