@@ -182,6 +182,15 @@ def execute_run(run_id: str) -> None:
                 f"Proxy pool · {ppool['available']} available of {ppool['total']} · cap {ppool['cap']}",
             )
         fingerprint_mode = str(payload.get("fingerprint_mode") or "random").lower()
+        fp_preset = str(payload.get("fp_preset") or payload.get("fingerprint_preset") or "working")
+        chrome_kernel = preferred_chrome_kernel()
+        try:
+            from app.ads.fingerprints import normalize_fp_preset, resolve_chrome_kernel
+
+            fp_preset = normalize_fp_preset(fp_preset)
+            chrome_kernel = resolve_chrome_kernel(payload)
+        except Exception:
+            pass
         shared_fingerprint = None if fingerprint_mode == "random" else resolve_fingerprint(payload)
         action = str(payload.get("action") or "snapchat_signup")
         close_after = bool(payload.get("close_after", False))
@@ -206,7 +215,7 @@ def execute_run(run_id: str) -> None:
         log(
             run,
             "plan",
-            f"{count} profile(s) · fingerprint={fingerprint_mode} · kernel=SunBrowser Chrome {preferred_chrome_kernel()} · action={action} · gender={normalize_gender(payload.get('bitmoji_gender'))} · extensions={empty_cat['category_name']}"
+            f"{count} profile(s) · fingerprint={fingerprint_mode}/{fp_preset} · kernel=SunBrowser Chrome {chrome_kernel} · action={action} · gender={normalize_gender(payload.get('bitmoji_gender'))} · extensions={empty_cat['category_name']}"
             + (" · signup on home IP, merge proxy before Chat" if merge_after else "")
             + f" · then {'close' if close_after else 'leave open'}",
         )

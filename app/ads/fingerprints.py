@@ -85,9 +85,40 @@ def sanitize_kernel_version(value: Any) -> str:
 
 
 def preferred_chrome_kernel() -> str:
-    # Snapchat SMS signup: always pin SunBrowser Chrome 152 (no fallback).
+    # Snapchat SMS signup: default SunBrowser Chrome 152 (no fallback).
     # AdsPower must have chrome_152 installed on each machine.
     return "152"
+
+
+def resolve_chrome_kernel(payload: dict[str, Any] | None = None) -> str:
+    """Kernel from payload (chrome_kernel / kernel_version) or the SMS default."""
+    if payload:
+        raw = (
+            payload.get("chrome_kernel")
+            or payload.get("kernel_version")
+            or payload.get("browser_kernel")
+        )
+        if raw is not None and str(raw).strip():
+            return sanitize_kernel_version(raw)
+    return preferred_chrome_kernel()
+
+
+FP_PRESETS = {
+    "working": "working",
+    "w": "working",
+    "windows": "windows",
+    "a": "windows",
+    "win": "windows",
+    "all-windows": "windows",
+    "strict": "strict",
+    "s": "strict",
+    "win11": "strict",
+}
+
+
+def normalize_fp_preset(value: Any) -> str:
+    key = str(value or "working").strip().lower()
+    return FP_PRESETS.get(key, "working")
 
 
 def sanitize_fingerprint(fp: dict[str, Any] | None) -> dict[str, Any]:
@@ -222,9 +253,8 @@ def browser_from_ua(ua: str, kernel_fallback: str = "") -> str:
     return kernel_fallback or "—"
 
 
-def parse_kernel_choice(_payload: dict[str, Any] | None = None) -> tuple[str, str]:
-    # New profiles always pin the newest Chrome kernel already on disk.
-    return "chrome", preferred_chrome_kernel()
+def parse_kernel_choice(payload: dict[str, Any] | None = None) -> tuple[str, str]:
+    return "chrome", resolve_chrome_kernel(payload)
 
 
 def default_fingerprint(
@@ -273,12 +303,13 @@ def default_fingerprint(
     }
 
 
-def random_fingerprint() -> dict[str, Any]:
+def random_fingerprint(kernel_version: str | None = None) -> dict[str, Any]:
     # Blend into the common crowd: Windows-heavy, some macOS, no Linux desktop
     # (rare for Snapchat web → smaller crowd = easier to flag).
     # SMS signup crowd is Windows-heavy; keep a thin macOS tail, never Linux.
     os_key = random.choices(["win11", "win10", "macos"], weights=[60, 35, 5])[0]
-    fp = default_fingerprint(os_key, "chrome", "disabled", kernel_version=preferred_chrome_kernel())
+    kv = sanitize_kernel_version(kernel_version)
+    fp = default_fingerprint(os_key, "chrome", "disabled", kernel_version=kv)
     # Bias toward modern desktop specs; avoid the uncommon 4-core tier.
     fp["hardware_concurrency"] = random.choices(["6", "8", "16"], weights=[15, 55, 30])[0]
     # navigator.deviceMemory is spec-capped at 8 — never report higher (would be an impossible value).
@@ -288,16 +319,45 @@ def random_fingerprint() -> dict[str, Any]:
     return fp
 
 
+def fingerprint_from_preset(
+    preset: str = "working",
+    kernel_version: str | None = None,
+) -> dict[str, Any]:
+    """UI presets for SMS / run.bat fingerprint menu."""
+    key = normalize_fp_preset(preset)
+    kv = sanitize_kernel_version(kernel_version)
+    if key == "strict":
+        fp = default_fingerprint("win11", "chrome", "disabled", kernel_version=kv)
+        fp["hardware_concurrency"] = "8"
+        fp["device_memory"] = "8"
+        fp["do_not_track"] = "default"
+        fp["gpu"] = "0"
+        return fp
+    if key == "windows":
+        os_key = random.choices(["win11", "win10"], weights=[65, 35])[0]
+        fp = default_fingerprint(os_key, "chrome", "disabled", kernel_version=kv)
+        fp["hardware_concurrency"] = random.choices(["6", "8", "16"], weights=[15, 55, 30])[0]
+        fp["device_memory"] = random.choices(["8", "4"], weights=[80, 20])[0]
+        fp["do_not_track"] = random.choice(("default", "true", "false"))
+        fp["gpu"] = random.choice(("0", "1"))
+        return fp
+    return random_fingerprint(kernel_version=kv)
+
+
 def resolve_fingerprint(payload: dict[str, Any]) -> dict[str, Any]:
     mode = str(payload.get("fingerprint_mode") or "selective").lower()
-    if mode == "random":
-        return random_fingerprint()
-    _kernel, version = parse_kernel_choice(payload)
+    preset_raw = payload.get("fp_preset") or payload.get("fingerprint_preset")
+    kernel = resolve_chrome_kernel(payload)
+    if mode == "random" or preset_raw:
+        return fingerprint_from_preset(
+            normalize_fp_preset(preset_raw or "working"),
+            kernel_version=kernel,
+        )
     return default_fingerprint(
         payload.get("os") or "win11",
         "chrome",
         payload.get("webrtc") or "disabled",
-        kernel_version=version,
+        kernel_version=kernel,
     )
 
 

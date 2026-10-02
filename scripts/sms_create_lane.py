@@ -463,6 +463,17 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Run a single batch then exit (smoke test)",
     )
+    p.add_argument(
+        "--fp-preset",
+        default=(os.environ.get("SNAPPY_FP_PRESET") or "working").strip().lower(),
+        choices=["working", "windows", "strict", "w", "a", "s"],
+        help="Fingerprint preset: working (default) | windows | strict",
+    )
+    p.add_argument(
+        "--chrome-kernel",
+        default=(os.environ.get("SNAPPY_CHROME_KERNEL") or "152").strip().lower(),
+        help="SunBrowser Chrome major: 152 (default) | 153 | latest",
+    )
     args = p.parse_args()
     if not args.vps:
         p.error("Pass --vps 1|2|3|4|5 or set SNAPPY_VPS")
@@ -470,6 +481,18 @@ def parse_args() -> argparse.Namespace:
         p.error("Use either --isp or --no-proxy, not both")
     args.batch = max(1, min(50, int(args.batch)))
     args.target = max(1, int(args.target))
+    # Normalize short aliases from run.bat
+    fp_map = {"w": "working", "a": "windows", "s": "strict"}
+    args.fp_preset = fp_map.get(args.fp_preset, args.fp_preset)
+    kern = str(args.chrome_kernel or "152").strip().lower()
+    if kern in {"l", "latest"}:
+        args.chrome_kernel = "latest"
+    elif kern.isdigit():
+        args.chrome_kernel = kern
+    else:
+        # allow 152.0.0.0 style
+        major = kern.split(".", 1)[0]
+        args.chrome_kernel = major if major.isdigit() else "152"
     return args
 
 
@@ -498,6 +521,8 @@ def main() -> int:
         group=group_name,
         target=str(args.target),
         batch=str(args.batch),
+        fp=str(args.fp_preset),
+        chrome=str(args.chrome_kernel),
         good="—",
         run="—",
         last="booting",
@@ -528,6 +553,8 @@ def _run_lane(args, vps: int, group_n: int, group_name: str, prefix: str, log: T
     payload_inject = False if (args.isp or args.no_proxy) else True
     log(f"proxy   {proxy_label}")
     log(f"inject  inject_netlox={payload_inject}")
+    log(f"fp      {args.fp_preset}")
+    log(f"chrome  {args.chrome_kernel}")
     log(f"ui      {'grid' if args.ui and log.ui else 'plain'}")
 
     init_db()
@@ -560,6 +587,8 @@ def _run_lane(args, vps: int, group_n: int, group_name: str, prefix: str, log: T
         "proxy_mode": "pool" if args.isp else "none",
         "inject_netlox": payload_inject,
         "fingerprint_mode": "random",
+        "fp_preset": args.fp_preset,
+        "chrome_kernel": args.chrome_kernel,
         "auto_username": True,
         "auto_password": True,
         "bitmoji_gender": "female",

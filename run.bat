@@ -5,17 +5,26 @@ title SnappyMake
 chcp 65001 >nul 2>&1
 color 0B
 
-REM Optional: run.bat 1            → menus for continue/fresh + proxy
-REM           run.bat 1 c          → continue lane 1, then proxy menu
-REM           run.bat 1 f          → fresh wipe + lane 1, then proxy menu
-REM           run.bat 1 c n        → continue + Netlox (default)
+REM Optional: run.bat 1            → menus for continue/fresh + proxy + fp + kernel
+REM           run.bat 1 c          → continue lane 1, then remaining menus
+REM           run.bat 1 f          → fresh wipe + lane 1, then remaining menus
+REM           run.bat 1 c n        → continue + Netlox, then fp/kernel menus
 REM           run.bat 1 c d        → continue + direct (no proxy)
 REM           run.bat 1 c i        → continue + ISP Manage Proxy pool
+REM           run.bat 1 c n w 152  → continue + Netlox + working FP + Chrome 152
+REM           run.bat 1 c n a 153  → continue + Netlox + all-Windows FP + Chrome 153
+REM           run.bat 1 c n s l    → continue + Netlox + strict Win11 + latest
 set "CHOICE=%~1"
 set "MODE=%~2"
 set "PROXY=%~3"
+set "FP=%~4"
+set "KERNEL=%~5"
 set "PROXY_FLAG="
 set "PROXY_LABEL=Netlox"
+set "FP_FLAG=--fp-preset working"
+set "FP_LABEL=Working"
+set "KERNEL_FLAG=--chrome-kernel 152"
+set "KERNEL_LABEL=Chrome 152"
 
 cls
 echo.
@@ -171,40 +180,160 @@ if /i "%PROXY%"=="b" (
 if /i "%PROXY%"=="N" (
   set "PROXY_FLAG="
   set "PROXY_LABEL=Netlox"
-  goto :lane
+  goto :fp_mode
 )
 if /i "%PROXY%"=="n" (
   set "PROXY_FLAG="
   set "PROXY_LABEL=Netlox"
-  goto :lane
+  goto :fp_mode
 )
 if /i "%PROXY%"=="" (
   set "PROXY_FLAG="
   set "PROXY_LABEL=Netlox"
-  goto :lane
+  goto :fp_mode
 )
 if /i "%PROXY%"=="D" (
   set "PROXY_FLAG=--no-proxy"
   set "PROXY_LABEL=Direct no-proxy"
-  goto :lane
+  goto :fp_mode
 )
 if /i "%PROXY%"=="d" (
   set "PROXY_FLAG=--no-proxy"
   set "PROXY_LABEL=Direct no-proxy"
-  goto :lane
+  goto :fp_mode
 )
 if /i "%PROXY%"=="I" (
   set "PROXY_FLAG=--isp"
   set "PROXY_LABEL=ISP pool"
-  goto :lane
+  goto :fp_mode
 )
 if /i "%PROXY%"=="i" (
   set "PROXY_FLAG=--isp"
   set "PROXY_LABEL=ISP pool"
-  goto :lane
+  goto :fp_mode
 )
 
 echo   [x] Invalid proxy: %PROXY%
+pause
+exit /b 1
+
+:fp_mode
+if not "%FP%"=="" goto :fp_dispatch
+echo.
+echo   +-------------------------------+------------------------------+
+echo   ^|  LANE %CHOICE%  FINGERPRINT              ^|  DETAIL                       ^|
+echo   +-------------------------------+------------------------------+
+echo   ^|  [W]  Working ^(default^)       ^|  Win-heavy + light macOS    ^|
+echo   ^|  [A]  All Windows             ^|  Win11/10 only · no macOS   ^|
+echo   ^|  [S]  Strict Win11            ^|  Always Win11 · 8c / 8GB    ^|
+echo   ^|  [B]  Back                    ^|  Return to proxy menu       ^|
+echo   +-------------------------------+------------------------------+
+echo.
+set /p "FP=   Pick W / A / S / B: "
+
+:fp_dispatch
+if /i "%FP%"=="B" (
+  set "PROXY="
+  set "FP="
+  goto :proxy_mode
+)
+if /i "%FP%"=="b" (
+  set "PROXY="
+  set "FP="
+  goto :proxy_mode
+)
+if /i "%FP%"=="W" (
+  set "FP_FLAG=--fp-preset working"
+  set "FP_LABEL=Working"
+  goto :kernel_mode
+)
+if /i "%FP%"=="w" (
+  set "FP_FLAG=--fp-preset working"
+  set "FP_LABEL=Working"
+  goto :kernel_mode
+)
+if /i "%FP%"=="" (
+  set "FP_FLAG=--fp-preset working"
+  set "FP_LABEL=Working"
+  goto :kernel_mode
+)
+if /i "%FP%"=="A" (
+  set "FP_FLAG=--fp-preset windows"
+  set "FP_LABEL=All Windows"
+  goto :kernel_mode
+)
+if /i "%FP%"=="a" (
+  set "FP_FLAG=--fp-preset windows"
+  set "FP_LABEL=All Windows"
+  goto :kernel_mode
+)
+if /i "%FP%"=="S" (
+  set "FP_FLAG=--fp-preset strict"
+  set "FP_LABEL=Strict Win11"
+  goto :kernel_mode
+)
+if /i "%FP%"=="s" (
+  set "FP_FLAG=--fp-preset strict"
+  set "FP_LABEL=Strict Win11"
+  goto :kernel_mode
+)
+
+echo   [x] Invalid fingerprint: %FP%
+pause
+exit /b 1
+
+:kernel_mode
+if not "%KERNEL%"=="" goto :kernel_dispatch
+echo.
+echo   +-------------------------------+------------------------------+
+echo   ^|  LANE %CHOICE%  BROWSER KERNEL           ^|  DETAIL                       ^|
+echo   +-------------------------------+------------------------------+
+echo   ^|  [152] Chrome 152 ^(default^)   ^|  Proven SMS signup kernel   ^|
+echo   ^|  [153] Chrome 153             ^|  Needs chrome_153 installed ^|
+echo   ^|  [L]   Latest on disk         ^|  AdsPower "latest" token    ^|
+echo   ^|  [B]   Back                   ^|  Return to fingerprint      ^|
+echo   +-------------------------------+------------------------------+
+echo.
+set /p "KERNEL=   Pick 152 / 153 / L / B: "
+
+:kernel_dispatch
+if /i "%KERNEL%"=="B" (
+  set "FP="
+  set "KERNEL="
+  goto :fp_mode
+)
+if /i "%KERNEL%"=="b" (
+  set "FP="
+  set "KERNEL="
+  goto :fp_mode
+)
+if "%KERNEL%"=="152" (
+  set "KERNEL_FLAG=--chrome-kernel 152"
+  set "KERNEL_LABEL=Chrome 152"
+  goto :lane
+)
+if "%KERNEL%"=="" (
+  set "KERNEL_FLAG=--chrome-kernel 152"
+  set "KERNEL_LABEL=Chrome 152"
+  goto :lane
+)
+if "%KERNEL%"=="153" (
+  set "KERNEL_FLAG=--chrome-kernel 153"
+  set "KERNEL_LABEL=Chrome 153"
+  goto :lane
+)
+if /i "%KERNEL%"=="L" (
+  set "KERNEL_FLAG=--chrome-kernel latest"
+  set "KERNEL_LABEL=Latest"
+  goto :lane
+)
+if /i "%KERNEL%"=="l" (
+  set "KERNEL_FLAG=--chrome-kernel latest"
+  set "KERNEL_LABEL=Latest"
+  goto :lane
+)
+
+echo   [x] Invalid kernel: %KERNEL%
 pause
 exit /b 1
 
@@ -221,6 +350,7 @@ echo   +-------------------------------+------------------------------+
 echo   ^|  Lane %CHOICE%  !MODE_LABEL!            ^|  data\logs\sms_create_vps%CHOICE%.log ^|
 echo   ^|  Group Warming SMS %CHOICE%           ^|  live grid in this window  ^|
 echo   ^|  Proxy !PROXY_LABEL!                  ^|  stop at 300 good          ^|
+echo   ^|  FP    !FP_LABEL!                     ^|  Kernel !KERNEL_LABEL!     ^|
 echo   ^|  Dashboard :8787 background   ^|                              ^|
 echo   +-------------------------------+------------------------------+
 echo.
@@ -273,8 +403,8 @@ if not "!READY!"=="1" (
 echo   [ok] Dashboard up.
 :lane_ready
 echo.
-echo   Launch: sms_create_lane.py --vps %CHOICE% --target 300 --ui !FRESH_FLAG! !PROXY_FLAG!
-"%VENVPY%" scripts\sms_create_lane.py --vps %CHOICE% --target 300 --ui !FRESH_FLAG! !PROXY_FLAG!
+echo   Launch: sms_create_lane.py --vps %CHOICE% --target 300 --ui !FRESH_FLAG! !PROXY_FLAG! !FP_FLAG! !KERNEL_FLAG!
+"%VENVPY%" scripts\sms_create_lane.py --vps %CHOICE% --target 300 --ui !FRESH_FLAG! !PROXY_FLAG! !FP_FLAG! !KERNEL_FLAG!
 set "RC=%ERRORLEVEL%"
 
 echo.
