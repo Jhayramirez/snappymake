@@ -289,6 +289,9 @@ class GmailLoginRunIn(BaseModel):
 
 class RunIn(CreateIn):
     fingerprint_mode: str = "random"
+    fp_preset: str = "working"
+    chrome_kernel: str = "152"
+    otp_provider: str = ""
     action: str = "snapchat_signup"
     start_url: str = "https://accounts.snapchat.com/v2/signup"
     close_after: bool = False
