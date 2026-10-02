@@ -474,6 +474,12 @@ def parse_args() -> argparse.Namespace:
         default=(os.environ.get("SNAPPY_CHROME_KERNEL") or "152").strip().lower(),
         help="SunBrowser Chrome major: 152 (default) | 153 | latest",
     )
+    p.add_argument(
+        "--otp-provider",
+        default=(os.environ.get("SNAPPY_OTP_PROVIDER") or "imap").strip().lower(),
+        choices=["imap", "anymessage", "diddysms", "i", "am", "a", "d", "ds"],
+        help="OTP source: imap (Gmail pool) | anymessage | diddysms",
+    )
     args = p.parse_args()
     if not args.vps:
         p.error("Pass --vps 1|2|3|4|5 or set SNAPPY_VPS")
@@ -493,6 +499,17 @@ def parse_args() -> argparse.Namespace:
         # allow 152.0.0.0 style
         major = kern.split(".", 1)[0]
         args.chrome_kernel = major if major.isdigit() else "152"
+    otp_map = {
+        "i": "imap",
+        "imap": "imap",
+        "am": "anymessage",
+        "a": "anymessage",
+        "anymessage": "anymessage",
+        "d": "diddysms",
+        "ds": "diddysms",
+        "diddysms": "diddysms",
+    }
+    args.otp_provider = otp_map.get(str(args.otp_provider).strip().lower(), "imap")
     return args
 
 
@@ -523,6 +540,7 @@ def main() -> int:
         batch=str(args.batch),
         fp=str(args.fp_preset),
         chrome=str(args.chrome_kernel),
+        otp=str(args.otp_provider),
         good="—",
         run="—",
         last="booting",
@@ -555,6 +573,7 @@ def _run_lane(args, vps: int, group_n: int, group_name: str, prefix: str, log: T
     log(f"inject  inject_netlox={payload_inject}")
     log(f"fp      {args.fp_preset}")
     log(f"chrome  {args.chrome_kernel}")
+    log(f"otp     {args.otp_provider}")
     log(f"ui      {'grid' if args.ui and log.ui else 'plain'}")
 
     init_db()
@@ -589,6 +608,7 @@ def _run_lane(args, vps: int, group_n: int, group_name: str, prefix: str, log: T
         "fingerprint_mode": "random",
         "fp_preset": args.fp_preset,
         "chrome_kernel": args.chrome_kernel,
+        "otp_provider": args.otp_provider,
         "auto_username": True,
         "auto_password": True,
         "bitmoji_gender": "female",

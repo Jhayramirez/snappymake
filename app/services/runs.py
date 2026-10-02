@@ -212,15 +212,22 @@ def execute_run(run_id: str) -> None:
             and str(payload.get("proxy_mode") or "") == "list"
             and bool(proxies)
         )
+        conf = load_runtime_settings()
+        otp_provider = str(
+            payload.get("otp_provider") or conf.get("otp_provider") or "imap"
+        ).strip().lower()
+        if otp_provider not in {"imap", "anymessage", "diddysms"}:
+            otp_provider = "imap"
+        # Keep the rest of the run on the chosen provider even if Settings differs.
+        conf = dict(conf)
+        conf["otp_provider"] = otp_provider
         log(
             run,
             "plan",
-            f"{count} profile(s) · fingerprint={fingerprint_mode}/{fp_preset} · kernel=SunBrowser Chrome {chrome_kernel} · action={action} · gender={normalize_gender(payload.get('bitmoji_gender'))} · extensions={empty_cat['category_name']}"
+            f"{count} profile(s) · fingerprint={fingerprint_mode}/{fp_preset} · kernel=SunBrowser Chrome {chrome_kernel} · otp={otp_provider} · action={action} · gender={normalize_gender(payload.get('bitmoji_gender'))} · extensions={empty_cat['category_name']}"
             + (" · signup on home IP, merge proxy before Chat" if merge_after else "")
             + f" · then {'close' if close_after else 'leave open'}",
         )
-        conf = load_runtime_settings()
-        otp_provider = (conf.get("otp_provider") or "imap").lower()
         if action == "snapchat_signup":
             if otp_provider == "diddysms":
                 if not (conf.get("diddysms_key") or "").strip():

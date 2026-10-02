@@ -5,22 +5,20 @@ title SnappyMake
 chcp 65001 >nul 2>&1
 color 0B
 
-REM Optional: run.bat 1            → menus for continue/fresh + proxy + fp + kernel
-REM           run.bat 1 c          → continue lane 1, then remaining menus
-REM           run.bat 1 f          → fresh wipe + lane 1, then remaining menus
-REM           run.bat 1 c n        → continue + Netlox, then fp/kernel menus
-REM           run.bat 1 c d        → continue + direct (no proxy)
-REM           run.bat 1 c i        → continue + ISP Manage Proxy pool
-REM           run.bat 1 c n w 152  → continue + Netlox + working FP + Chrome 152
-REM           run.bat 1 c n a 153  → continue + Netlox + all-Windows FP + Chrome 153
-REM           run.bat 1 c n s l    → continue + Netlox + strict Win11 + latest
+REM Optional: run.bat 1                 → full menus
+REM           run.bat 1 c n am w 152    → continue · Netlox · AnyMessage · working · 152
+REM           run.bat 1 c n i  w 152    → continue · Netlox · IMAP · working · 152
+REM           run.bat 1 c i am a 153    → continue · ISP · AnyMessage · all-Windows · 153
 set "CHOICE=%~1"
 set "MODE=%~2"
 set "PROXY=%~3"
-set "FP=%~4"
-set "KERNEL=%~5"
+set "OTP=%~4"
+set "FP=%~5"
+set "KERNEL=%~6"
 set "PROXY_FLAG="
 set "PROXY_LABEL=Netlox"
+set "OTP_FLAG=--otp-provider imap"
+set "OTP_LABEL=IMAP Gmail"
 set "FP_FLAG=--fp-preset working"
 set "FP_LABEL=Working"
 set "KERNEL_FLAG=--chrome-kernel 152"
@@ -180,40 +178,115 @@ if /i "%PROXY%"=="b" (
 if /i "%PROXY%"=="N" (
   set "PROXY_FLAG="
   set "PROXY_LABEL=Netlox"
-  goto :fp_mode
+  goto :otp_mode
 )
 if /i "%PROXY%"=="n" (
   set "PROXY_FLAG="
   set "PROXY_LABEL=Netlox"
-  goto :fp_mode
+  goto :otp_mode
 )
 if /i "%PROXY%"=="" (
   set "PROXY_FLAG="
   set "PROXY_LABEL=Netlox"
-  goto :fp_mode
+  goto :otp_mode
 )
 if /i "%PROXY%"=="D" (
   set "PROXY_FLAG=--no-proxy"
   set "PROXY_LABEL=Direct no-proxy"
-  goto :fp_mode
+  goto :otp_mode
 )
 if /i "%PROXY%"=="d" (
   set "PROXY_FLAG=--no-proxy"
   set "PROXY_LABEL=Direct no-proxy"
-  goto :fp_mode
+  goto :otp_mode
 )
 if /i "%PROXY%"=="I" (
   set "PROXY_FLAG=--isp"
   set "PROXY_LABEL=ISP pool"
-  goto :fp_mode
+  goto :otp_mode
 )
 if /i "%PROXY%"=="i" (
   set "PROXY_FLAG=--isp"
   set "PROXY_LABEL=ISP pool"
-  goto :fp_mode
+  goto :otp_mode
 )
 
 echo   [x] Invalid proxy: %PROXY%
+pause
+exit /b 1
+
+:otp_mode
+if not "%OTP%"=="" goto :otp_dispatch
+echo.
+echo   +-------------------------------+------------------------------+
+echo   ^|  LANE %CHOICE%  OTP                      ^|  DETAIL                       ^|
+echo   +-------------------------------+------------------------------+
+echo   ^|  [I]  IMAP Gmail pool         ^|  Unused Gmails in Settings   ^|
+echo   ^|  [A]  AnyMessage              ^|  Needs token in Settings     ^|
+echo   ^|  [D]  DiddySMS                ^|  Needs key in Settings       ^|
+echo   ^|  [B]  Back                    ^|  Return to proxy menu        ^|
+echo   +-------------------------------+------------------------------+
+echo.
+set /p "OTP=   Pick I / A / D / B: "
+
+:otp_dispatch
+if /i "%OTP%"=="B" (
+  set "PROXY="
+  set "OTP="
+  goto :proxy_mode
+)
+if /i "%OTP%"=="b" (
+  set "PROXY="
+  set "OTP="
+  goto :proxy_mode
+)
+if /i "%OTP%"=="I" (
+  set "OTP_FLAG=--otp-provider imap"
+  set "OTP_LABEL=IMAP Gmail"
+  goto :fp_mode
+)
+if /i "%OTP%"=="i" (
+  set "OTP_FLAG=--otp-provider imap"
+  set "OTP_LABEL=IMAP Gmail"
+  goto :fp_mode
+)
+if /i "%OTP%"=="" (
+  set "OTP_FLAG=--otp-provider imap"
+  set "OTP_LABEL=IMAP Gmail"
+  goto :fp_mode
+)
+if /i "%OTP%"=="A" (
+  set "OTP_FLAG=--otp-provider anymessage"
+  set "OTP_LABEL=AnyMessage"
+  goto :fp_mode
+)
+if /i "%OTP%"=="a" (
+  set "OTP_FLAG=--otp-provider anymessage"
+  set "OTP_LABEL=AnyMessage"
+  goto :fp_mode
+)
+if /i "%OTP%"=="AM" (
+  set "OTP_FLAG=--otp-provider anymessage"
+  set "OTP_LABEL=AnyMessage"
+  goto :fp_mode
+)
+if /i "%OTP%"=="am" (
+  set "OTP_FLAG=--otp-provider anymessage"
+  set "OTP_LABEL=AnyMessage"
+  goto :fp_mode
+)
+if /i "%OTP%"=="D" (
+  set "OTP_FLAG=--otp-provider diddysms"
+  set "OTP_LABEL=DiddySMS"
+  goto :fp_mode
+)
+if /i "%OTP%"=="d" (
+  set "OTP_FLAG=--otp-provider diddysms"
+  set "OTP_LABEL=DiddySMS"
+  goto :fp_mode
+)
+
+echo   [x] Invalid OTP: %OTP%
 pause
 exit /b 1
 
@@ -226,21 +299,21 @@ echo   +-------------------------------+------------------------------+
 echo   ^|  [W]  Working ^(default^)       ^|  Win-heavy + light macOS    ^|
 echo   ^|  [A]  All Windows             ^|  Win11/10 only · no macOS   ^|
 echo   ^|  [S]  Strict Win11            ^|  Always Win11 · 8c / 8GB    ^|
-echo   ^|  [B]  Back                    ^|  Return to proxy menu       ^|
+echo   ^|  [B]  Back                    ^|  Return to OTP menu         ^|
 echo   +-------------------------------+------------------------------+
 echo.
 set /p "FP=   Pick W / A / S / B: "
 
 :fp_dispatch
 if /i "%FP%"=="B" (
-  set "PROXY="
+  set "OTP="
   set "FP="
-  goto :proxy_mode
+  goto :otp_mode
 )
 if /i "%FP%"=="b" (
-  set "PROXY="
+  set "OTP="
   set "FP="
-  goto :proxy_mode
+  goto :otp_mode
 )
 if /i "%FP%"=="W" (
   set "FP_FLAG=--fp-preset working"
@@ -350,8 +423,8 @@ echo   +-------------------------------+------------------------------+
 echo   ^|  Lane %CHOICE%  !MODE_LABEL!            ^|  data\logs\sms_create_vps%CHOICE%.log ^|
 echo   ^|  Group Warming SMS %CHOICE%           ^|  live grid in this window  ^|
 echo   ^|  Proxy !PROXY_LABEL!                  ^|  stop at 300 good          ^|
-echo   ^|  FP    !FP_LABEL!                     ^|  Kernel !KERNEL_LABEL!     ^|
-echo   ^|  Dashboard :8787 background   ^|                              ^|
+echo   ^|  OTP   !OTP_LABEL!                    ^|  FP !FP_LABEL!             ^|
+echo   ^|  Kernel !KERNEL_LABEL!                ^|  Dashboard :8787           ^|
 echo   +-------------------------------+------------------------------+
 echo.
 
@@ -403,8 +476,8 @@ if not "!READY!"=="1" (
 echo   [ok] Dashboard up.
 :lane_ready
 echo.
-echo   Launch: sms_create_lane.py --vps %CHOICE% --target 300 --ui !FRESH_FLAG! !PROXY_FLAG! !FP_FLAG! !KERNEL_FLAG!
-"%VENVPY%" scripts\sms_create_lane.py --vps %CHOICE% --target 300 --ui !FRESH_FLAG! !PROXY_FLAG! !FP_FLAG! !KERNEL_FLAG!
+echo   Launch: sms_create_lane.py --vps %CHOICE% --target 300 --ui !FRESH_FLAG! !PROXY_FLAG! !OTP_FLAG! !FP_FLAG! !KERNEL_FLAG!
+"%VENVPY%" scripts\sms_create_lane.py --vps %CHOICE% --target 300 --ui !FRESH_FLAG! !PROXY_FLAG! !OTP_FLAG! !FP_FLAG! !KERNEL_FLAG!
 set "RC=%ERRORLEVEL%"
 
 echo.
