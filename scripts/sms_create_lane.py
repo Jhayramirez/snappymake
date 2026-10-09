@@ -565,6 +565,7 @@ def _run_lane(args, vps: int, group_n: int, group_name: str, prefix: str, log: T
     log(f"mode    {'FRESH (wipe group first)' if args.fresh else 'CONTINUE (resume count)'}")
     log(f"target  {args.target} good in group")
     log(f"batch   {args.batch}")
+    log(f"browsers 3 at a time")
     log(f"api     {args.api}")
     log(f"log     {log.path}")
     log(f"cache   {'off' if args.no_cache_clear else 'clear after batch (keep cookies)'}")
@@ -615,6 +616,7 @@ def _run_lane(args, vps: int, group_n: int, group_name: str, prefix: str, log: T
         "proxy_mode": "pool" if args.isp else "none",
         "inject_netlox": payload_inject,
         "inject_mars": payload_mars,
+        "concurrency": 3,
         "fingerprint_mode": "random",
         "fp_preset": args.fp_preset,
         "chrome_kernel": args.chrome_kernel,

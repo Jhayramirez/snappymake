@@ -303,6 +303,7 @@ class RunIn(CreateIn):
     group_id: str = ""
     inject_netlox: bool = True
     inject_mars: bool = False
+    concurrency: int = Field(1, ge=1, le=5)
 
 
 def _client() -> AdsPowerClient:

@@ -3,6 +3,7 @@ from __future__ import annotations
 import email as email_lib
 import imaplib
 import re
+import threading
 import time
 from datetime import timezone
 from email.header import decode_header, make_header
@@ -234,14 +235,31 @@ def update_account(current_email: str, *, email: str | None = None, app_password
     return {"email": new_email, "app_password": new_pw}
 
 
+_claim_lock = threading.Lock()
+_reserved_gmails: set[str] = set()
+
+
 def claim_unused_mailbox(profile_id: str = "") -> dict[str, str] | None:
-    """Pick the next unused Gmail. Caller must mark it used after OTP succeeds."""
-    used = gmail_used_set()
-    for acct in load_accounts():
-        if acct["email"].lower() in used:
-            continue
-        return acct
+    """Pick the next unused Gmail. Caller must mark it used after OTP succeeds.
+
+    An in-process reservation keeps parallel signups from taking the same inbox.
+    """
+    with _claim_lock:
+        used = gmail_used_set()
+        for acct in load_accounts():
+            email = acct["email"].lower()
+            if email in used or email in _reserved_gmails:
+                continue
+            _reserved_gmails.add(email)
+            return acct
     return None
+
+
+def release_gmail_claim(email: str) -> None:
+    if not email:
+        return
+    with _claim_lock:
+        _reserved_gmails.discard(email.strip().lower())
 
 
 def release_mailbox(email: str) -> None:
