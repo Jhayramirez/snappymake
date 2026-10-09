@@ -19,7 +19,7 @@ NETLOX_PASS = "kgywfgsjnm"
 NETLOX_LIFE = "10080"
 
 MARS_HOST = "ultra.marsproxies.com"
-MARS_PORT = "44445"
+MARS_PORT = "44443"
 MARS_USER = "mr84348c1zt"
 MARS_PASS = "MiwWZYGyE5"
 MARS_LIFE = "168h"
@@ -223,7 +223,7 @@ def random_mars_us() -> tuple[dict[str, str], str]:
     label = f"US/{city.replace('-', ' ').title()}"
     cfg = {
         "proxy_soft": "other",
-        "proxy_type": "socks5",
+        "proxy_type": "http",
         "proxy_host": MARS_HOST,
         "proxy_port": MARS_PORT,
         "proxy_user": MARS_USER,
