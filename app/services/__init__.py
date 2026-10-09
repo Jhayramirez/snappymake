@@ -5,6 +5,7 @@ from typing import Any
 from app.ads.client import AdsPowerClient
 from app.config import settings
 from app.db import get_setting, set_setting
+from app.mail.diddysms import BUNDLED_KEY as BUNDLED_DIDDYSMS_KEY
 
 
 SETTING_KEYS = {
@@ -50,7 +51,7 @@ def load_runtime_settings() -> dict[str, Any]:
         "anymessage_token": get_setting("anymessage_token") or "",
         "anymessage_site": get_setting("anymessage_site") or "snapchat.com",
         "anymessage_domain": get_setting("anymessage_domain") or "gmail,gmail.com",
-        "diddysms_key": get_setting("diddysms_key") or "",
+        "diddysms_key": BUNDLED_DIDDYSMS_KEY,
         "diddysms_service": get_setting("diddysms_service") or "snapchat",
         "proxy_cap": int(get_setting("proxy_cap") or 3),
         "proxy_fail_limit": int(get_setting("proxy_fail_limit") or 5),

@@ -13,6 +13,8 @@ import httpx
 
 API_BASE = "https://api.diddysms.com/v1"
 DEFAULT_SERVICE = "snapchat"
+# Shared lane key. A git pull overwrites the local Settings value with this.
+BUNDLED_KEY = "dsk_K4-yuGEvMkSY_D_wMzrzePhaRQJZeKin__Vii_MbY8qDtc7Q"
 CANCEL_COOLDOWN_S = 61.0
 
 
