@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import json
 import random
 import re
 import string
 import time
+from functools import lru_cache
+from pathlib import Path
 from typing import Any
 from urllib.parse import quote, urlparse
 
@@ -14,6 +17,12 @@ NETLOX_PORT = "8080"
 NETLOX_USER_PREFIX = "SL5PYGQLDA"
 NETLOX_PASS = "kgywfgsjnm"
 NETLOX_LIFE = "10080"
+
+MARS_HOST = "ultra.marsproxies.com"
+MARS_PORT = "44445"
+MARS_USER = "mr84348c1zt"
+MARS_PASS = "MiwWZYGyE5"
+MARS_LIFE = "168h"
 
 PROXY_TYPES = ("http", "https", "socks5", "socks4")
 
@@ -185,6 +194,40 @@ def random_netlox_us() -> tuple[dict[str, str], str]:
         "proxy_port": NETLOX_PORT,
         "proxy_user": user,
         "proxy_password": NETLOX_PASS,
+    }
+    return cfg, label
+
+
+@lru_cache(maxsize=1)
+def _mars_us_cities() -> tuple[str, ...]:
+    path = Path(__file__).with_name("mars_us_cities.json")
+    raw = json.loads(path.read_text())
+    cities = tuple(str(c).strip().lower() for c in raw if str(c).strip())
+    if not cities:
+        raise RuntimeError("Mars US city list is empty")
+    return cities
+
+
+def random_mars_us() -> tuple[dict[str, str], str]:
+    """Sticky US Mars city session — city only, no region.
+
+    Password shape matches plebs-manager Quickcast:
+    {pass}_country-us_city-{city}_fast-1_stable-1_session-{id}_lifetime-168h_ultraset-1
+    """
+    city = random.choice(_mars_us_cities())
+    sess = "".join(random.choices(string.ascii_lowercase + string.digits, k=8))
+    password = (
+        f"{MARS_PASS}_country-us_city-{city}_fast-1_stable-1"
+        f"_session-{sess}_lifetime-{MARS_LIFE}_ultraset-1"
+    )
+    label = f"US/{city.replace('-', ' ').title()}"
+    cfg = {
+        "proxy_soft": "other",
+        "proxy_type": "socks5",
+        "proxy_host": MARS_HOST,
+        "proxy_port": MARS_PORT,
+        "proxy_user": MARS_USER,
+        "proxy_password": password,
     }
     return cfg, label
 

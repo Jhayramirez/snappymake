@@ -459,6 +459,11 @@ def parse_args() -> argparse.Namespace:
         help="Use Manage Proxy ISP pool (no Netlox). Success remark tags Proxy: ISP.",
     )
     p.add_argument(
+        "--mars",
+        action="store_true",
+        help="Inject sticky US Mars city proxy (no region, no Netlox).",
+    )
+    p.add_argument(
         "--once",
         action="store_true",
         help="Run a single batch then exit (smoke test)",
@@ -483,8 +488,9 @@ def parse_args() -> argparse.Namespace:
     args = p.parse_args()
     if not args.vps:
         p.error("Pass --vps 1|2|3|4|5 or set SNAPPY_VPS")
-    if args.isp and args.no_proxy:
-        p.error("Use either --isp or --no-proxy, not both")
+    proxy_flags = sum(bool(x) for x in (args.isp, args.no_proxy, args.mars))
+    if proxy_flags > 1:
+        p.error("Use only one of --isp, --no-proxy, --mars")
     args.batch = max(1, min(50, int(args.batch)))
     args.target = max(1, int(args.target))
     # Normalize short aliases from run.bat
@@ -564,13 +570,16 @@ def _run_lane(args, vps: int, group_n: int, group_name: str, prefix: str, log: T
     log(f"cache   {'off' if args.no_cache_clear else 'clear after batch (keep cookies)'}")
     if args.isp:
         proxy_label = "ISP pool (Manage Proxy · no Netlox)"
+    elif args.mars:
+        proxy_label = "Mars city (US sticky · no Netlox)"
     elif args.no_proxy:
         proxy_label = "OFF (no Netlox)"
     else:
         proxy_label = "Netlox inject"
-    payload_inject = False if (args.isp or args.no_proxy) else True
+    payload_inject = not (args.isp or args.no_proxy or args.mars)
+    payload_mars = bool(args.mars)
     log(f"proxy   {proxy_label}")
-    log(f"inject  inject_netlox={payload_inject}")
+    log(f"inject  inject_netlox={payload_inject} inject_mars={payload_mars}")
     log(f"fp      {args.fp_preset}")
     log(f"chrome  {args.chrome_kernel}")
     log(f"otp     {args.otp_provider}")
@@ -605,6 +614,7 @@ def _run_lane(args, vps: int, group_n: int, group_name: str, prefix: str, log: T
         "close_after": True,
         "proxy_mode": "pool" if args.isp else "none",
         "inject_netlox": payload_inject,
+        "inject_mars": payload_mars,
         "fingerprint_mode": "random",
         "fp_preset": args.fp_preset,
         "chrome_kernel": args.chrome_kernel,

@@ -9,6 +9,7 @@ REM Optional: run.bat 1                 → full menus
 REM           run.bat 1 c n am w 152    → continue · Netlox · AnyMessage · working · 152
 REM           run.bat 1 c n i  w 152    → continue · Netlox · IMAP · working · 152
 REM           run.bat 1 c i am a 153    → continue · ISP · AnyMessage · all-Windows · 153
+REM           run.bat 1 c m i  w 152    → continue · Mars city · IMAP · working · 152
 set "CHOICE=%~1"
 set "MODE=%~2"
 set "PROXY=%~3"
@@ -153,12 +154,13 @@ echo   +-------------------------------+------------------------------+
 echo   ^|  LANE %CHOICE%  PROXY                    ^|  DETAIL                       ^|
 echo   +-------------------------------+------------------------------+
 echo   ^|  [N]  Netlox                  ^|  Sticky US inject ^(default^)  ^|
-echo   ^|  [D]  Direct / no proxy       ^|  Skip Netlox, use machine IP ^|
+echo   ^|  [M]  Mars                    ^|  Sticky US city · 168h       ^|
+echo   ^|  [D]  Direct / no proxy       ^|  Skip proxy, use machine IP  ^|
 echo   ^|  [I]  ISP                     ^|  Manage Proxy ISP pool       ^|
 echo   ^|  [B]  Back                    ^|  Return to mode menu         ^|
 echo   +-------------------------------+------------------------------+
 echo.
-set /p "PROXY=   Pick N / D / I / B: "
+set /p "PROXY=   Pick N / M / D / I / B: "
 
 :proxy_dispatch
 if /i "%PROXY%"=="B" (
@@ -188,6 +190,16 @@ if /i "%PROXY%"=="n" (
 if /i "%PROXY%"=="" (
   set "PROXY_FLAG="
   set "PROXY_LABEL=Netlox"
+  goto :otp_mode
+)
+if /i "%PROXY%"=="M" (
+  set "PROXY_FLAG=--mars"
+  set "PROXY_LABEL=Mars city"
+  goto :otp_mode
+)
+if /i "%PROXY%"=="m" (
+  set "PROXY_FLAG=--mars"
+  set "PROXY_LABEL=Mars city"
   goto :otp_mode
 )
 if /i "%PROXY%"=="D" (
